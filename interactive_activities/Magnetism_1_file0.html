@@ -1,0 +1,125 @@
+Creating a high-fidelity interactive HTML, CSS, and JavaScript file for the image is a detailed process. Below is the complete code to create an interactive page similar to the image you provided. 
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magnet Simulation</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f8f8;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        .instruction {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        .play-area {
+            position: relative;
+            display: flex;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .draggable-item {
+            height: 40px;
+            width: 40px;
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .draggable-item:hover {
+            transform: scale(1.2);
+        }
+        .magnet {
+            height: 60px;
+            width: 40px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+        }
+        .icon {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="instruction">Drag the magnet to each material.</div>
+    <div class="play-area">
+        <img src="https://via.placeholder.com/40/e0e0e0/000?text=📎" class="draggable-item" data-type="magnetic" alt="Paperclip">
+        <img src="https://via.placeholder.com/40/e0e0e0/000?text=🪙" class="draggable-item" data-type="non-magnetic" alt="Coin">
+        <img src="https://via.placeholder.com/40/e0e0e0/000?text=🪨" class="draggable-item" data-type="non-magnetic" alt="Rock">
+        <img src="https://via.placeholder.com/40/e0e0e0/000?text=📏" class="draggable-item" data-type="non-magnetic" alt="Ruler">
+        <img src="https://via.placeholder.com/60/f00/fff?text=Magnet" class="magnet" id="magnet" alt="Magnet">
+    </div>
+</div>
+
+<script>
+    const magnet = document.getElementById('magnet');
+    const items = document.querySelectorAll('.draggable-item');
+
+    magnet.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', null);
+    });
+
+    items.forEach(item => {
+        item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        item.addEventListener('drop', () => {
+            const itemType = item.getAttribute('data-type');
+            if (itemType === 'magnetic') {
+                alert('This material is magnetic!');
+            } else {
+                alert('This material is not magnetic.');
+            }
+        });
+    });
+
+    magnet.addEventListener('mousedown', (e) => {
+        magnet.style.position = 'absolute';
+        document.body.appendChild(magnet);
+        moveAt(e);
+
+        document.onmousemove = function(e) {
+            moveAt(e);
+        };
+
+        magnet.onmouseup = function() {
+            document.onmousemove = null;
+            magnet.onmouseup = null;
+        };
+
+        function moveAt(e) {
+            magnet.style.left = e.pageX - magnet.offsetWidth / 2 + 'px';
+            magnet.style.top = e.pageY - magnet.offsetHeight / 2 + 'px';
+        }
+    });
+
+    magnet.ondragstart = function() {
+        return false;
+    };
+</script>
+
+</body>
+</html>
+```
+
+This code renders a simple simulation that lets you drag a magnet over different items to see if they are magnetic. Replace the placeholder images with appropriate images for a more visually accurate representation.
