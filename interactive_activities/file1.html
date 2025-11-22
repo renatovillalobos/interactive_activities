@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound Intensity Experiment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f9f1dd;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .goal-tag {
+            background-color: #ffe5a8;
+            padding: 5px 10px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        .interactive-zone {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .speaker {
+            width: 30px;
+            height: 30px;
+            background-color: #ff961f;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: absolute;
+            left: 20px;
+            bottom: 80px;
+        }
+        .wave {
+            height: 10px;
+            width: 10px;
+            background-color: transparent;
+            border: 2px solid #333;
+            border-radius: 50%;
+            position: absolute;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        .controls {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .controls button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .controls input[type="range"] {
+            width: 100px;
+        }
+        .feedback {
+            background-color: #d4edda;
+            padding: 10px 15px;
+            border-radius: 12px;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sound Intensity Experiment</h1>
+        <p>Drag the speaker to change intensity.</p>
+    </header>
+    <div class="goal-tag">Inverse-Square Law</div>
+    <div class="interactive-zone">
+        <div class="speaker" id="speaker">
+            <div class="wave"></div>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="startButton">Start</button>
+        <button id="pauseButton">Pause</button>
+        <input type="range" min="1" max="100" value="50" id="distanceSlider">
+    </div>
+    <div class="feedback" id="feedback">Drag to change distance!</div>
+
+    <script>
+        const speaker = document.getElementById('speaker');
+        const feedback = document.getElementById('feedback');
+        const distanceSlider = document.getElementById('distanceSlider');
+        let isDragging = false;
+        
+        speaker.addEventListener('mousedown', () => {
+            isDragging = true;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        document.addEventListener('mousemove', (event) => {
+            if (isDragging) {
+                let newX = event.clientX - 15; // Center the speaker
+                if (newX > 20 && newX < 260) { // Restrict movement to zone
+                    speaker.style.left = newX + 'px';
+                    updateIntensity();
+                }
+            }
+        });
+
+        distanceSlider.addEventListener('input', () => {
+            const distance = distanceSlider.value;
+            const newX = 20 + (distance / 100) * 240;
+            speaker.style.left = newX + 'px';
+            updateIntensity();
+        });
+
+        function updateIntensity() {
+            const leftPosition = parseInt(speaker.style.left, 10);
+            const distance = (leftPosition - 20) / 240;
+            const intensity = Math.round(60 - (60 * distance));
+            feedback.textContent = intensity + ' dB';
+        }
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            feedback.style.backgroundColor = '#cce5ff';
+        });
+
+        document.getElementById('pauseButton').addEventListener('click', () => {
+            feedback.style.backgroundColor = '#d4edda';
+        });
+    </script>
+</body>
+</html>
