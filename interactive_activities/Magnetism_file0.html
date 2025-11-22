@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magnetic Sorting Mini-Lab</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f1ea;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .goal {
+            background-color: #f9c74f;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .interactive-zone {
+            background-color: #fff;
+            border-radius: 10px;
+            display: flex;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .object {
+            background-color: #e0e0e0;
+            padding: 10px;
+            border-radius: 50%;
+            margin: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .object:hover {
+            transform: scale(1.1);
+        }
+        .zone {
+            flex-basis: 30%;
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px dashed #ccc;
+        }
+        .zone.drop-hover {
+            background-color: #ffec99;
+            border-color: #f9c74f;
+        }
+        .feedback {
+            margin-top: 15px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .try-again {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Magnetic & Non-Magnetic Sorting</h1>
+        <p class="instruction">Use magnet to test and sort the objects.</p>
+    </div>
+    
+    <div class="goal">Sort objects into Magnetic & Non-Magnetic</div>
+
+    <div class="interactive-zone">
+        <div id="objects-container">
+            <div class="object" data-type="magnetic">🔩</div>
+            <div class="object" data-type="non-magnetic">⚪</div>
+            <div class="object" data-type="magnetic">📎</div>
+            <div class="object" data-type="non-magnetic">🟠</div>
+        </div>
+        <div id="magnet" class="object" style="background-color:#bde0fe;">🧲</div>
+        <div class="zone" id="magnetic-zone">Magnetic</div>
+        <div class="zone" id="non-magnetic-zone">Non-Magnetic</div>
+    </div>
+    
+    <div class="feedback" id="feedback"></div>
+
+    <script>
+        const objects = document.querySelectorAll('.object[data-type]');
+        const magnet = document.getElementById('magnet');
+        const magneticZone = document.getElementById('magnetic-zone');
+        const nonMagneticZone = document.getElementById('non-magnetic-zone');
+        const feedback = document.getElementById('feedback');
+        let draggableObject = null;
+
+        magnet.addEventListener('dragstart', (e) => {
+            e.preventDefault();
+            return false;
+        });
+
+        objects.forEach(object => {
+            object.addEventListener('dragstart', (e) => {
+                e.preventDefault();
+                draggableObject = object;
+            });
+
+            object.addEventListener('click', () => {
+                if (object.dataset.type === 'magnetic') {
+                    object.style.transform = 'translateX(-50px)';
+                } else {
+                    object.style.transform = 'translateX(0px)';
+                }
+            });
+        });
+
+        [magneticZone, nonMagneticZone].forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('drop-hover');
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drop-hover');
+            });
+
+            zone.addEventListener('drop', () => {
+                if (draggableObject) {
+                    zone.classList.remove('drop-hover');
+                    if (draggableObject.dataset.type === zone.id.split('-')[0]) {
+                        feedback.textContent = "Correct!";
+                        feedback.classList.add('success');
+                        feedback.classList.remove('try-again');
+                        zone.appendChild(draggableObject);
+                    } else {
+                        feedback.textContent = "Try Again!";
+                        feedback.classList.add('try-again');
+                        feedback.classList.remove('success');
+                    }
+                    draggableObject = null;
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
