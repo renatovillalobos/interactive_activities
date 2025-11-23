@@ -1,0 +1,273 @@
+<html>
+<head>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #f8f6f2;
+      width: 100%;
+      height: 100%;
+    }
+
+    svg {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    .draggable:hover {
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+      cursor: grab;
+    }
+
+    .button:hover {
+      filter: brightness(1.1);
+      cursor: pointer;
+    }
+
+    .slider-knob:hover {
+      filter: brightness(1.1);
+      cursor: pointer;
+    }
+
+    .value-text {
+      font-family: sans-serif;
+      font-size: 14px;
+      fill: #333;
+      text-anchor: middle;
+    }
+
+    .spring-path {
+      transition: d 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
+</head>
+<body>
+<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+
+  <rect x="100" y="80" width="700" height="540" rx="40" fill="#fdfcfa"/>
+
+  <g id="mass-selector">
+    <rect x="140" y="160" width="100" height="280" rx="25" fill="#f9f6f2"/>
+    <g id="mass1" class="draggable">
+      <rect x="160" y="190" width="60" height="30" rx="15" fill="#bdd2dd" stroke="#d0d0d0"/>
+    </g>
+    <g id="mass2" class="draggable">
+      <rect x="160" y="240" width="60" height="30" rx="15" fill="#bdd2dd" stroke="#d0d0d0"/>
+    </g>
+    <g id="mass3" class="draggable">
+      <rect x="160" y="290" width="60" height="30" rx="15" fill="#bdd2dd" stroke="#d0d0d0"/>
+    </g>
+  </g>
+
+  <g id="spring-system">
+    <line x1="450" y1="80" x2="450" y2="100" stroke="#000" stroke-width="5" stroke-linecap="round"/>
+
+    <path id="spring" class="spring-path" d="M450 100
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15" stroke="#11181e" fill="none"/>
+
+    <g id="attachedMass">
+      <rect id="mass-body" x="400" y="460" width="100" height="100" rx="20" fill="#86c4f0" />
+    </g>
+
+    <g id="arrowdown">
+      <path d="M430 580 Q450 600 470 580" fill="none" stroke="#86c4f0" stroke-width="6" marker-end="url(#arrowhead)"/>
+    </g>
+
+    <line id="stretchLine" x1="450" y1="560" x2="450" y2="600" stroke="#86c4f0" stroke-width="4" stroke-dasharray="4 6"/>
+
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#86c4f0"/>
+      </marker>
+    </defs>
+  </g>
+
+  <g id="slider-control">
+    <rect x="720" y="180" width="20" height="250" rx="10" fill="#f2f0ec"/>
+    <circle id="slider-knob" class="slider-knob" cx="730" cy="300" r="20" fill="url(#knob-gradient)"/>
+    <g id="reset-button" class="button">
+      <rect x="680" y="460" width="120" height="60" rx="30" fill="#86c4f0" filter="url(#shadow)"/>
+    </g>
+  </g>
+
+  <g id="footer-display">
+    <g>
+      <rect x="120" y="660" width="170" height="110" rx="30" fill="#fcfbf9"/>
+      <rect x="170" y="680" width="70" height="70" rx="15" fill="#86c4f0"/>
+      <text x="205" y="765" class="value-text">Mass</text>
+    </g>
+
+    <g>
+      <rect x="365" y="660" width="170" height="110" rx="30" fill="#fcfbf9"/>
+      <path d="M420 690 L445 710 L420 730 L445 750" stroke="#86c4f0" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <text x="450" y="765" class="value-text">Spring constant</text>
+    </g>
+
+    <g>
+      <rect x="610" y="660" width="170" height="110" rx="30" fill="#fcfbf9"/>
+      <line x1="695" y1="690" x2="695" y2="750" stroke="#86c4f0" stroke-width="4" stroke-dasharray="4 6"/>
+      <text x="695" y="765" class="value-text">Stretch length</text>
+    </g>
+  </g>
+
+  <defs>
+    <linearGradient id="knob-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a5d1f3"/>
+      <stop offset="100%" stop-color="#86c4f0"/>
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+</svg>
+
+<script>
+  let dragging = null;
+  let offsetX, offsetY;
+  let springConstant = 50;
+  let attachedMass = null;
+
+  const masses = ["mass1", "mass2", "mass3"];
+  const spring = document.getElementById("spring");
+  const massBody = document.getElementById("mass-body");
+  const springGroup = document.getElementById("spring-system");
+
+  const slider = document.getElementById("slider-knob");
+  const line = document.getElementById("stretchLine");
+
+  slider.addEventListener("pointerdown", startSlide);
+
+  function startSlide(e) {
+    e.preventDefault();
+    document.addEventListener("pointermove", onSlide);
+    document.addEventListener("pointerup", stopSlide);
+  }
+
+  function onSlide(e) {
+    let svg = document.querySelector("svg");
+    let pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    let ctm = svg.getScreenCTM().inverse();
+    let loc = pt.matrixTransform(ctm);
+    let y = Math.max(190, Math.min(410, loc.y));
+    slider.setAttribute("cy", y);
+    springConstant = 100 - ((y - 190) / 220 * 90);
+  }
+
+  function stopSlide() {
+    document.removeEventListener("pointermove", onSlide);
+    document.removeEventListener("pointerup", stopSlide);
+    if (attachedMass) simulate();
+  }
+
+  masses.forEach(id => {
+    let el = document.getElementById(id);
+    el.addEventListener("pointerdown", startDrag);
+  });
+
+  function startDrag(e) {
+    dragging = this;
+    let rect = this.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    document.addEventListener("pointermove", onDrag);
+    document.addEventListener("pointerup", stopDrag);
+  }
+
+  function onDrag(e) {
+    if (!dragging) return;
+    let svg = document.querySelector("svg");
+    let pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    let ctm = svg.getScreenCTM().inverse();
+    let loc = pt.matrixTransform(ctm);
+    dragging.setAttribute("transform", `translate(${loc.x - offsetX},${loc.y - offsetY})`);
+  }
+
+  function stopDrag(e) {
+    document.removeEventListener("pointermove", onDrag);
+    document.removeEventListener("pointerup", stopDrag);
+    if (!dragging) return;
+    let bbox = dragging.getBBox();
+    if (bbox.x > 380 && bbox.x < 520 && bbox.y > 400 && bbox.y < 520) {
+      attachedMass = dragging;
+      dragging.setAttribute("transform", "translate(400,460)");
+      simulate();
+    } else {
+      dragging.setAttribute("transform", "");
+    }
+    dragging = null;
+  }
+
+  function simulate() {
+    let m = 1 + masses.indexOf(attachedMass.id);
+    let k = springConstant;
+    let stretch = (m * 30) / (k / 50);
+    let stretchY = stretch * 5;
+
+    massBody.setAttribute("y", 460 + stretchY);
+
+    let top = 100;
+    let path = `M450 ${top}`;
+    let dy = 360 + stretchY;
+    let coils = 12;
+    let step = dy / coils;
+    for (let i = 0; i < coils; i++) {
+      let cy = top + step * (i + 1);
+      path += ` c-5 5, 5 10, -5 15`;
+    }
+    spring.setAttribute("d", path);
+
+    line.setAttribute("x1", 450);
+    line.setAttribute("x2", 450);
+    let lineTop = 460 + stretchY + 100;
+    line.setAttribute("y1", lineTop);
+    line.setAttribute("y2", lineTop + 40);
+  }
+
+  const resetBtn = document.getElementById("reset-button");
+  resetBtn.addEventListener("click", () => {
+    spring.setAttribute("d", `M450 100
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15
+      c-5 5, 5 10, -5 15`);
+    massBody.setAttribute("y", 460);
+    line.setAttribute("y1", 560);
+    line.setAttribute("y2", 600);
+    if (attachedMass) {
+      attachedMass.setAttribute("transform", "");
+      attachedMass = null;
+    }
+    slider.setAttribute("cy", 300);
+    springConstant = 50;
+  });
+</script>
+</body>
+</html>
