@@ -1,0 +1,382 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html, body {
+    margin: 0; height: 100%; background: #020617; display: grid; place-items: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  }
+  svg { width: 96vmin; height: 96vmin; display: block; }
+  .micro { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; fill: #9ca3af; }
+  .title { font-size: 26px; font-weight: 700; fill: #f9fafb; }
+  .body { font-size: 14px; fill: #cbd5e1; }
+  .label { font-size: 14px; fill: #e5e7eb; }
+  .kval { font-size: 13px; fill: #94a3b8; }
+  .btn-text { font-size: 14px; font-weight: 700; fill: #ffffff; pointer-events: none; }
+  .hint { font-size: 13px; fill: #9ca3af; }
+  #btn-reset:hover .btn-bg { opacity: 0.95; }
+  #btn-reset:active .btn-bg { transform: translateY(1px); }
+  .mass-body { transition: transform .15s ease, opacity .15s ease; }
+  .mass-shadow { opacity: .25; }
+  .coil { transition: stroke .15s ease, opacity .2s ease; }
+  .hook { transition: stroke .15s ease, fill .15s ease, r .15s ease; }
+  .highlight { stroke: #3b82f6 !important; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#020617"/>
+      <stop offset="1" stop-color="#050816"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#050b18"/>
+      <stop offset="1" stop-color="#0b1120"/>
+    </linearGradient>
+    <linearGradient id="accentMagenta" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff4b9a"/>
+      <stop offset="1" stop-color="#ec4899"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#94a3b8"/>
+      <stop offset="1" stop-color="#64748b"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="900" fill="url(#bgGrad)"/>
+
+  <g id="card">
+    <rect x="60" y="60" rx="20" ry="20" width="780" height="780" fill="url(#cardGrad)" stroke="rgba(148,163,184,0.25)" />
+    <text class="micro" x="96" y="110">SPRING CONSTANTS DRAG-AND-DROP</text>
+    <text class="title" x="96" y="144">Spring Constants Lab</text>
+    <text class="hint" x="96" y="172">Drag a mass block onto a spring. Heavier mass or smaller k stretches more.</text>
+
+    <g id="btn-reset" cursor="pointer">
+      <rect class="btn-bg" x="618" y="96" width="186" height="40" rx="20" fill="url(#accentMagenta)"/>
+      <text class="btn-text" x="711" y="121" text-anchor="middle">Reset</text>
+    </g>
+
+    <g id="lab-area">
+      <rect x="96" y="200" width="708" height="560" rx="16" fill="#0b1120" stroke="rgba(148,163,184,0.15)"/>
+      <rect x="156" y="230" width="588" height="12" rx="6" fill="#111827" stroke="rgba(148,163,184,0.12)"/>
+
+      <text class="micro" x="156" y="220">SPRINGS</text>
+      <text class="micro" x="660" y="220">MASS BLOCKS</text>
+
+      <g id="springs">
+        <g id="spring-1">
+          <text class="kval" x="236" y="538" text-anchor="middle">k = 100 N/m</text>
+          <circle id="spring-1-top" cx="236" cy="236" r="6" fill="#1f2937" stroke="rgba(148,163,184,0.3)"/>
+          <path id="spring-1-coil" class="coil" d="" stroke="#8093a7" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle id="spring-1-hook" class="hook" cx="236" cy="390" r="7" fill="#0f172a" stroke="rgba(148,163,184,0.5)"/>
+        </g>
+        <g id="spring-2">
+          <text class="kval" x="450" y="538" text-anchor="middle">k = 200 N/m</text>
+          <circle id="spring-2-top" cx="450" cy="236" r="6" fill="#1f2937" stroke="rgba(148,163,184,0.3)"/>
+          <path id="spring-2-coil" class="coil" d="" stroke="#8093a7" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle id="spring-2-hook" class="hook" cx="450" cy="390" r="7" fill="#0f172a" stroke="rgba(148,163,184,0.5)"/>
+        </g>
+        <g id="spring-3">
+          <text class="kval" x="664" y="538" text-anchor="middle">k = 400 N/m</text>
+          <circle id="spring-3-top" cx="664" cy="236" r="6" fill="#1f2937" stroke="rgba(148,163,184,0.3)"/>
+          <path id="spring-3-coil" class="coil" d="" stroke="#8093a7" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle id="spring-3-hook" class="hook" cx="664" cy="390" r="7" fill="#0f172a" stroke="rgba(148,163,184,0.5)"/>
+        </g>
+      </g>
+
+      <g id="masses">
+        <g id="mass-1" cursor="grab">
+          <rect class="mass-shadow" x="702" y="330" width="120" height="64" rx="12" fill="#000000"/>
+          <rect class="mass-body" x="696" y="324" width="120" height="64" rx="12" fill="url(#steel)" stroke="rgba(255,255,255,0.08)"/>
+          <text class="label" x="756" y="363" text-anchor="middle">1 kg</text>
+        </g>
+        <g id="mass-2" cursor="grab">
+          <rect class="mass-shadow" x="702" y="410" width="120" height="64" rx="12" fill="#000000"/>
+          <rect class="mass-body" x="696" y="404" width="120" height="64" rx="12" fill="url(#steel)" stroke="rgba(255,255,255,0.08)"/>
+          <text class="label" x="756" y="443" text-anchor="middle">2 kg</text>
+        </g>
+        <g id="mass-3" cursor="grab">
+          <rect class="mass-shadow" x="702" y="490" width="120" height="64" rx="12" fill="#000000"/>
+          <rect class="mass-body" x="696" y="484" width="120" height="64" rx="12" fill="url(#steel)" stroke="rgba(255,255,255,0.08)"/>
+          <text class="label" x="756" y="523" text-anchor="middle">3 kg</text>
+        </g>
+      </g>
+
+      <g id="legend">
+        <circle cx="120" cy="618" r="6" fill="#8093a7"/>
+        <text class="body" x="136" y="623">Rest spring length</text>
+        <circle cx="120" cy="654" r="6" fill="#60a5fa"/>
+        <text class="body" x="136" y="659">Active drop target</text>
+        <rect x="108" y="680" width="12" height="12" rx="2" fill="#22c55e"/>
+        <text class="body" x="136" y="690">More stretch with higher mass or lower k</text>
+      </g>
+
+    </g>
+  </g>
+
+  <script>
+    const PX_PER_M = 800;
+    const G = 9.8;
+    const REST_LEN = 140;
+    const TOP_Y = 242; // start of coils just under bar
+    const HOOK_GAP = 18; // small gap below coil end to hook center
+    const COIL_TURNS = 10;
+    const COIL_WIDTH = 16;
+    const DROP_THRESHOLD = 64;
+
+    const springs = [
+      { id: 'spring-1', x: 236, k: 100, attached: null, coilEl: null, hookEl: null },
+      { id: 'spring-2', x: 450, k: 200, attached: null, coilEl: null, hookEl: null },
+      { id: 'spring-3', x: 664, k: 400, attached: null, coilEl: null, hookEl: null },
+    ];
+
+    const masses = [
+      { id: 'mass-1', m: 1, home: {x: 696, y: 324}, w: 120, h: 64, attachedTo: null, g: null },
+      { id: 'mass-2', m: 2, home: {x: 696, y: 404}, w: 120, h: 64, attachedTo: null, g: null },
+      { id: 'mass-3', m: 3, home: {x: 696, y: 484}, w: 120, h: 64, attachedTo: null, g: null },
+    ];
+
+    // Map DOM
+    springs.forEach(s => {
+      s.coilEl = document.getElementById(s.id + '-coil');
+      s.hookEl = document.getElementById(s.id + '-hook');
+      s.topEl  = document.getElementById(s.id + '-top');
+      setSpring(s, 0, true);
+    });
+
+    masses.forEach(ms => {
+      ms.g = document.getElementById(ms.id);
+      placeMass(ms, ms.home.x, ms.home.y);
+    });
+
+    // Draw initial coils
+    function setSpring(spring, extension, instant=false) {
+      const yTop = TOP_Y;
+      const yBottom = yTop + REST_LEN + extension;
+      const pathD = springPath(spring.x, yTop, yBottom, COIL_TURNS, COIL_WIDTH);
+      spring.coilEl.setAttribute('d', pathD);
+      spring.hookEl.setAttribute('cx', spring.x);
+      spring.hookEl.setAttribute('cy', yBottom + HOOK_GAP);
+    }
+
+    function springPath(x, yTop, yBottom, turns, width) {
+      const seg = (yBottom - yTop) / (turns + 1);
+      let d = `M ${x} ${yTop}`;
+      let y = yTop + seg;
+      for (let i = 0; i < turns; i++) {
+        const xAlt = x + (i % 2 === 0 ? -width : width);
+        d += ` L ${xAlt} ${y}`;
+        y += seg;
+      }
+      d += ` L ${x} ${yBottom}`;
+      return d;
+    }
+
+    function extensionFor(massKg, k) {
+      const meters = (massKg * G) / k;
+      const px = meters * PX_PER_M;
+      return Math.max(0, Math.min(px, 180));
+    }
+
+    // Dragging
+    let active = null;
+    let offset = {x:0, y:0};
+    const svg = document.querySelector('svg');
+
+    masses.forEach(ms => {
+      const g = ms.g;
+      g.style.touchAction = 'none';
+      g.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        svg.setPointerCapture(e.pointerId);
+        // Detach if attached
+        if (ms.attachedTo) {
+          const s = springs.find(sp => sp.id === ms.attachedTo);
+          if (s) {
+            s.attached = null;
+            setSpring(s, 0, true);
+            unhighlightSpring(s);
+          }
+          ms.attachedTo = null;
+        }
+        active = ms;
+        const pt = pointerToSvg(e);
+        const bbox = g.getBBox();
+        offset.x = pt.x - bbox.x;
+        offset.y = pt.y - bbox.y;
+        g.style.cursor = 'grabbing';
+        scaleMass(g, 1.05);
+      });
+    });
+
+    svg.addEventListener('pointermove', e => {
+      if (!active) return;
+      const pt = pointerToSvg(e);
+      const x = pt.x - offset.x;
+      const y = pt.y - offset.y;
+      placeMass(active, x, y);
+
+      // highlight nearest hook if within threshold
+      let target = nearestSpring(pt.x, pt.y);
+      springs.forEach(s => unhighlightSpring(s));
+      if (target && target.dist <= DROP_THRESHOLD) {
+        highlightSpring(target.spring);
+      }
+    });
+
+    svg.addEventListener('pointerup', e => {
+      if (!active) return;
+      const ms = active;
+      active.g.style.cursor = 'grab';
+      scaleMass(ms.g, 1.0);
+
+      const pt = pointerToSvg(e);
+      const target = nearestSpring(pt.x, pt.y);
+
+      springs.forEach(s => unhighlightSpring(s));
+
+      if (target && target.dist <= DROP_THRESHOLD) {
+        const s = target.spring;
+        if (!s.attached) {
+          attach(ms, s);
+        } else {
+          // Occupied: snap back
+          snapBack(ms);
+        }
+      } else {
+        snapBack(ms);
+      }
+
+      active = null;
+    });
+
+    function attach(ms, s) {
+      s.attached = ms.id;
+      ms.attachedTo = s.id;
+      const ext = extensionFor(ms.m, s.k);
+      animateSpringTo(s, ext, () => {
+        // position mass centered on hook
+        const hookX = parseFloat(s.hookEl.getAttribute('cx'));
+        const hookY = parseFloat(s.hookEl.getAttribute('cy'));
+        const mx = hookX - ms.w/2;
+        const my = hookY + 8; // a small gap below hook
+        placeMass(ms, mx, my);
+      });
+    }
+
+    function animateSpringTo(s, targetExt, cb) {
+      const yTop = TOP_Y;
+      const currentD = s.coilEl.getAttribute('d');
+      // Estimate current extension from hook y
+      const cy = parseFloat(s.hookEl.getAttribute('cy'));
+      let currentExt = Math.max(0, (cy - HOOK_GAP - (yTop + REST_LEN)));
+      const start = currentExt;
+      const delta = targetExt - start;
+      const dur = 320;
+      const t0 = performance.now();
+      function step(t) {
+        const u = Math.min(1, (t - t0) / dur);
+        const ease = 1 - Math.pow(1 - u, 3);
+        const ext = start + delta * ease;
+        setSpring(s, ext);
+        if (u < 1) requestAnimationFrame(step);
+        else { setSpring(s, targetExt); if (cb) cb(); }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function nearestSpring(x, y) {
+      let best = null;
+      springs.forEach(s => {
+        const hx = parseFloat(s.hookEl.getAttribute('cx'));
+        const hy = parseFloat(s.hookEl.getAttribute('cy'));
+        const dx = x - hx;
+        const dy = y - hy;
+        const d = Math.hypot(dx, dy);
+        if (!best || d < best.dist) best = {spring: s, dist: d};
+      });
+      return best;
+    }
+
+    function highlightSpring(s) {
+      s.coilEl.classList.add('highlight');
+      s.hookEl.setAttribute('stroke', '#60a5fa');
+      s.hookEl.setAttribute('fill', '#0b122a');
+      s.hookEl.setAttribute('r', 9);
+    }
+    function unhighlightSpring(s) {
+      s.coilEl.classList.remove('highlight');
+      s.hookEl.setAttribute('stroke', 'rgba(148,163,184,0.5)');
+      s.hookEl.setAttribute('fill', '#0f172a');
+      s.hookEl.setAttribute('r', 7);
+    }
+
+    function placeMass(ms, x, y) {
+      const dx = x - ms.home.x;
+      const dy = y - ms.home.y;
+      // Move both shadow and body together by transforming the group
+      ms.g.setAttribute('transform', `translate(${dx},${dy})`);
+    }
+
+    function snapBack(ms) {
+      animateMassTo(ms, ms.home.x, ms.home.y);
+    }
+
+    function animateMassTo(ms, x, y) {
+      const tr = ms.g.getAttribute('transform') || 'translate(0,0)';
+      const match = /translate\(([-\d.]+),([-\d.]+)\)/.exec(tr);
+      const curDX = match ? parseFloat(match[1]) : 0;
+      const curDY = match ? parseFloat(match[2]) : 0;
+      const targetDX = x - ms.home.x;
+      const targetDY = y - ms.home.y;
+      const dX = targetDX - curDX;
+      const dY = targetDY - curDY;
+      const dur = 200;
+      const t0 = performance.now();
+      function step(t) {
+        const u = Math.min(1, (t - t0) / dur);
+        const ease = 1 - Math.pow(1 - u, 3);
+        const nx = curDX + dX * ease;
+        const ny = curDY + dY * ease;
+        ms.g.setAttribute('transform', `translate(${nx},${ny})`);
+        if (u < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    function pointerToSvg(evt) {
+      const pt = svg.createSVGPoint();
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+      const m = svg.getScreenCTM().inverse();
+      return pt.matrixTransform(m);
+    }
+
+    function scaleMass(g, s) {
+      g.querySelector('.mass-body').setAttribute('transform', `scale(${s})`);
+      // Keep label centered visually: ignore for simplicity; small scale is fine
+    }
+
+    // Reset button
+    const btnReset = document.getElementById('btn-reset');
+    btnReset.addEventListener('click', () => {
+      // Detach all
+      springs.forEach(s => {
+        s.attached = null;
+        setSpring(s, 0, true);
+        unhighlightSpring(s);
+      });
+      masses.forEach(ms => {
+        ms.attachedTo = null;
+        animateMassTo(ms, ms.home.x, ms.home.y);
+      });
+    });
+
+    // Ensure initial positions correct after draw
+    springs.forEach(s => setSpring(s, 0, true));
+  </script>
+</svg>
+</body>
+</html>
