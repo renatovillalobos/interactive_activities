@@ -1,0 +1,157 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  html,body{height:100%;margin:0;background:#f6f5f2}
+  svg{width:100%;height:100%;display:block}
+  .digit-text{font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; font-weight:700; letter-spacing:2px}
+  #btnRect{transition:fill .2s ease}
+  #knob{fill:#ffffff; transition:transform .15s ease; transform-box:fill-box; transform-origin:center}
+  #sliderTrack{fill:#3b4652}
+  #innerGroove{stroke:#2a3336; stroke-width:16; stroke-linecap:round; opacity:.7}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 1200">
+  <rect x="0" y="0" width="800" height="1200" fill="#f6f5f2"/>
+
+  <g id="timerGroup">
+    <rect id="timerBG" x="265" y="90" width="270" height="90" rx="45" fill="#ffffff"/>
+    <text id="timerText" class="digit-text" x="400" y="149" text-anchor="middle" font-size="52" fill="#0b0b0b">00.0 s</text>
+  </g>
+
+  <g id="pendulum">
+    <path id="string" d="M400 180 L400 460" stroke="#1b1b1b" stroke-width="6"/>
+  </g>
+
+  <g id="ballGroup">
+    <circle id="ball" cx="400" cy="460" r="80" fill="#2577ff"/>
+  </g>
+
+  <g id="btnStartStop" cursor="pointer">
+    <rect id="btnRect" x="250" y="740" width="300" height="150" rx="36" fill="#28c84a"/>
+    <path id="playIcon" d="M0,-38 L66,0 L0,38 Z" fill="#ffffff" transform="translate(400,815)"/>
+  </g>
+
+  <g id="sliderControl" cursor="pointer">
+    <rect id="sliderTrack" x="140" y="960" width="520" height="80" rx="40"/>
+    <path id="innerGroove" d="M200 1000 H 600" />
+    <circle id="knob" cx="200" cy="1000" r="36" />
+  </g>
+</svg>
+
+<script>
+(function(){
+  const svg = document.querySelector('svg');
+
+  const anchor = {x:400, y:180};
+  const ball = document.getElementById('ball');
+  const string = document.getElementById('string');
+  const timerText = document.getElementById('timerText');
+  const btnRect = document.getElementById('btnRect');
+
+  const slider = document.getElementById('sliderControl');
+  const knob = document.getElementById('knob');
+  const track = document.getElementById('sliderTrack');
+
+  const ballY = 460;
+  let amplitude = 130;
+
+  const trackX = parseFloat(track.getAttribute('x'));
+  const trackW = parseFloat(track.getAttribute('width'));
+  const trackY = parseFloat(track.getAttribute('y'));
+  const trackH = parseFloat(track.getAttribute('height'));
+  const minX = trackX + 60;
+  const maxX = trackX + trackW - 60;
+
+  let knobX = minX;
+  knob.setAttribute('cx', knobX);
+
+  let running = false;
+  let startTime = 0;
+  let elapsed = 0;
+  let lastTime = 0;
+  let phase = 0;
+  let omega = 2.2; // base angular speed
+
+  function knobToSpeed(){
+    const t = (knobX - minX) / (maxX - minX); // 0..1
+    omega = 1.6 + t*4.0; // radians/s
+    amplitude = 110 + t*80; // subtle amplitude change
+  }
+  knobToSpeed();
+
+  function formatTime(s){
+    return (s).toFixed(1).padStart(4,'0') + ' s';
+  }
+
+  function setBall(x){
+    ball.setAttribute('cx', x);
+    string.setAttribute('d', `M${anchor.x} ${anchor.y} L${x} ${ballY}`);
+  }
+
+  function resetScene(){
+    phase = 0;
+    elapsed = 0;
+    setBall(anchor.x);
+  }
+  resetScene();
+
+  const btn = document.getElementById('btnStartStop');
+  btn.addEventListener('click', ()=>{
+    running = !running;
+    if(running){
+      btnRect.setAttribute('fill','#e84b3c');
+      startTime = performance.now();
+      lastTime = 0;
+    }else{
+      btnRect.setAttribute('fill','#28c84a');
+      lastTime = elapsed;
+      timerText.textContent = formatTime(lastTime);
+      resetScene();
+    }
+  });
+
+  // Slider drag
+  let dragging = false, pid = null;
+  function clamp(v,min,max){return Math.max(min, Math.min(max,v));}
+  slider.addEventListener('pointerdown', (e)=>{
+    dragging = true; pid = e.pointerId; slider.setPointerCapture(pid);
+    moveKnob(e);
+  });
+  slider.addEventListener('pointermove', (e)=>{ if(dragging) moveKnob(e); });
+  slider.addEventListener('pointerup', (e)=>{
+    if(dragging){
+      dragging=false; slider.releasePointerCapture(pid); pid=null;
+      knob.style.transform='scale(1.08)';
+      setTimeout(()=>knob.style.transform='scale(1)',140);
+    }
+  });
+  function moveKnob(e){
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    const ctm = svg.getScreenCTM().inverse();
+    const loc = pt.matrixTransform(ctm);
+    knobX = clamp(loc.x, minX, maxX);
+    knob.setAttribute('cx', knobX);
+    knobToSpeed();
+  }
+
+  function tick(now){
+    if(running){
+      const dt = (now - startTime)/1000;
+      startTime = now;
+      elapsed += dt;
+      phase += omega*dt;
+      const bx = anchor.x + amplitude * Math.sin(phase);
+      setBall(bx);
+      timerText.textContent = formatTime(elapsed);
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame((t)=>{startTime=t; requestAnimationFrame(tick);});
+})();
+</script>
+</body>
+</html>
