@@ -1,0 +1,204 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  html,body{height:100%;margin:0;background:#F4EEDF;}
+  #stage{width:100vmin;height:100vmin;display:block;margin:0 auto;touch-action:none;}
+  .noselect{-webkit-user-select:none;-ms-user-select:none;user-select:none;}
+  .btn{cursor:pointer;transition:transform .08s ease;}
+  .btn:active{transform:scale(.98);}
+  #weight{cursor:grab;}
+  #weight.dragging{cursor:grabbing;}
+</style>
+</head>
+<body>
+<svg id="stage" class="noselect" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
+  <rect x="0" y="0" width="1000" height="1000" fill="#F4EEDF"/>
+  <g id="artboard">
+    <g id="topAnchor">
+      <rect x="435" y="70" width="130" height="44" rx="10" fill="#F6B029"/>
+    </g>
+
+    <g id="spring">
+      <path id="springPath" d="" stroke="#2F3B46" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <g id="weight">
+      <circle id="weightCircle" cx="500" cy="540" r="95" fill="#1E9BDD"/>
+    </g>
+
+    <g id="ruler" transform="translate(150,700)">
+      <rect width="700" height="80" rx="10" fill="#2F3B46"/>
+      <g id="ticks" transform="translate(20,20)">
+        <!-- 14 major ticks -->
+        <g id="tickLines" stroke="#94A1AD" stroke-width="6" stroke-linecap="round"></g>
+      </g>
+    </g>
+
+    <g id="marker" transform="translate(180,660)">
+      <path d="M140 26 H30 a8 8 0 0 1 -8 -8 a8 8 0 0 1 8 -8 H140 M30 10 L14 26 L30 42" fill="none" stroke="#F6B029" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <g id="resetBtn" class="btn" transform="translate(350,820)">
+      <rect id="resetRect" width="300" height="86" rx="22" fill="#F2A323"/>
+      <text x="150" y="58" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="56" fill="#8A3D00">Reset</text>
+    </g>
+  </g>
+</svg>
+
+<script>
+(function(){
+  const svg = document.getElementById('stage');
+  const springPath = document.getElementById('springPath');
+  const weightGroup = document.getElementById('weight');
+  const weightCircle = document.getElementById('weightCircle');
+  const resetBtn = document.getElementById('resetBtn');
+  const tickLines = document.getElementById('tickLines');
+  const marker = document.getElementById('marker');
+
+  const centerX = 500;
+  const anchorBottomY = 114; // bottom of yellow top bar
+  const springTopY = anchorBottomY + 15;
+
+  const r = 95; // weight radius
+  const stubLen = 24;
+  const springStroke = 20;
+  const turns = 8;
+  const amp = 42;
+
+  const ruler = {x:150, y:700, w:700, h:80, pad:40};
+
+  // Build ruler ticks
+  (function buildTicks(){
+    const n = 14;
+    for(let i=0;i<=n;i++){
+      const x = 20 + (i*(ruler.w-40)/n);
+      const len = (i%2===0)?36:24;
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', x);
+      line.setAttribute('y1', 10);
+      line.setAttribute('x2', x);
+      line.setAttribute('y2', 10+len);
+      tickLines.appendChild(line);
+    }
+  })();
+
+  // Initial positions
+  const restCY = 540;
+  let cy = restCY;
+  const maxStretch = 230; // limit
+  const minCY = restCY;
+  const maxCY = restCY + maxStretch;
+
+  function drawSpring(cyNow){
+    const targetY = cyNow - r; // top of weight
+    const coilLen = Math.max(40, targetY - springTopY - stubLen);
+    const seg = coilLen / (turns);
+    let d = `M ${centerX} ${springTopY}`;
+    // first small offset to start the zig
+    let y = springTopY;
+    let xLeft = centerX - amp;
+    let xRight = centerX + amp;
+    for(let i=0;i<turns;i++){
+      y += seg;
+      const x = (i%2===0)?xRight:xLeft;
+      d += ` L ${x} ${y}`;
+    }
+    d += ` L ${centerX} ${springTopY + coilLen} L ${centerX} ${targetY}`;
+    springPath.setAttribute('d', d);
+  }
+
+  function setWeight(cyNew){
+    cy = Math.max(minCY, Math.min(maxCY, cyNew));
+    weightCircle.setAttribute('cy', cy);
+    drawSpring(cy);
+    updateMarker();
+  }
+
+  function updateMarker(){
+    const stretch = cy - minCY; // 0..maxStretch
+    const usable = ruler.w - 2*ruler.pad;
+    const x = ruler.x + ruler.pad + (stretch/maxStretch)*usable;
+    const markerY = 660; // above ruler
+    marker.setAttribute('transform', `translate(${x-140},${markerY})`);
+  }
+
+  // Start initial draw
+  drawSpring(cy);
+  updateMarker();
+
+  // Drag handling with touch + mouse
+  let dragging = false;
+  let grabOffset = 0;
+
+  function svgPoint(evt){
+    const pt = svg.createSVGPoint();
+    if(evt.touches && evt.touches.length){
+      pt.x = evt.touches[0].clientX;
+      pt.y = evt.touches[0].clientY;
+    }else{
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+    }
+    const screenCTM = svg.getScreenCTM();
+    return pt.matrixTransform(screenCTM.inverse());
+  }
+
+  function down(evt){
+    evt.preventDefault();
+    const p = svgPoint(evt);
+    grabOffset = p.y - cy;
+    dragging = true;
+    weightGroup.classList.add('dragging');
+  }
+  function move(evt){
+    if(!dragging) return;
+    const p = svgPoint(evt);
+    setWeight(p.y - grabOffset);
+  }
+  function up(){
+    if(!dragging) return;
+    dragging = false;
+    weightGroup.classList.remove('dragging');
+    bounceTo(cy);
+  }
+
+  weightGroup.addEventListener('mousedown', down);
+  svg.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', up);
+
+  weightGroup.addEventListener('touchstart', down,{passive:false});
+  svg.addEventListener('touchmove', move,{passive:false});
+  window.addEventListener('touchend', up);
+
+  function bounceTo(target){
+    // small damped oscillation around target
+    let t = 0;
+    const start = cy;
+    const amplitude = Math.min(12, 0.06*(target - minCY) + 6); // slightly more bounce with more stretch
+    function step(){
+      t += 0.08;
+      const decay = Math.exp(-2*t);
+      const offset = Math.sin(10*t) * amplitude * decay;
+      setWeight(target + offset);
+      if(decay > 0.02){
+        requestAnimationFrame(step);
+      }else{
+        setWeight(target);
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  resetBtn.addEventListener('click',()=>{
+    setWeight(restCY);
+  });
+
+  // ensure correct stroke thickness on scale changes
+  springPath.setAttribute('vector-effect','non-scaling-stroke');
+  tickLines.querySelectorAll('line').forEach(l=>l.setAttribute('vector-effect','non-scaling-stroke'));
+})();
+</script>
+</body>
+</html>
