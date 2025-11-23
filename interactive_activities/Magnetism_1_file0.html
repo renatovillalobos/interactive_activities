@@ -1,0 +1,171 @@
+Here's a full HTML, CSS, and JavaScript file to create an interactive webpage based on the image you provided:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magnet Sorting Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #fdfbf5;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .items {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .items div {
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        .magnet, .result {
+            width: 50px;
+            height: 50px;
+        }
+
+        .boxes {
+            display: flex;
+        }
+
+        .box {
+            width: 100px;
+            height: 60px;
+            margin: 0 20px;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .magnet-box {
+            border-color: #e1b12c;
+        }
+
+        .non-magnet-box {
+            border-color: #b8b8b8;
+        }
+
+        .hover {
+            background-color: #f6e58d;
+        }
+
+        .magnet-box::after, .non-magnet-box::after {
+            content: "";
+            width: 30px;
+            height: 30px;
+            background-size: cover;
+        }
+
+        .magnet-box::after {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjEyMCIgd2lkdGg9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gPHBhdGggZD0iTTQwIDI1TDYwIDI1TDYwIDQwTDEyNSA0MEwxMjUgODBMNjggODBMODAgMTAwTDAgMTAwTDAgODBMWDQwIDY2WiIgZmlsbD0iI0ZGRjY2OCIvPjwvc3ZnPgo=');
+        }
+
+        .non-magnet-box::after {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjEyMCIgd2lkdGg9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gPHBhdGggZD0iTTIwIDEzMFY3MFYwTDYwIDBMMTYwIDU2TDAgNTZMMCAxMzBaIiBmaWxsPSIjRTBERkYwIiBzdHJva2U9IiNGM0YzRjMiLz48L3N2Zz4K');
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img class="magnet" src="https://img.icons8.com/ios-filled/100/000000/magnet.png" alt="Magnet"/>
+        <div class="items">
+            <div class="item" data-type="magnet">
+                <img src="https://img.icons8.com/ios-filled/50/000000/paperclip.png" alt="Paperclip"/>
+            </div>
+            <div class="item" data-type="magnet">
+                <img src="https://img.icons8.com/ios-filled/50/000000/coin-in-hand.png" alt="Coin"/>
+            </div>
+            <div class="item" data-type="non-magnet">
+                <img src="https://img.icons8.com/ios-filled/50/000000/cotton-bud.png" alt="Cotton Bud"/>
+            </div>
+            <div class="item" data-type="non-magnet">
+                <img src="https://img.icons8.com/ios-filled/50/000000/spoon.png" alt="Spoon"/>
+            </div>
+            <div class="item" data-type="non-magnet">
+                <img src="https://img.icons8.com/ios-filled/50/000000/rubber-duck.png" alt="Rubber Duck"/>
+            </div>
+        </div>
+        <div class="boxes">
+            <div class="box magnet-box"></div>
+            <div class="box non-magnet-box"></div>
+        </div>
+    </div>
+    <script>
+        const items = document.querySelectorAll('.item');
+        const magnetBox = document.querySelector('.magnet-box');
+        const nonMagnetBox = document.querySelector('.non-magnet-box');
+
+        items.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('type', item.dataset.type);
+            });
+
+            item.addEventListener('dragend', () => {
+                item.style.opacity = '1';
+            });
+        });
+
+        magnetBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            magnetBox.classList.add('hover');
+        });
+
+        nonMagnetBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            nonMagnetBox.classList.add('hover');
+        });
+
+        magnetBox.addEventListener('dragleave', () => {
+            magnetBox.classList.remove('hover');
+        });
+
+        nonMagnetBox.addEventListener('dragleave', () => {
+            nonMagnetBox.classList.remove('hover');
+        });
+
+        magnetBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            magnetBox.classList.remove('hover');
+            const type = e.dataTransfer.getData('type');
+            if (type === 'magnet') {
+                alert('Correct!');
+            } else {
+                alert('Try again!');
+            }
+        });
+
+        nonMagnetBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            nonMagnetBox.classList.remove('hover');
+            const type = e.dataTransfer.getData('type');
+            if (type === 'non-magnet') {
+                alert('Correct!');
+            } else {
+                alert('Try again!');
+            }
+        });
+    </script>
+</body>
+</html>
+```
+
+In this project, you can drag the items to the appropriate boxes, and it will alert whether you sorted them correctly based on their magnetic properties. The images use icons from the Icons8 library.
