@@ -1,0 +1,204 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+html,body{margin:0;height:100%;background:#0a0a15}
+svg{width:100%;height:100%;display:block}
+text{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+#springGroup path,#stem{vector-effect:non-scaling-stroke}
+.slider .knob{transition:transform .12s ease, opacity .12s ease}
+.slider.active .knob{transform:scale(1.08)}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 768 1152" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="bgGrad" cx="50%" cy="40%" r="70%">
+    <stop offset="0%" stop-color="#0d0f2a"/>
+    <stop offset="60%" stop-color="#0a0a18"/>
+    <stop offset="100%" stop-color="#070713"/>
+  </radialGradient>
+
+  <linearGradient id="springGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#9d2cff"/>
+    <stop offset="60%" stop-color="#d43ea6"/>
+    <stop offset="100%" stop-color="#a93cc5"/>
+  </linearGradient>
+
+  <linearGradient id="topFillGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#b443f7"/>
+    <stop offset="100%" stop-color="#5b2a9e"/>
+  </linearGradient>
+  <linearGradient id="topTrackGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#3a2b5e"/>
+    <stop offset="100%" stop-color="#241f3f"/>
+  </linearGradient>
+
+  <linearGradient id="botFillGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#1f5463"/>
+    <stop offset="100%" stop-color="#1a3a4b"/>
+  </linearGradient>
+  <linearGradient id="botTrackGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#142536"/>
+    <stop offset="100%" stop-color="#0f1e2d"/>
+  </linearGradient>
+</defs>
+
+<rect x="0" y="0" width="768" height="1152" fill="url(#bgGrad)"/>
+
+<g id="scene">
+  <g id="springGroup" stroke="url(#springGrad)" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path id="springCoil"/>
+    <path id="stem"/>
+  </g>
+
+  <g id="massGroup">
+    <circle id="massCore" cx="384" cy="540" r="68" fill="#0f2b60" stroke="#356CFF" stroke-width="16"/>
+  </g>
+</g>
+
+<g id="ui">
+  <g id="massSlider" class="slider" transform="translate(124,880)">
+    <rect id="topTrack" x="0" y="0" rx="18" ry="18" width="520" height="36" fill="url(#topTrackGrad)" opacity="0.9"/>
+    <rect id="topFill" x="0" y="0" rx="18" ry="18" width="260" height="36" fill="url(#topFillGrad)"/>
+    <g id="topKnob" class="knob" transform="translate(260,18)">
+      <circle r="36" fill="#2a2045" stroke="#ff63b0" stroke-width="12"/>
+      <path d="M-4,-14 L-18,0 L-4,14" fill="#ff8dca"/>
+    </g>
+  </g>
+
+  <g id="kSlider" class="slider" transform="translate(124,1030)">
+    <rect id="botTrack" x="0" y="0" rx="18" ry="18" width="520" height="36" fill="url(#botTrackGrad)" opacity="0.95"/>
+    <rect id="botFill" x="0" y="0" rx="18" ry="18" width="480" height="36" fill="url(#botFillGrad)"/>
+    <g id="botKnob" class="knob" transform="translate(480,18)">
+      <circle r="34" fill="none" stroke="#3ad7c8" stroke-width="12"/>
+    </g>
+  </g>
+</g>
+
+<script>
+const gConst = 9.8;
+let mass = 3;      // kg (1..10)
+let k = 85;        // N/m (10..100)
+const pxPerMeter = 30;
+
+const centerX = 384;
+const coilTopY = 220;
+const baseCoilH = 250;
+const baseStem = 80;
+const loops = 9;
+const amplitude = 34;
+
+const springCoil = document.getElementById('springCoil');
+const stem = document.getElementById('stem');
+const massCore = document.getElementById('massCore');
+
+function buildCoilPath(cx, yTop, height, loops, amp){
+  const step = height/loops;
+  let d = `M ${cx} ${yTop-22} q 0 16 12 26`;
+  let y = yTop;
+  for(let i=0;i<loops;i++){
+    const xm = (i%2===0)? (cx+amp):(cx-amp);
+    d += ` Q ${xm} ${y+step*0.5} ${cx} ${y+step}`;
+    y += step;
+  }
+  return d;
+}
+
+function updateSimulation(){
+  const displacement = mass*gConst/k; // meters
+  const extraPx = displacement * pxPerMeter;
+
+  const coilH = baseCoilH + extraPx*0.75;
+  const yBottomCoil = coilTopY + coilH;
+
+  springCoil.setAttribute('d', buildCoilPath(centerX, coilTopY, coilH, loops, amplitude));
+  stem.setAttribute('d', `M ${centerX} ${yBottomCoil} L ${centerX} ${yBottomCoil + baseStem}`);
+
+  const massY = yBottomCoil + baseStem + 68; // center of mass circle
+  massCore.setAttribute('cx', centerX);
+  massCore.setAttribute('cy', massY);
+}
+updateSimulation();
+
+/* Slider mechanics */
+function attachSlider(group, options){
+  const track = group.querySelector('rect');
+  const fill = group.querySelectorAll('rect')[1];
+  const knob = group.querySelector('.knob');
+  const width = +track.getAttribute('width');
+  const x0 = group.transform.baseVal.getItem(0).matrix.e;
+  const y0 = group.transform.baseVal.getItem(0).matrix.f;
+
+  let value = options.initial;
+  setByValue(value);
+
+  function setByValue(v){
+    value = Math.max(options.min, Math.min(options.max, v));
+    const t = (value-options.min)/(options.max-options.min);
+    const x = t*width;
+    fill.setAttribute('width', Math.max(36, x));
+    knob.setAttribute('transform', `translate(${x},18)`);
+    options.onChange(value);
+  }
+
+  function pointerToValue(evt){
+    const ptX = (evt.clientX || evt.touches && evt.touches[0].clientX);
+    const svg = document.querySelector('svg');
+    const ctm = svg.getScreenCTM();
+    const localX = (ptX - ctm.e)/ctm.a - x0;
+    const t = Math.max(0, Math.min(1, localX/width));
+    return options.min + t*(options.max-options.min);
+  }
+
+  let dragging = false;
+  function startDrag(e){
+    dragging = true;
+    group.classList.add('active');
+    group.setPointerCapture && group.setPointerCapture(e.pointerId);
+    setByValue(pointerToValue(e));
+  }
+  function moveDrag(e){
+    if(!dragging) return;
+    setByValue(pointerToValue(e));
+  }
+  function endDrag(){
+    dragging = false;
+    group.classList.remove('active');
+  }
+
+  knob.addEventListener('pointerdown', startDrag);
+  track.addEventListener('pointerdown', startDrag);
+  fill.addEventListener('pointerdown', startDrag);
+  window.addEventListener('pointermove', moveDrag);
+  window.addEventListener('pointerup', endDrag);
+
+  return {set:value=>setByValue(value), get:()=>value};
+}
+
+/* Top slider = mass (1..10) */
+const massSlider = attachSlider(document.getElementById('massSlider'),{
+  min:1,max:10,initial:3,
+  onChange:v=>{ mass = v; updateSimulation(); }
+});
+
+/* Bottom slider = k (10..100) */
+const kSlider = attachSlider(document.getElementById('kSlider'),{
+  min:10,max:100,initial:85,
+  onChange:v=>{ k = v; updateSimulation(); }
+});
+
+/* Reset with keyboard 'r' */
+window.addEventListener('keydown',e=>{
+  if(e.key.toLowerCase()==='r'){
+    massSlider.set(3);
+    kSlider.set(85);
+    mass = 3; k = 85;
+    updateSimulation();
+  }
+});
+</script>
+</svg>
+</body>
+</html>
