@@ -1,0 +1,268 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+html,body{height:100%;margin:0;background:#f6f5f2}
+svg{width:100vmin;height:100vmin;display:block;margin:auto;touch-action:none}
+#ballCircle{transition:transform .15s ease, r .15s ease, opacity .2s ease}
+#glow{transition:opacity .2s ease}
+.hand-stroke{stroke:#0e0e0f;stroke-width:8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.grid{stroke:#e7e5e3;stroke-width:4}
+.dots{stroke:#d6d4d2;stroke-width:8;stroke-linecap:round;stroke-dasharray:0 28}
+.axis{stroke:#cfcfcd;stroke-width:8;stroke-linecap:round}
+#vPath{stroke:#1e72ff;stroke-width:8;fill:none}
+#aPath{stroke:#ef3a33;stroke-width:8;fill:none}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 900 900" id="svgRoot">
+  <defs>
+    <radialGradient id="ballGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#2d93ff"/>
+      <stop offset="100%" stop-color="#1260ff"/>
+    </radialGradient>
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffdf6e" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ffdf6e" stop-opacity="0"/>
+    </radialGradient>
+    <marker id="arrowGreen" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="14" markerHeight="14" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#18a84a"></path>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="14" markerHeight="14" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#ef3a33"></path>
+    </marker>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g id="card">
+    <rect x="50" y="50" width="800" height="800" rx="34" ry="34" fill="#fcfbfa" stroke="#d8d6d4" stroke-width="8"/>
+    <line x1="70" y1="560" x2="830" y2="560" stroke="#e9e7e5" stroke-width="6"/>
+  </g>
+
+  <g id="scene">
+    <line class="dots" x1="120" y1="320" x2="830" y2="320"/>
+    <g id="hand" transform="translate(200,310)">
+      <path class="hand-stroke" d="M30 62c-7-7-10-24 3-30 7-3 13-1 18 5v-18c0-6 5-11 11-11s11 5 11 11v27-37c0-6 5-11 11-11s11 5 11 11v37-31c0-6 5-11 11-11s11 5 11 11v31-22c0-6 5-11 11-11s11 5 11 11v38c0 14-8 27-21 32-12 5-26 11-38 11-12 0-22-4-30-13z"/>
+    </g>
+  </g>
+
+  <g id="sim">
+    <g id="vectors">
+      <line id="velVec" x1="450" y1="265" x2="610" y2="265" stroke="#18a84a" stroke-width="12" marker-end="url(#arrowGreen)" stroke-linecap="round"/>
+      <line id="accVec" x1="450" y1="320" x2="570" y2="320" stroke="#ef3a33" stroke-width="12" marker-end="url(#arrowRed)" stroke-linecap="round"/>
+    </g>
+    <g id="ball">
+      <circle id="glow" cx="450" cy="320" r="58" fill="url(#glowGrad)" opacity="0.85" filter="url(#softGlow)"/>
+      <circle id="ballCircle" cx="450" cy="320" r="48" fill="url(#ballGrad)" stroke="none" style="transform-box: fill-box; transform-origin:center;"/>
+    </g>
+  </g>
+
+  <g id="graph" transform="translate(0,0)">
+    <g id="grid">
+      <line class="axis" x1="120" y1="600" x2="120" y2="800"/>
+      <g>
+        <line class="grid" x1="120" y1="610" x2="830" y2="610"/>
+        <line class="grid" x1="120" y1="650" x2="830" y2="650"/>
+        <line class="grid" x1="120" y1="690" x2="830" y2="690"/>
+        <line class="grid" x1="120" y1="730" x2="830" y2="730"/>
+        <line class="grid" x1="120" y1="770" x2="830" y2="770"/>
+      </g>
+    </g>
+    <g id="paths">
+      <path id="vPath" d="M120,700 C220,620 320,620 420,700 S620,780 830,700"/>
+      <path id="aPath" d="M120,770 C220,820 320,740 420,640 S620,620 830,770" stroke="#ef3a33"/>
+    </g>
+  </g>
+
+<script>
+const svg = document.getElementById('svgRoot');
+
+// Layout numbers tied to the drawing
+const cx0 = 450;
+const cy0 = 320;
+const yVel = 265;
+const leftBound = 140;
+const rightBound = 830;
+const trackY = 320;
+const graph = {x:120, y:600, w:710, h:200};
+
+const ball = document.getElementById('ballCircle');
+const glow = document.getElementById('glow');
+const velVec = document.getElementById('velVec');
+const accVec = document.getElementById('accVec');
+const vPath = document.getElementById('vPath');
+const aPath = document.getElementById('aPath');
+
+let isDragging = false;
+let x = cx0;
+let v = 0;
+let a = 0;
+let lastT = null;
+let lastXForDrag = cx0;
+let lastTForDrag = 0;
+let simRunning = false;
+
+// oscillator parameters
+const T = 2400; // ms period ~2.4s
+const omega = 2*Math.PI/(T/1000); // rad/s
+const zeta = 0.12; // damping ratio
+const twoZetaOmega = 2*zeta*omega;
+
+// graph buffers
+const maxPoints = 220;
+let vSeries = [];
+let aSeries = [];
+
+// helpers
+function svgPoint(evt){
+  const pt = svg.createSVGPoint();
+  pt.x = evt.clientX;
+  pt.y = evt.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+function setBallX(nx){
+  x = clamp(nx, leftBound, rightBound);
+  ball.setAttribute('cx', x);
+  glow.setAttribute('cx', x);
+  // Update vectors while dragging or animating
+  updateVectors();
+}
+
+function updateVectors(){
+  const velLen = clamp(v*0.18, -190, 190);
+  velVec.setAttribute('x1', x);
+  velVec.setAttribute('y1', yVel);
+  velVec.setAttribute('x2', x + velLen);
+  velVec.setAttribute('y2', yVel);
+
+  const accLen = clamp(a*0.06, -190, 190);
+  accVec.setAttribute('x1', x);
+  accVec.setAttribute('y1', trackY);
+  accVec.setAttribute('x2', x + accLen);
+  accVec.setAttribute('y2', trackY);
+}
+
+function buildPath(series, color){
+  const n = series.length;
+  if(n === 0){
+    return '';
+  }
+  const dx = graph.w/(maxPoints-1);
+  let d = `M${graph.x},${series[0]}`;
+  for(let i=1;i<n;i++){
+    d += ` L${graph.x + dx*i},${series[i]}`;
+  }
+  return d;
+}
+
+function clearGraph(){
+  vSeries = [];
+  aSeries = [];
+  vPath.setAttribute('d', "M120,700 C220,620 320,620 420,700 S620,780 830,700");
+  aPath.setAttribute('d', "M120,770 C220,820 320,740 420,640 S620,620 830,770");
+}
+
+function pushGraphSamples(){
+  const gy = graph.y + graph.h/2;
+  const vy = gy - v*0.17; // scale to fit
+  const ay = gy - a*0.055;
+  vSeries.push(vy);
+  aSeries.push(ay);
+  if(vSeries.length > maxPoints){ vSeries.shift(); }
+  if(aSeries.length > maxPoints){ aSeries.shift(); }
+  vPath.setAttribute('d', buildPath(vSeries));
+  aPath.setAttribute('d', buildPath(aSeries));
+}
+
+function animate(ts){
+  if(lastT === null){ lastT = ts; requestAnimationFrame(animate); return; }
+  const dt = (ts - lastT)/1000; // seconds
+  lastT = ts;
+
+  if(simRunning){
+    a = -omega*omega*(x - cx0) - twoZetaOmega*v;
+    v += a*dt;
+    setBallX(x + v*dt);
+    pushGraphSamples();
+    // stop condition after damping
+    if(Math.abs(x - cx0) < 0.3 && Math.abs(v) < 0.3){
+      simRunning = false;
+      setBallX(cx0);
+      glow.style.opacity = 0.85;
+      ball.style.transform = 'scale(1)';
+      // soft clear after settle
+      setTimeout(clearGraph, 200);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);
+
+// Drag handlers
+ball.addEventListener('pointerdown', e=>{
+  e.preventDefault();
+  isDragging = true;
+  simRunning = false;
+  lastT = null; // reset animation integrator timing
+  lastXForDrag = x;
+  lastTForDrag = performance.now();
+  ball.setPointerCapture(e.pointerId);
+  glow.style.opacity = 1;
+  ball.style.transform = 'scale(1.07)';
+  // while dragging do not change graph
+});
+
+svg.addEventListener('pointermove', e=>{
+  if(!isDragging) return;
+  const p = svgPoint(e);
+  const now = performance.now();
+  const dt = (now - lastTForDrag)/1000;
+  if(dt>0){
+    v = (p.x - lastXForDrag)/dt;
+    a = 0;
+    lastXForDrag = p.x;
+    lastTForDrag = now;
+  }
+  setBallX(p.x);
+});
+
+svg.addEventListener('pointerup', e=>{
+  if(!isDragging) return;
+  isDragging = false;
+  // bounce back visual
+  ball.style.transform = 'scale(1.0)';
+  glow.style.opacity = 0.6;
+  // start oscillation from released state
+  lastT = null;
+  clearGraph();
+  simRunning = true;
+});
+
+svg.addEventListener('pointercancel', ()=>{
+  if(isDragging){
+    isDragging = false;
+    ball.style.transform = 'scale(1.0)';
+    glow.style.opacity = 0.6;
+    lastT = null;
+    clearGraph();
+    simRunning = true;
+  }
+});
+
+// initialize positions
+setBallX(cx0);
+updateVectors();
+</script>
+</svg>
+</body>
+</html>
