@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Inclined Plane Lab – EF/Addi Style</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg-main: #020617;
+      --bg-main-alt: #050816;
+      --bg-card: #050b18;
+      --bg-card-alt: #0b1120;
+
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+
+      --accent-primary: #ff4b9a;
+      --accent-secondary: #22c55e;
+      --accent-info: #3b82f6;
+
+      --border-subtle: rgba(148, 163, 184, 0.25);
+      --radius-card: 20px;
+      --radius-soft: 14px;
+      --radius-pill: 9999px;
+
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+      --shadow-subtle: 0 10px 25px rgba(15, 23, 42, 0.75);
+
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont,
+        "SF Pro Text", "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: radial-gradient(circle at top, #020617 0%, #050816 60%, #020617 100%);
+      color: var(--text-primary);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .app-shell {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(320px, 2.4fr);
+      gap: 16px;
+      padding: 16px 16px 16px 16px;
+    }
+
+    /* Canvas panel */
+    .sim-shell {
+      position: relative;
+      border-radius: 24px;
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 55%),
+        radial-gradient(circle at bottom, rgba(244, 63, 94, 0.12), transparent 55%),
+        linear-gradient(145deg, var(--bg-main) 0%, #020617 40%, #020617 100%);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      padding: 16px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sim-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sim-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .sim-title {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .sim-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      max-width: 420px;
+    }
+
+    .sim-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(22, 163, 74, 0.18);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.7);
+      font-size: 11px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent-secondary);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+    }
+
+    .canvas-wrap {
+      position: relative;
+      flex: 1;
+      border-radius: 18px;
+      overflow: hidden;
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), #020617);
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    #mainCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .sim-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Controls panel */
+    .controls-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-radius: 24px;
+      background: linear-gradient(
+        145deg,
+        rgba(15, 23, 42, 0.98),
+        rgba(15, 23, 42, 0.96)
+      );
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow: var(--shadow-soft);
+      padding: 16px 16px 18px;
+      overflow: hidden;
+    }
+
+    .controls-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .controls-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .controls-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .card-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+      overflow-y: auto;
+    }
+
+    .control-card {
+      background: radial-gradient(circle at top left, rgba(39, 39, 42, 0.65), rgba(15, 23, 42, 0.96));
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 10px 11px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .control-card-title {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .control-card-helper {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Buttons */
+    button {
+      font-family: var(--font-sans);
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.16s ease-out;
+    }
+
+    .primary-btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 500;
+      color: #0b1120;
+      background: radial-gradient(circle at 0 0, #fecaca, #fb7185);
+      box-shadow: 0 0 0 1px rgba(248, 250, 252, 0.08),
+        0 16px 32px rgba(248, 113, 113, 0.5);
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 1px rgba(248, 250, 252, 0.2),
+        0 18px 40px rgba(248, 113, 113, 0.6);
+    }
+
+    .primary-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.9);
+    }
+
+    .secondary-btn {
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 500;
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-primary);
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.9);
+    }
+
+    .secondary-btn:hover {
+      border-color: rgba(248, 250, 252, 0.9);
+      background: radial-gradient(circle at top, rgba(59, 130, 246, 0.4), rgba(15, 23, 42, 1));
+      transform: translateY(-1px);
+    }
+
+    .secondary-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 1);
+    }
+
+    .chip-btn {
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(15, 23, 42, 0.96);
+      color: var(--text-secondary);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+
+    .chip-btn.active {
+      color: var(--text-primary);
+      border-color: var(--accent-info);
+      background: radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.5), rgba(15, 23, 42, 0.98));
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* Toggles */
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .toggle-pill {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 11px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-pill input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .toggle-knob {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      background: radial-gradient(circle at 30% 20%, rgba(248, 250, 252, 0.7), rgba(15, 23, 42, 1));
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 1);
+      transition: all 0.18s ease-out;
+      flex-shrink: 0;
+    }
+
+    .toggle-pill span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .toggle-pill input:checked + .toggle-knob {
+      border-color: rgba(251, 113, 133, 1);
+      background: radial-gradient(circle at 30% 10%, #f9a8d4, #fb7185);
+      box-shadow: 0 0 0 1px rgba(248, 250, 252, 0.2),
+        0 0 18px rgba(248, 113, 113, 0.9);
+    }
+
+    .toggle-pill input:checked ~ span {
+      color: var(--text-primary);
+    }
+
+    .toggle-pill.disabled {
+      opacity: 0.4;
+      cursor: default;
+      filter: grayscale(0.3);
+    }
+
+    /* Sliders */
+    .slider-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .slider-value-pill {
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.95);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(148, 163, 184, 0.5), rgba(148, 163, 184, 0.15));
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #f9fafb, #e5e7eb);
+      border: 2px solid var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(255, 75, 154, 0.35),
+        0 8px 18px rgba(15, 23, 42, 0.95);
+      transition: all 0.16s ease-out;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.8),
+        0 10px 24px rgba(15, 23, 42, 1);
+      transform: translateY(-1px);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, 1),
+        0 4px 10px rgba(15, 23, 42, 1);
+      transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .app-shell {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(260px, 2fr) minmax(0, 2.4fr);
+        padding: 10px;
+      }
+
+      .controls-shell {
+        max-height: 50vh;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .sim-title {
+        font-size: 18px;
+      }
+      .controls-title {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Simulation side -->
+    <section class="sim-shell">
+      <header class="sim-header">
+        <div class="sim-title-block">
+          <div class="eyebrow">PHYSICS MINI-LAB</div>
+          <div class="sim-title">Inclined Plane &amp; Friction Explorer</div>
+          <p class="sim-subtitle">
+            Adjust the ramp angle, mass, friction and gravity. Then press
+            <strong>Start</strong> to see how forces, motion and energy behave.
+          </p>
+        </div>
+        <div class="sim-status">
+          <span class="status-dot"></span>
+          Live simulation
+        </div>
+      </header>
+
+      <div class="canvas-wrap">
+        <canvas id="mainCanvas"></canvas>
+      </div>
+
+      <footer class="sim-footer">
+        <span>Tip: Try low friction and steep angles, then toggle <strong>Forces</strong> and <strong>Energy</strong>.</span>
+        <span>Drag the sliders to build your own scenario.</span>
+      </footer>
+    </section>
+
+    <!-- Controls side -->
+    <aside class="controls-shell">
+      <div class="controls-header">
+        <div class="eyebrow">Controls</div>
+        <h2 class="controls-title">Run the experiment</h2>
+        <p class="controls-subtitle">
+          Use the buttons to control playback and the sliders to set up the ramp and block.
+        </p>
+      </div>
+
+      <div class="card-group">
+        <!-- Buttons -->
+        <div class="control-card">
+          <div class="control-card-header">
+            <h3 class="control-card-title">Simulation controls</h3>
+            <span class="control-card-helper">Start, pause or replay the motion.</span>
+          </div>
+          <div class="button-row">
+            <button id="startButton" class="primary-btn" type="button">Start</button>
+            <button id="pauseButton" class="secondary-btn" type="button">Pause</button>
+            <button id="resetButton" class="secondary-btn" type="button">Reset</button>
+            <button id="replayButton" class="secondary-btn" type="button">Replay</button>
+            <button id="slowButton" class="chip-btn" type="button">Slow-mo</button>
+          </div>
+        </div>
+
+        <!-- Overlays -->
+        <div class="control-card">
+          <div class="control-card-header">
+            <h3 class="control-card-title">Overlays</h3>
+            <span class="control-card-helper">Turn on extra information.</span>
+          </div>
+          <div class="toggle-grid">
+            <label class="toggle-pill">
+              <input type="checkbox" id="showforces">
+              <span class="toggle-knob"></span>
+              <span>Forces</span>
+            </label>
+
+            <label class="toggle-pill">
+              <input type="checkbox" id="showcomponents">
+              <span class="toggle-knob"></span>
+              <span>Components</span>
+            </label>
+
+            <label class="toggle-pill">
+              <input type="checkbox" id="showmotion">
+              <span class="toggle-knob"></span>
+              <span>Motion</span>
+            </label>
+
+            <label class="toggle-pill">
+              <input type="checkbox" id="showenergy">
+              <span class="toggle-knob"></span>
+              <span>Energy</span>
+            </label>
+
+            <label class="toggle-pill">
+              <input type="checkbox" id="showcalculations">
+              <span class="toggle-knob"></span>
+              <span>Calculations</span>
+            </label>
+
+            <label class="toggle-pill">
+              <input type="checkbox" id="showvalues">
+              <span class="toggle-knob"></span>
+              <span>Values</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Sliders -->
+        <div class="control-card">
+          <div class="control-card-header">
+            <h3 class="control-card-title">Setup</h3>
+            <span class="control-card-helper">Adjust the ramp, block and gravity.</span>
+          </div>
+          <div class="slider-column">
+            <div class="slider-row">
+              <div class="slider-header">
+                <span id="paxpos">Ramp angle θ</span>
+                <span class="slider-value-pill" id="anglesliderValue"></span>
+              </div>
+              <input type="range" id="angleRange" min="5" max="80" step="1" value="30">
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-header">
+                <span id="paypos">Mass m</span>
+                <span class="slider-value-pill" id="masssliderValue"></span>
+              </div>
+              <input type="range" id="massRange" min="0.5" max="5" step="0.1" value="2">
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-header">
+                <span id="paxvel">Kinetic friction μₖ</span>
+                <span class="slider-value-pill" id="kineticfsliderValue"></span>
+              </div>
+              <input type="range" id="kineticfRange" min="0" max="1" step="0.01" value="0.2">
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-header">
+                <span id="payvel">Static friction μₛ</span>
+                <span class="slider-value-pill" id="staticfsliderValue"></span>
+              </div>
+              <input type="range" id="staticfRange" min="0" max="1" step="0.01" value="0.4">
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-header">
+                <span id="paxacc">Initial velocity v₀</span>
+                <span class="slider-value-pill" id="initvelsliderValue"></span>
+              </div>
+              <input type="range" id="initvelRange" min="-3" max="3" step="0.1" value="0">
+            </div>
+
+            <div class="slider-row">
+              <div class="slider-header">
+                <span id="payacc">Gravity g</span>
+                <span class="slider-value-pill" id="gravsliderValue"></span>
+              </div>
+              <input type="range" id="gravRange" min="1" max="20" step="1" value="10">
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // ---------------------------------------------
+    // Simulation state
+    // ---------------------------------------------
+    const canvas = document.getElementById("mainCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let cw = 0;
+    let ch = 0;
+
+    const params = {
+      angleDeg: 30,
+      mass: 2,
+      muK: 0.2,
+      muS: 0.4,
+      g: 10,
+      v0: 0,
+      rampLengthMeters: 5
+    };
+
+    const sim = {
+      s: 0,           // position along ramp [m]
+      v: 0,           // velocity along ramp [m/s]
+      a: 0,           // acceleration along ramp [m/s^2]
+      running: false,
+      paused: false,
+      finished: false,
+      time: 0,
+      lastTime: null,
+      slowMo: false,
+      trail: []
+    };
+
+    const overlays = {
+      forces: false,
+      components: false,
+      motion: false,
+      energy: false,
+      calculations: false,
+      values: false
+    };
+
+    // Ramp geometry (computed each frame)
+    let ramp = {
+      x0: 0, y0: 0,   // top
+      x1: 0, y1: 0,   // bottom
+      lengthPx: 0,
+      angleRad: 0
+    };
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      cw = rect.width;
+      ch = rect.height;
+      canvas.width = cw;
+      canvas.height = ch;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    // ---------------------------------------------
+    // UI elements
+    // ---------------------------------------------
+    const angleRange = document.getElementById("angleRange");
+    const massRange = document.getElementById("massRange");
+    const muKRange = document.getElementById("kineticfRange");
+    const muSRange = document.getElementById("staticfRange");
+    const v0Range = document.getElementById("initvelRange");
+    const gRange = document.getElementById("gravRange");
+
+    const angleValue = document.getElementById("anglesliderValue");
+    const massValue = document.getElementById("masssliderValue");
+    const muKValue = document.getElementById("kineticfsliderValue");
+    const muSValue = document.getElementById("staticfsliderValue");
+    const v0Value = document.getElementById("initvelsliderValue");
+    const gValue = document.getElementById("gravsliderValue");
+
+    const startBtn = document.getElementById("startButton");
+    const pauseBtn = document.getElementById("pauseButton");
+    const resetBtn = document.getElementById("resetButton");
+    const replayBtn = document.getElementById("replayButton");
+    const slowBtn = document.getElementById("slowButton");
+
+    const showForces = document.getElementById("showforces");
+    const showComponents = document.getElementById("showcomponents");
+    const showMotion = document.getElementById("showmotion");
+    const showEnergy = document.getElementById("showenergy");
+    const showCalcs = document.getElementById("showcalculations");
+    const showValues = document.getElementById("showvalues");
+
+    // ---------------------------------------------
+    // UI helpers
+    // ---------------------------------------------
+    function updateLabels() {
+      angleValue.textContent = `${params.angleDeg.toFixed(0)}°`;
+      massValue.textContent = `${params.mass.toFixed(1)} kg`;
+      muKValue.textContent = params.muK.toFixed(2);
+      muSValue.textContent = params.muS.toFixed(2);
+      v0Value.textContent = `${params.v0.toFixed(1)} m/s`;
+      gValue.textContent = `${params.g.toFixed(1)} m/s²`;
+    }
+
+    function resetSimState(keepTime = false) {
+      sim.s = 0;
+      sim.v = params.v0;
+      sim.a = 0;
+      sim.finished = false;
+      sim.trail = [];
+      if (!keepTime) sim.time = 0;
+      sim.lastTime = null;
+    }
+
+    function resetAll() {
+      params.angleDeg = 30;
+      params.mass = 2;
+      params.muK = 0.2;
+      params.muS = 0.4;
+      params.v0 = 0;
+      params.g = 10;
+
+      angleRange.value = params.angleDeg;
+      massRange.value = params.mass;
+      muKRange.value = params.muK;
+      muSRange.value = params.muS;
+      v0Range.value = params.v0;
+      gRange.value = params.g;
+
+      updateLabels();
+      sim.running = false;
+      sim.paused = false;
+      sim.slowMo = false;
+      slowBtn.classList.remove("active");
+      resetSimState(false);
+    }
+
+    angleRange.addEventListener("input", () => {
+      params.angleDeg = parseFloat(angleRange.value);
+      updateLabels();
+      resetSimState();
+    });
+    massRange.addEventListener("input", () => {
+      params.mass = parseFloat(massRange.value);
+      updateLabels();
+      resetSimState();
+    });
+    muKRange.addEventListener("input", () => {
+      params.muK = parseFloat(muKRange.value);
+      updateLabels();
+      resetSimState();
+    });
+    muSRange.addEventListener("input", () => {
+      params.muS = parseFloat(muSRange.value);
+      updateLabels();
+      resetSimState();
+    });
+    v0Range.addEventListener("input", () => {
+      params.v0 = parseFloat(v0Range.value);
+      updateLabels();
+      resetSimState();
+    });
+    gRange.addEventListener("input", () => {
+      params.g = parseFloat(gRange.value);
+      updateLabels();
+      resetSimState();
+    });
+
+    // Buttons
+    startBtn.addEventListener("click", () => {
+      if (!sim.running || sim.finished) {
+        resetSimState();
+      }
+      sim.running = true;
+      sim.paused = false;
+    });
+
+    pauseBtn.addEventListener("click", () => {
+      if (!sim.running) return;
+      sim.paused = !sim.paused;
+    });
+
+    resetBtn.addEventListener("click", () => {
+      resetAll();
+    });
+
+    replayBtn.addEventListener("click", () => {
+      resetSimState(false);
+      sim.running = true;
+      sim.paused = false;
+    });
+
+    slowBtn.addEventListener("click", () => {
+      sim.slowMo = !sim.slowMo;
+      slowBtn.classList.toggle("active", sim.slowMo);
+    });
+
+    // Overlay toggles
+    showForces.addEventListener("change", () => {
+      overlays.forces = showForces.checked;
+    });
+    showComponents.addEventListener("change", () => {
+      overlays.components = showComponents.checked;
+    });
+    showMotion.addEventListener("change", () => {
+      overlays.motion = showMotion.checked;
+    });
+    showEnergy.addEventListener("change", () => {
+      overlays.energy = showEnergy.checked;
+    });
+    showCalcs.addEventListener("change", () => {
+      overlays.calculations = showCalcs.checked;
+    });
+    showValues.addEventListener("change", () => {
+      overlays.values = showValues.checked;
+    });
+
+    // Initial label update
+    updateLabels();
+    resetSimState();
+
+    // ---------------------------------------------
+    // Physics helpers
+    // ---------------------------------------------
+    function computeAcceleration(v) {
+      const theta = (params.angleDeg * Math.PI) / 180;
+      const m = params.mass;
+      const g = params.g;
+      const muK = params.muK;
+      const muS = params.muS;
+
+      const Fg = m * g * Math.sin(theta); // parallel (down ramp)
+      const N = m * g * Math.cos(theta);
+      const maxStaticF = muS * N;
+
+      if (Math.abs(v) < 1e-4 && !sim.running) {
+        // Not really used, but kept for clarity
+        return 0;
+      }
+
+      if (Math.abs(v) < 1e-4) {
+        // Check static friction
+        if (Math.abs(Fg) <= maxStaticF) {
+          return 0; // stays at rest
+        }
+        // Start sliding with kinetic friction
+        const Ff = -Math.sign(Fg) * muK * N;
+        const Fnet = Fg + Ff;
+        return Fnet / m;
+      } else {
+        // Already moving: kinetic friction opposes motion
+        const Ff = -Math.sign(v) * muK * N;
+        const Fnet = Fg + Ff;
+        return Fnet / m;
+      }
+    }
+
+    function updatePhysics(dt) {
+      if (!sim.running || sim.paused || sim.finished) return;
+
+      const theta = (params.angleDeg * Math.PI) / 180;
+      const L = params.rampLengthMeters;
+
+      // Compute acceleration
+      sim.a = computeAcceleration(sim.v);
+
+      // Integrate motion
+      sim.v += sim.a * dt;
+      sim.s += sim.v * dt;
+
+      // Boundaries
+      if (sim.s <= 0 && sim.v <= 0) {
+        sim.s = 0;
+        sim.v = 0;
+        sim.a = 0;
+        // Check if static friction keeps it at rest
+        const m = params.mass;
+        const g = params.g;
+        const Fg = m * g * Math.sin(theta);
+        const N = m * g * Math.cos(theta);
+        const maxStaticF = params.muS * N;
+        if (Math.abs(Fg) <= maxStaticF) {
+          // At rest, stable
+          sim.finished = true;
+        }
+      }
+      if (sim.s >= L && sim.v >= 0) {
+        sim.s = L;
+        sim.v = 0;
+        sim.a = 0;
+        sim.finished = true;
+      }
+
+      // Record trail
+      sim.time += dt;
+      if (overlays.motion) {
+        sim.trail.push({ s: sim.s, t: sim.time });
+        if (sim.trail.length > 300) sim.trail.shift();
+      } else {
+        sim.trail = [];
+      }
+    }
+
+    // ---------------------------------------------
+    // Drawing helpers
+    // ---------------------------------------------
+    function computeRampGeometry() {
+      const marginX = cw * 0.12;
+      const marginYTop = ch * 0.18;
+      const marginYBottom = ch * 0.18;
+
+      const Lpx = cw * 0.6;
+      const theta = (params.angleDeg * Math.PI) / 180;
+
+      // Bottom point
+      const x1 = cw - marginX;
+      const y1 = ch - marginYBottom;
+
+      // Top point = bottom shifted up-left by Lpx
+      const x0 = x1 - Lpx * Math.cos(theta);
+      const y0 = y1 - Lpx * Math.sin(theta);
+
+      ramp.x0 = x0;
+      ramp.y0 = y0;
+      ramp.x1 = x1;
+      ramp.y1 = y1;
+      ramp.lengthPx = Lpx;
+      ramp.angleRad = -theta; // for rotation (y-axis down)
+    }
+
+    function worldPositionFromS(sMeters) {
+      const Lm = params.rampLengthMeters;
+      const t = sMeters / Lm;
+      const x = ramp.x0 + (ramp.x1 - ramp.x0) * t;
+      const y = ramp.y0 + (ramp.y1 - ramp.y0) * t;
+      return { x, y };
+    }
+
+    function drawRamp() {
+      // ramp
+      ctx.save();
+      ctx.lineWidth = 10;
+      const grad = ctx.createLinearGradient(ramp.x0, ramp.y0, ramp.x1, ramp.y1);
+      grad.addColorStop(0, "#38bdf8");
+      grad.addColorStop(1, "#1d4ed8");
+      ctx.strokeStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(ramp.x0, ramp.y0);
+      ctx.lineTo(ramp.x1, ramp.y1);
+      ctx.stroke();
+
+      // top anchor
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath();
+      ctx.arc(ramp.x0, ramp.y0, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawBlock() {
+      const pos = worldPositionFromS(sim.s);
+      const blockWidth = 50;
+      const blockHeight = 30;
+
+      ctx.save();
+      ctx.translate(pos.x, pos.y);
+      const theta = Math.atan2(ramp.y1 - ramp.y0, ramp.x1 - ramp.x0);
+      ctx.rotate(theta);
+
+      // shadow
+      ctx.fillStyle = "rgba(0,0,0,0.3)";
+      ctx.fillRect(-blockWidth / 2 + 4, -blockHeight - 2 + 4, blockWidth, blockHeight);
+
+      // block body
+      const grad = ctx.createLinearGradient(-blockWidth / 2, -blockHeight, blockWidth / 2, 0);
+      grad.addColorStop(0, "#22c55e");
+      grad.addColorStop(1, "#4ade80");
+      ctx.fillStyle = grad;
+      ctx.strokeStyle = "#022c22";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(-blockWidth / 2, -blockHeight - 2, blockWidth, blockHeight, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      // face
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath();
+      ctx.arc(0, -blockHeight + 8, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+
+      return pos;
+    }
+
+    function drawArrow(x1, y1, x2, y2, color, width = 3) {
+      const headLength = 10;
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(
+        x2 - headLength * Math.cos(angle - Math.PI / 6),
+        y2 - headLength * Math.sin(angle - Math.PI / 6)
+      );
+      ctx.lineTo(
+        x2 - headLength * Math.cos(angle + Math.PI / 6),
+        y2 - headLength * Math.sin(angle + Math.PI / 6)
+      );
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawTrail() {
+      if (!overlays.motion || sim.trail.length < 2) return;
+      ctx.save();
+      ctx.lineWidth = 2;
+      const grad = ctx.createLinearGradient(ramp.x0, ramp.y0, ramp.x1, ramp.y1);
+      grad.addColorStop(0, "rgba(59,130,246,0.1)");
+      grad.addColorStop(1, "rgba(59,130,246,0.9)");
+      ctx.strokeStyle = grad;
+      ctx.beginPath();
+      for (let i = 0; i < sim.trail.length; i++) {
+        const p = worldPositionFromS(sim.trail[i].s);
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawForces(pos) {
+      if (!overlays.forces && !overlays.components) return;
+
+      const theta = (params.angleDeg * Math.PI) / 180;
+      const m = params.mass;
+      const g = params.g;
+
+      const Fg = m * g;
+      const N = m * g * Math.cos(theta);
+      const FgAlong = m * g * Math.sin(theta);
+
+      // Scale forces visually
+      const scale = 4; // px per Newton-ish
+      const cx = pos.x;
+      const cy = pos.y - 20;
+
+      // Weight (downwards)
+      if (overlays.forces || overlays.components) {
+        drawArrow(cx, cy, cx, cy + Fg * scale * 0.05, "#f97373", 3);
+        if (overlays.values) {
+          ctx.save();
+          ctx.fillStyle = "#fecaca";
+          ctx.font = "11px " + getFontFamily();
+          ctx.fillText(`mg = ${Fg.toFixed(1)} N`, cx + 8, cy + Fg * scale * 0.05 + 5);
+          ctx.restore();
+        }
+      }
+
+      if (overlays.components) {
+        // Component along ramp
+        const tangentAngle = Math.atan2(ramp.y1 - ramp.y0, ramp.x1 - ramp.x0);
+        const normalAngle = tangentAngle - Math.PI / 2;
+
+        // Fg parallel
+        const Fx = Math.cos(tangentAngle) * FgAlong * scale * 0.05;
+        const Fy = Math.sin(tangentAngle) * FgAlong * scale * 0.05;
+        drawArrow(cx, cy, cx + Fx, cy + Fy, "#fbbf24", 3);
+
+        // Normal
+        const Nx = Math.cos(normalAngle) * N * scale * 0.05;
+        const Ny = Math.sin(normalAngle) * N * scale * 0.05;
+        drawArrow(cx, cy, cx + Nx, cy + Ny, "#38bdf8", 3);
+      }
+
+      if (overlays.forces) {
+        // Friction arrow
+        const tangentAngle = Math.atan2(ramp.y1 - ramp.y0, ramp.x1 - ramp.x0);
+        const N = m * g * Math.cos(theta);
+        let Ff = 0;
+        if (Math.abs(sim.v) < 1e-3) {
+          const FgParallel = m * g * Math.sin(theta);
+          const maxStatic = params.muS * N;
+          if (Math.abs(FgParallel) <= maxStatic) {
+            Ff = -FgParallel;
+          } else {
+            Ff = -Math.sign(FgParallel) * params.muK * N;
+          }
+        } else {
+          Ff = -Math.sign(sim.v) * params.muK * N;
+        }
+
+        const FxF = Math.cos(tangentAngle) * Ff * scale * 0.05;
+        const FyF = Math.sin(tangentAngle) * Ff * scale * 0.05;
+        drawArrow(cx, cy, cx + FxF, cy + FyF, "#22c55e", 3);
+      }
+    }
+
+    function drawEnergyPanel() {
+      if (!overlays.energy) return;
+
+      const theta = (params.angleDeg * Math.PI) / 180;
+      const m = params.mass;
+      const g = params.g;
+      const L = params.rampLengthMeters;
+      const hTop = L * Math.sin(theta);
+      const h = (L - sim.s) * Math.sin(theta); // height above bottom
+      const v = sim.v;
+
+      const PE = Math.max(0, m * g * h);
+      const KE = Math.max(0, 0.5 * m * v * v);
+      const EtotalTop = m * g * hTop + 0.5 * m * params.v0 * params.v0;
+      const Etotal = PE + KE;
+      const Ethermal = Math.max(0, EtotalTop - Etotal);
+
+      const x = cw * 0.06;
+      const y = ch * 0.18;
+      const width = cw * 0.14;
+      const height = ch * 0.22;
+
+      ctx.save();
+      ctx.fillStyle = "rgba(15,23,42,0.95)";
+      ctx.strokeStyle = "rgba(148,163,184,0.6)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(x, y, width, height, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.clip();
+
+      // Title
+      ctx.fillStyle = "#e5e7eb";
+      ctx.font = "11px " + getFontFamily();
+      ctx.fillText("Energy", x + 10, y + 16);
+
+      const barX = x + 18;
+      const barY = y + height - 18;
+      const barW = width - 36;
+      const barH = height - 40;
+
+      const total = PE + KE + Ethermal || 1;
+      const peH = (PE / total) * barH;
+      const keH = (KE / total) * barH;
+      const thH = (Ethermal / total) * barH;
+
+      // PE (top)
+      ctx.fillStyle = "#38bdf8";
+      ctx.fillRect(barX, barY - peH, barW, peH);
+
+      // KE
+      ctx.fillStyle = "#22c55e";
+      ctx.fillRect(barX, barY - peH - keH, barW, keH);
+
+      // Thermal
+      ctx.fillStyle = "#f97316";
+      ctx.fillRect(barX, barY - peH - keH - thH, barW, thH);
+
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "10px " + getFontFamily();
+      ctx.fillText("PE", barX, barY - peH - 4);
+      ctx.fillText("KE", barX, barY - peH - keH - 4);
+      ctx.fillText("Loss", barX, barY - peH - keH - thH - 4);
+
+      ctx.restore();
+    }
+
+    function drawCalculationPanel() {
+      if (!overlays.calculations) return;
+
+      const thetaDeg = params.angleDeg;
+      const theta = (thetaDeg * Math.PI) / 180;
+      const m = params.mass;
+      const g = params.g;
+      const muK = params.muK;
+      const muS = params.muS;
+
+      const Fg = m * g;
+      const FgParallel = m * g * Math.sin(theta);
+      const N = m * g * Math.cos(theta);
+      const maxStatic = muS * N;
+      const vk = sim.v;
+      const a = sim.a;
+
+      const x = cw * 0.62;
+      const y = ch * 0.14;
+      const width = cw * 0.32;
+      const height = ch * 0.26;
+
+      ctx.save();
+      ctx.fillStyle = "rgba(15,23,42,0.96)";
+      ctx.strokeStyle = "rgba(148,163,184,0.6)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(x, y, width, height, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(x + 12, y + 26);
+      ctx.lineTo(x + width - 12, y + 26);
+      ctx.strokeStyle = "rgba(148,163,184,0.35)";
+      ctx.stroke();
+
+      ctx.fillStyle = "#e5e7eb";
+      ctx.font = "11px " + getFontFamily();
+      ctx.fillText("Calculations", x + 12, y + 18);
+
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "11px " + getFontFamily();
+      const lines = [
+        `θ = ${thetaDeg.toFixed(1)}°`,
+        `m = ${m.toFixed(1)} kg, g = ${g.toFixed(1)} m/s²`,
+        `Fg = mg = ${Fg.toFixed(1)} N`,
+        `N = mg cosθ = ${N.toFixed(1)} N`,
+        `Fg‖ = mg sinθ = ${FgParallel.toFixed(2)} N`,
+        `μₛN(max) = ${maxStatic.toFixed(2)} N`,
+        `μₖ = ${muK.toFixed(2)}`,
+        `a = ${a.toFixed(2)} m/s², v = ${vk.toFixed(2)} m/s`
+      ];
+
+      let ly = y + 42;
+      for (const line of lines) {
+        ctx.fillText(line, x + 12, ly);
+        ly += 16;
+      }
+
+      ctx.restore();
+    }
+
+    function drawValuesNearBlock(pos) {
+      if (!overlays.values) return;
+      const x = pos.x + 20;
+      const y = pos.y - 50;
+
+      ctx.save();
+      ctx.fillStyle = "rgba(15,23,42,0.92)";
+      ctx.strokeStyle = "rgba(148,163,184,0.5)";
+      ctx.lineWidth = 1;
+      const w = 140;
+      const h = 54;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, 10);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#e5e7eb";
+      ctx.font = "11px " + getFontFamily();
+      ctx.fillText(`s = ${sim.s.toFixed(2)} m`, x + 10, y + 18);
+      ctx.fillText(`v = ${sim.v.toFixed(2)} m/s`, x + 10, y + 34);
+      ctx.fillText(`a = ${sim.a.toFixed(2)} m/s²`, x + 10, y + 50);
+      ctx.restore();
+    }
+
+    function getFontFamily() {
+      return 'system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif';
+    }
+
+    function drawHUD() {
+      ctx.save();
+      ctx.fillStyle = "rgba(15,23,42,0.8)";
+      ctx.font = "12px " + getFontFamily();
+      ctx.fillText(
+        `t = ${sim.time.toFixed(2)} s   |   s = ${sim.s.toFixed(2)} m   |   v = ${sim.v.toFixed(2)} m/s`,
+        cw * 0.06,
+        ch * 0.08
+      );
+      ctx.restore();
+    }
+
+    // ---------------------------------------------
+    // Main render loop
+    // ---------------------------------------------
+    function step(timestamp) {
+      if (sim.lastTime === null) {
+        sim.lastTime = timestamp;
+      }
+      let dt = (timestamp - sim.lastTime) / 1000;
+      sim.lastTime = timestamp;
+
+      if (sim.slowMo) dt *= 0.3;
+      dt = Math.min(dt, 0.05);
+
+      computeRampGeometry();
+      updatePhysics(dt);
+
+      // Draw
+      ctx.clearRect(0, 0, cw, ch);
+
+      // background subtle grid
+      ctx.save();
+      ctx.globalAlpha = 0.06;
+      ctx.strokeStyle = "#64748b";
+      ctx.lineWidth = 1;
+      const gridSize = 40;
+      for (let x = (cw % gridSize); x < cw; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, ch);
+        ctx.stroke();
+      }
+      for (let y = (ch % gridSize); y < ch; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(cw, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      drawRamp();
+      drawTrail();
+      const blockPos = drawBlock();
+      drawForces(blockPos);
+      drawEnergyPanel();
+      drawCalculationPanel();
+      drawValuesNearBlock(blockPos);
+      drawHUD();
+
+      requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+  </script>
+</body>
+</html>
