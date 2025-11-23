@@ -1,0 +1,406 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  html, body { height:100%; margin:0; background:#000; }
+  body { display:grid; place-items:center; }
+  svg { width:100vmin; height:100vmin; display:block; }
+  text { font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; }
+  .noselect { user-select:none; -webkit-user-select:none; -ms-user-select:none; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 1000 1000" class="noselect">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020617"/>
+      <stop offset="1" stop-color="#050816"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1120"/>
+      <stop offset="1" stop-color="#081025"/>
+    </linearGradient>
+    <linearGradient id="btnGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff4b9a"/>
+      <stop offset="1" stop-color="#ff6fb0"/>
+    </linearGradient>
+    <linearGradient id="btnDarkGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1224"/>
+      <stop offset="1" stop-color="#0a1020"/>
+    </linearGradient>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="innerSoft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>
+      <feOffset dy="1"/>
+      <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="innerShadow"/>
+      <feComposite in="SourceGraphic" in2="innerShadow" operator="over"/>
+    </filter>
+    <pattern id="roughPattern" patternUnits="userSpaceOnUse" width="12" height="12">
+      <path d="M0,12 L12,0" stroke="rgba(148,163,184,0.25)" stroke-width="1"/>
+      <path d="M-6,12 L6,0" stroke="rgba(148,163,184,0.15)" stroke-width="1"/>
+      <path d="M6,12 L18,0" stroke="rgba(148,163,184,0.15)" stroke-width="1"/>
+    </pattern>
+    <pattern id="sandPattern" patternUnits="userSpaceOnUse" width="14" height="14">
+      <circle cx="3" cy="5" r="1.3" fill="rgba(245,158,11,0.5)"/>
+      <circle cx="10" cy="9" r="1.1" fill="rgba(245,158,11,0.4)"/>
+      <circle cx="6" cy="12" r="0.9" fill="rgba(245,158,11,0.35)"/>
+      <circle cx="12" cy="3" r="1.0" fill="rgba(245,158,11,0.35)"/>
+    </pattern>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="1000" fill="url(#bgGrad)"/>
+
+  <g id="card" filter="url(#innerSoft)">
+    <rect x="60" y="60" width="880" height="880" rx="24" fill="url(#cardGrad)" stroke="rgba(148,163,184,0.25)" stroke-width="1"/>
+    <text x="90" y="110" font-size="30" fill="#f9fafb" font-weight="700">Friction Race</text>
+    <text x="90" y="136" font-size="13" fill="#9ca3af" letter-spacing="0.08em">DRAG THE CAR TO A SURFACE, THEN PRESS RELEASE</text>
+
+    <g id="infoPanel">
+      <rect x="90" y="160" width="300" height="700" rx="18" fill="#0a0f1e" stroke="rgba(148,163,184,0.18)" stroke-width="1"/>
+      <text x="110" y="200" font-size="12" fill="#9ca3af" letter-spacing="0.08em" font-weight="700">LEARNING PURPOSE</text>
+      <text x="110" y="222" font-size="16" fill="#f9fafb">Understand how friction affects</text>
+      <text x="110" y="244" font-size="16" fill="#f9fafb">the speed of a moving object.</text>
+
+      <text x="110" y="290" font-size="12" fill="#9ca3af" letter-spacing="0.08em" font-weight="700">MATERIALS</text>
+      <g font-size="15" fill="#e5e7eb">
+        <text x="110" y="314">• Toy cars</text>
+        <text x="110" y="336">• Smooth, rough, sandy surfaces</text>
+        <text x="110" y="358">• Ruler or measuring tape</text>
+      </g>
+
+      <text x="110" y="408" font-size="12" fill="#9ca3af" letter-spacing="0.08em" font-weight="700">PROCEDURE</text>
+      <g font-size="15" fill="#e5e7eb">
+        <text x="110" y="432">1. Set up a track with smooth,</text>
+        <text x="110" y="454">   rough, and sandy sections.</text>
+        <text x="110" y="476">2. Predict which is fastest/slowest.</text>
+        <text x="110" y="498">3. Race and measure distance</text>
+        <text x="110" y="520">   traveled in a set time.</text>
+        <text x="110" y="542">4. Discuss how friction changed</text>
+        <text x="110" y="564">   the speed and distance.</text>
+      </g>
+    </g>
+
+    <g id="simPanel">
+      <rect x="410" y="160" width="510" height="700" rx="18" fill="#0a1223" stroke="rgba(148,163,184,0.18)" stroke-width="1"/>
+      <text x="430" y="196" font-size="18" fill="#f9fafb" font-weight="600">Race Track</text>
+      <text x="430" y="214" font-size="12" fill="#9ca3af">Friction changes how far the car goes in the same time.</text>
+
+      <g id="trackArea">
+        <rect x="430" y="220" width="470" height="560" rx="14" fill="#081429" stroke="rgba(148,163,184,0.2)" stroke-width="1"/>
+        <g id="lanes">
+          <g id="laneSmooth">
+            <rect x="430" y="220" width="470" height="160" rx="12" fill="#0e1a31" stroke="rgba(148,163,184,0.12)"/>
+            <text x="440" y="244" font-size="12" fill="#9ca3af" letter-spacing="0.08em" font-weight="700">SMOOTH</text>
+          </g>
+          <g id="laneRough">
+            <rect x="430" y="420" width="470" height="160" rx="12" fill="url(#roughPattern)" />
+            <rect x="430" y="420" width="470" height="160" rx="12" fill="none" stroke="rgba(148,163,184,0.12)"/>
+            <text x="440" y="444" font-size="12" fill="#9ca3af" letter-spacing="0.08em" font-weight="700">ROUGH</text>
+          </g>
+          <g id="laneSandy">
+            <rect x="430" y="620" width="470" height="160" rx="12" fill="#0e1a31"/>
+            <rect x="430" y="620" width="470" height="160" rx="12" fill="url(#sandPattern)"/>
+            <rect x="430" y="620" width="470" height="160" rx="12" fill="none" stroke="rgba(148,163,184,0.12)"/>
+            <text x="440" y="644" font-size="12" fill="#9ca3af" letter-spacing="0.08em" font-weight="700">SANDY</text>
+          </g>
+        </g>
+
+        <g id="scale">
+          <line x1="460" y1="220" x2="460" y2="780" stroke="#4f46e5" stroke-width="2"/>
+          <text x="466" y="236" font-size="12" fill="#a5b4fc">START</text>
+          <g id="ticks">
+            <g>
+              <line x1="460" y1="215" x2="560" y2="215" stroke="rgba(148,163,184,0.25)" stroke-width="2"/>
+              <line x1="560" y1="215" x2="560" y2="225" stroke="rgba(148,163,184,0.5)" stroke-width="2"/>
+              <text x="553" y="210" font-size="12" fill="#9ca3af">1 m</text>
+            </g>
+            <g>
+              <line x1="460" y1="205" x2="660" y2="205" stroke="rgba(148,163,184,0.25)" stroke-width="1"/>
+              <line x1="660" y1="205" x2="660" y2="215" stroke="rgba(148,163,184,0.5)" stroke-width="2"/>
+              <text x="653" y="200" font-size="12" fill="#9ca3af">2 m</text>
+            </g>
+            <g>
+              <line x1="460" y1="195" x2="760" y2="195" stroke="rgba(148,163,184,0.25)" stroke-width="1"/>
+              <line x1="760" y1="195" x2="760" y2="205" stroke="rgba(148,163,184,0.5)" stroke-width="2"/>
+              <text x="753" y="190" font-size="12" fill="#9ca3af">3 m</text>
+            </g>
+            <g>
+              <line x1="460" y1="185" x2="860" y2="185" stroke="rgba(148,163,184,0.25)" stroke-width="1"/>
+              <line x1="860" y1="185" x2="860" y2="195" stroke="rgba(148,163,184,0.5)" stroke-width="2"/>
+              <text x="853" y="180" font-size="12" fill="#9ca3af">4 m</text>
+            </g>
+          </g>
+        </g>
+
+        <g id="distanceTag" opacity="0">
+          <rect id="distBubble" x="480" y="250" width="120" height="28" rx="14" fill="#22c55e"/>
+          <text id="distText" x="540" y="269" text-anchor="middle" font-size="14" fill="#03120a" font-weight="700">0.0 m</text>
+        </g>
+
+        <g id="car" cursor="grab" transform="translate(390,300)">
+          <g id="carBody">
+            <rect x="0" y="10" width="86" height="28" rx="10" fill="url(#btnGrad)" stroke="#ff85bb" stroke-width="1"/>
+            <path d="M18,10 Q30,-2 48,2 L60,10 Z" fill="#ff6fb0" opacity="0.9"/>
+            <rect x="24" y="4" width="20" height="10" rx="3" fill="#ffd6e8" opacity="0.9"/>
+            <circle cx="22" cy="40" r="8" fill="#0b1120" stroke="#3b82f6" stroke-width="2"/>
+            <circle cx="64" cy="40" r="8" fill="#0b1120" stroke="#3b82f6" stroke-width="2"/>
+            <circle cx="22" cy="40" r="3" fill="#93c5fd"/>
+            <circle cx="64" cy="40" r="3" fill="#93c5fd"/>
+          </g>
+        </g>
+
+      </g>
+
+      <g id="controls">
+        <g id="btnRelease" transform="translate(660,840)" cursor="pointer">
+          <rect x="0" y="0" width="220" height="46" rx="23" fill="url(#btnGrad)" filter="url(#softGlow)"/>
+          <text x="110" y="30" text-anchor="middle" font-size="18" fill="#ffffff" font-weight="700">Release</text>
+        </g>
+        <g id="btnReset" transform="translate(430,840)" cursor="pointer">
+          <rect x="0" y="0" width="200" height="46" rx="23" fill="url(#btnDarkGrad)" stroke="rgba(148,163,184,0.35)" stroke-width="1"/>
+          <text x="100" y="30" text-anchor="middle" font-size="16" fill="#e5e7eb" font-weight="600">Reset</text>
+        </g>
+      </g>
+
+    </g>
+  </g>
+</svg>
+
+<script>
+(function(){
+  const svg = document.querySelector('svg');
+
+  const car = document.getElementById('car');
+  const carBody = document.getElementById('carBody');
+  const btnRelease = document.getElementById('btnRelease');
+  const btnReset = document.getElementById('btnReset');
+  const distanceTag = document.getElementById('distanceTag');
+  const distText = document.getElementById('distText');
+  const distBubble = document.getElementById('distBubble');
+
+  const track = { x:430, y:220, w:470, h:560 };
+  const lanes = [
+    {name:'smooth', y:220, h:160, mu:0.02},
+    {name:'rough',  y:420, h:160, mu:0.07},
+    {name:'sandy',  y:620, h:160, mu:0.12}
+  ];
+
+  const startLineX = 460;
+  const carW = 86, carH = 48; // approx height including wheels
+  const startX = startLineX - carW - 12;
+
+  let carPos = { x: startX, y: lanes[0].y + lanes[0].h/2 - 24 }; // top-left of car group
+  let dragging = false, pointerId = null, dragOffset = {x:0, y:0};
+  let isRacing = false;
+  let rafId = null;
+
+  function setCarTransform(x,y){
+    car.setAttribute('transform', `translate(${x},${y})`);
+  }
+
+  function clamp(val,min,max){ return Math.max(min, Math.min(max, val)); }
+
+  function laneIndexAtY(yCenter){
+    for (let i=0;i<lanes.length;i++){
+      if (yCenter >= lanes[i].y && yCenter <= lanes[i].y + lanes[i].h) return i;
+    }
+    return -1;
+  }
+
+  function snapToLane(y){
+    // find nearest lane center
+    let minD = Infinity, targetY = carPos.y;
+    lanes.forEach(l=>{
+      const centerY = l.y + l.h/2 - carH/2;
+      const d = Math.abs(y - centerY);
+      if (d < minD){ minD = d; targetY = centerY; }
+    });
+    return targetY;
+  }
+
+  function showDistanceTag(px, laneYCenter, meters){
+    const bubbleW = 120;
+    const bubbleH = 28;
+    const pad = 10;
+    const tx = clamp(px - bubbleW/2, track.x + 10, track.x + track.w - bubbleW - 10);
+    const ty = laneYCenter - 56;
+    distBubble.setAttribute('x', tx);
+    distBubble.setAttribute('y', ty);
+    distText.setAttribute('x', tx + bubbleW/2);
+    distText.setAttribute('y', ty + 19);
+    distText.textContent = meters.toFixed(1) + ' m';
+    distanceTag.setAttribute('opacity','1');
+  }
+
+  function hideDistanceTag(){
+    distanceTag.setAttribute('opacity','0');
+  }
+
+  function resetCar(){
+    cancelAnimationFrame(rafId);
+    isRacing = false;
+    hideDistanceTag();
+    carPos.x = startX;
+    carPos.y = lanes[0].y + lanes[0].h/2 - 24;
+    setCarTransform(carPos.x, carPos.y);
+    car.style.transition = 'transform 220ms cubic-bezier(.2,.8,.2,1)';
+    setTimeout(()=>car.style.transition='none',230);
+  }
+
+  function getActiveLane(){
+    const centerY = carPos.y + carH/2;
+    const idx = laneIndexAtY(centerY);
+    return idx >= 0 ? {idx, lane: lanes[idx]} : null;
+  }
+
+  function race(){
+    if (isRacing) return;
+    const active = getActiveLane();
+    if (!active) {
+      // snap to nearest lane and return
+      carPos.y = snapToLane(carPos.y);
+      setCarTransform(carPos.x, carPos.y);
+      return;
+    }
+    isRacing = true;
+    hideDistanceTag();
+
+    const mu = active.lane.mu;
+    const g = 500;           // px/s^2 (gravity scale)
+    const v0 = 250;          // px/s initial push
+    const T = 2.0;           // seconds
+    const a = mu * g;        // deceleration due to friction
+    const tStop = v0 / a;    // time to stop if friction stops it earlier
+
+    const trackRightLimit = track.x + track.w - 10 - carW;
+    const x0 = carPos.x;
+    let t0 = null;
+    let stopped = false;
+
+    function step(ts){
+      if (!t0) t0 = ts;
+      const t = (ts - t0)/1000;
+
+      let tEff = Math.min(t, T);
+      let x;
+      if (tEff < tStop){
+        x = x0 + v0*tEff - 0.5*a*tEff*tEff;
+      } else {
+        x = x0 + (v0*v0)/(2*a);
+        stopped = true;
+      }
+      if (x >= trackRightLimit){ x = trackRightLimit; stopped = true; }
+
+      carPos.x = x;
+      setCarTransform(carPos.x, carPos.y);
+
+      const done = (t >= T) || stopped;
+      if (!done){
+        rafId = requestAnimationFrame(step);
+      } else {
+        isRacing = false;
+        // compute distance traveled in px relative to start line
+        const s_px = Math.max(0, (carPos.x - x0));
+        // convert to meters: 100 px = 1 m
+        const m = s_px / 100;
+        const laneCenterY = active.lane.y + active.lane.h/2;
+        showDistanceTag(carPos.x + carW/2, laneCenterY, m);
+      }
+    }
+    rafId = requestAnimationFrame(step);
+  }
+
+  // Initialize positions
+  resetCar();
+
+  // Drag behavior
+  car.addEventListener('pointerdown', (e)=>{
+    if (isRacing) return;
+    pointerId = e.pointerId;
+    dragging = true;
+    car.setPointerCapture(pointerId);
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    const ctm = svg.getScreenCTM();
+    const inv = ctm.inverse();
+    const svgPt = pt.matrixTransform(inv);
+    dragOffset.x = svgPt.x - carPos.x;
+    dragOffset.y = svgPt.y - carPos.y;
+
+    carBody.setAttribute('transform','scale(1.05)');
+    car.style.cursor = 'grabbing';
+  });
+
+  svg.addEventListener('pointermove', (e)=>{
+    if (!dragging || isRacing) return;
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    const svgPt = pt.matrixTransform(svg.getScreenCTM().inverse());
+
+    let nx = svgPt.x - dragOffset.x;
+    let ny = svgPt.y - dragOffset.y;
+
+    // Clamp within track vertical bounds (with some margin)
+    const minY = track.y - 10;
+    const maxY = track.y + track.h - carH + 10;
+    ny = clamp(ny, minY, maxY);
+
+    // Allow x anywhere but keep within card
+    const minX = track.x - 10;
+    const maxX = track.x + track.w - carW + 10;
+    nx = clamp(nx, minX, maxX);
+
+    carPos.x = nx;
+    carPos.y = ny;
+    setCarTransform(carPos.x, carPos.y);
+  });
+
+  svg.addEventListener('pointerup', (e)=>{
+    if (!dragging) return;
+    dragging = false;
+    car.releasePointerCapture(pointerId);
+    pointerId = null;
+
+    // Snap to nearest lane center, and close to start line for fairness
+    carPos.y = snapToLane(carPos.y);
+    // Snap near start if user dragged far left/right
+    const targetX = Math.min(carPos.x, startX);
+    car.style.transition = 'transform 180ms cubic-bezier(.2,.8,.2,1)';
+    setCarTransform(targetX, carPos.y);
+    carPos.x = targetX;
+    setTimeout(()=>{ car.style.transition='none'; }, 190);
+
+    carBody.setAttribute('transform','scale(1)');
+    car.style.cursor = 'grab';
+  });
+
+  // Buttons
+  function pressVisual(btn, active){
+    const rect = btn.querySelector('rect');
+    if (btn.id === 'btnRelease'){
+      rect.setAttribute('filter', active ? '' : 'url(#softGlow)');
+      rect.setAttribute('transform', active ? 'translate(0,2)' : '');
+    } else {
+      rect.setAttribute('transform', active ? 'translate(0,2)' : '');
+    }
+  }
+
+  btnRelease.addEventListener('pointerdown', ()=> pressVisual(btnRelease, true));
+  btnRelease.addEventListener('pointerup', ()=> { pressVisual(btnRelease, false); race(); });
+  btnRelease.addEventListener('pointerleave', ()=> pressVisual(btnRelease, false));
+
+  btnReset.addEventListener('pointerdown', ()=> pressVisual(btnReset, true));
+  btnReset.addEventListener('pointerup', ()=> { pressVisual(btnReset, false); resetCar(); });
+  btnReset.addEventListener('pointerleave', ()=> pressVisual(btnReset, false));
+
+})();
+</script>
+</body>
+</html>
