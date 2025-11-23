@@ -1,0 +1,354 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: #F5F7FB;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  }
+  .wrap {
+    width: 100vmin;
+    height: 100vmin;
+    margin: 0 auto;
+    display: block;
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+    user-select: none;
+  }
+  text {
+    fill: #1A2B4C;
+  }
+  .label {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+  .value {
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .small {
+    font-size: 18px;
+    fill: #4A5A7A;
+  }
+  .muted {
+    fill: #6E7C96;
+  }
+  .btn-like { cursor: pointer; }
+</style>
+</head>
+<body>
+<svg class="wrap" viewBox="0 0 1000 1000">
+  <defs>
+    <linearGradient id="panelGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F9FBFF"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="40" y="40" width="920" height="920" rx="22" fill="url(#panelGrad)" stroke="#DCE4F2" stroke-width="2"/>
+  <text x="500" y="105" text-anchor="middle" style="font-size:34px;font-weight:800;">Spring Mass Simulator</text>
+
+  <g id="springArea">
+    <rect x="80" y="140" width="520" height="760" rx="18" fill="#F2F6FD" stroke="#E4EBF7"/>
+    <text x="340" y="190" text-anchor="middle" class="small">Observe spring stretch as mass and stiffness change</text>
+
+    <g id="anchor">
+      <rect x="180" y="220" width="320" height="14" rx="7" fill="#B8C4DA"/>
+      <rect x="320" y="180" width="40" height="40" rx="8" fill="#CED7E8"/>
+      <rect x="332" y="148" width="16" height="40" rx="4" fill="#CED7E8"/>
+    </g>
+
+    <g id="springVisual">
+      <path id="springPath" d="" fill="none" stroke="#8A9BB7" stroke-width="6" stroke-linejoin="round"/>
+      <line id="hookLine" x1="340" y1="240" x2="340" y2="240" stroke="#8A9BB7" stroke-width="6" stroke-linecap="round" opacity="0.9"/>
+    </g>
+
+    <g id="massGroup">
+      <rect id="massRect" x="250" y="240" width="180" height="110" rx="14" fill="#4F8DF7" stroke="#2F65C7" stroke-width="3"/>
+      <circle id="bolt" cx="340" cy="240" r="6" fill="#2F65C7"/>
+      <text id="massLabel" x="340" y="300" text-anchor="middle" style="font-size:22px;font-weight:700;fill:white;">m = 3.0 kg</text>
+    </g>
+
+    <g id="readouts">
+      <rect x="110" y="640" width="460" height="210" rx="14" fill="#FFFFFF" stroke="#DEE6F5"/>
+      <text x="140" y="690" class="label">Stretch</text>
+      <text id="stretchVal" x="470" y="690" class="value" text-anchor="end">0.35 m</text>
+      <text x="140" y="730" class="small muted">Hooke's Law: x = (m·g)/k</text>
+      <text x="140" y="770" class="small">Gravity, g</text>
+      <text id="gVal" x="470" y="770" class="small" text-anchor="end">9.81 m/s²</text>
+      <text id="kVal" x="470" y="810" class="small" text-anchor="end">k = 150 N/m</text>
+    </g>
+  </g>
+
+  <g id="controls">
+    <rect x="640" y="160" width="280" height="300" rx="18" fill="#FFFFFF" stroke="#E0E7F4"/>
+    <text x="660" y="205" class="label">Controls</text>
+
+    <text x="660" y="255" class="small">Mass (kg)</text>
+    <text id="massValueText" x="900" y="255" class="value" text-anchor="end">3.0</text>
+    <g id="sliderMass" cursor="pointer">
+      <rect id="trackMass" x="660" y="270" width="260" height="10" rx="5" fill="#E6ECF5"/>
+      <rect id="trackMassActive" x="660" y="270" width="0" height="10" rx="5" fill="#4F8DF7" opacity="0.7"/>
+      <circle id="thumbMass" cx="0" cy="275" r="14" fill="#FFFFFF" stroke="#8A9BB7" stroke-width="3"/>
+    </g>
+
+    <text x="660" y="335" class="small">Stiffness k (N/m)</text>
+    <text id="kValueText" x="900" y="335" class="value" text-anchor="end">150</text>
+    <g id="sliderK" cursor="pointer">
+      <rect id="trackK" x="660" y="350" width="260" height="10" rx="5" fill="#E6ECF5"/>
+      <rect id="trackKActive" x="660" y="350" width="0" height="10" rx="5" fill="#4F8DF7" opacity="0.7"/>
+      <circle id="thumbK" cx="0" cy="355" r="14" fill="#FFFFFF" stroke="#8A9BB7" stroke-width="3"/>
+    </g>
+
+    <rect id="resetBtn" x="660" y="400" width="260" height="48" rx="10" fill="#4F8DF7" class="btn-like"/>
+    <text x="790" y="432" text-anchor="middle" style="font-size:20px;font-weight:700;fill:#FFFFFF;">Reset</text>
+  </g>
+</svg>
+
+<script>
+(function(){
+  const svg = document.querySelector('svg');
+
+  const anchorX = 340;
+  const springTopY = 240; // start of spring below bracket
+  const restLengthPx = 180;
+  const meterToPx = 180; // px per meter for stretch visualization
+  const hookGap = 12;
+
+  const g = 9.81;
+
+  let mass = 3.0;       // kg
+  let k = 150;          // N/m
+
+  const limits = {
+    mass: {min: 0.5, max: 10},
+    k: {min: 50, max: 500}
+  };
+
+  const springPath = document.getElementById('springPath');
+  const hookLine = document.getElementById('hookLine');
+  const massRect = document.getElementById('massRect');
+  const massLabel = document.getElementById('massLabel');
+  const bolt = document.getElementById('bolt');
+  const stretchVal = document.getElementById('stretchVal');
+  const gVal = document.getElementById('gVal');
+  const kVal = document.getElementById('kVal');
+
+  const trackMass = document.getElementById('trackMass');
+  const trackMassActive = document.getElementById('trackMassActive');
+  const thumbMass = document.getElementById('thumbMass');
+  const massValueText = document.getElementById('massValueText');
+
+  const trackK = document.getElementById('trackK');
+  const trackKActive = document.getElementById('trackKActive');
+  const thumbK = document.getElementById('thumbK');
+  const kValueText = document.getElementById('kValueText');
+
+  const resetBtn = document.getElementById('resetBtn');
+
+  gVal.textContent = g.toFixed(2) + ' m/s²';
+
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+  function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+  function metersToPx(m){ return m * meterToPx; }
+  function computeExtensionPx(mass, k){
+    const xMeters = (mass * g) / k;
+    return metersToPx(xMeters);
+  }
+
+  function buildSpringPath(x, yStart, yEnd, coils = 10, amplitude = 26){
+    const totalLen = Math.max(30, yEnd - yStart - hookGap);
+    const step = totalLen / coils;
+    let d = `M ${x} ${yStart}`;
+    d += ` L ${x} ${yStart + hookGap}`;
+    for (let i = 1; i <= coils; i++){
+      const yy = yStart + hookGap + i * step;
+      const dx = (i % 2 === 0) ? amplitude : -amplitude;
+      d += ` L ${x + dx} ${yy}`;
+    }
+    d += ` L ${x} ${yEnd}`;
+    return d;
+  }
+
+  let currentExt = computeExtensionPx(mass, k);
+  function layoutSpring(animatedToExt){
+    const targetExt = animatedToExt != null ? animatedToExt : currentExt;
+    const springBottom = springTopY + restLengthPx + targetExt;
+    const massTopY = springBottom + hookGap;
+    const massHeight = +massRect.getAttribute('height');
+    const massWidth = +massRect.getAttribute('width');
+
+    // Spring drawing
+    springPath.setAttribute('d', buildSpringPath(anchorX, springTopY, springBottom, 11, 26));
+    hookLine.setAttribute('x1', anchorX);
+    hookLine.setAttribute('x2', anchorX);
+    hookLine.setAttribute('y1', springBottom);
+    hookLine.setAttribute('y2', massTopY);
+
+    // Mass position
+    massRect.setAttribute('x', anchorX - massWidth/2);
+    massRect.setAttribute('y', massTopY);
+    bolt.setAttribute('cx', anchorX);
+    bolt.setAttribute('cy', massTopY);
+    massLabel.setAttribute('x', anchorX);
+    massLabel.setAttribute('y', massTopY + massHeight/2 + 8);
+  }
+
+  function updateReadouts(){
+    const xMeters = (mass * g) / k;
+    stretchVal.textContent = xMeters.toFixed(2) + ' m';
+    kVal.textContent = 'k = ' + k.toFixed(0) + ' N/m';
+    massLabel.textContent = 'm = ' + mass.toFixed(1) + ' kg';
+  }
+
+  function animateSpringTo(newExt){
+    const start = currentExt;
+    const delta = newExt - start;
+    const dur = 420;
+    const t0 = performance.now();
+
+    function frame(now){
+      const t = clamp((now - t0)/dur, 0, 1);
+      const e = easeOutCubic(t);
+      const val = start + delta * e;
+      layoutSpring(val);
+      if (t < 1){
+        requestAnimationFrame(frame);
+      } else {
+        currentExt = newExt;
+        layoutSpring(currentExt);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function refresh(){
+    const newExt = computeExtensionPx(mass, k);
+    updateReadouts();
+    animateSpringTo(newExt);
+  }
+
+  function sliderInit(trackEl, thumbEl, activeEl, min, max, initialValue, onChange){
+    const x = +trackEl.getAttribute('x');
+    const w = +trackEl.getAttribute('width');
+    let value = initialValue;
+
+    function valueToCx(v){
+      const t = (v - min) / (max - min);
+      return x + t * w;
+    }
+    function cxToValue(cx){
+      const t = clamp((cx - x)/w, 0, 1);
+      return min + t * (max - min);
+    }
+    function setVisual(v){
+      const cx = valueToCx(v);
+      thumbEl.setAttribute('cx', cx);
+      activeEl.setAttribute('width', cx - x);
+    }
+    setVisual(value);
+
+    let dragging = false;
+
+    function pointerMove(ev){
+      if (!dragging) return;
+      const pt = getSVGPoint(ev);
+      const cx = clamp(pt.x, x, x+w);
+      value = cxToValue(cx);
+      setVisual(value);
+      onChange(value, false);
+    }
+    function pointerUp(){
+      if (!dragging) return;
+      dragging = false;
+      onChange(value, true);
+      window.removeEventListener('pointermove', pointerMove);
+      window.removeEventListener('pointerup', pointerUp);
+      window.removeEventListener('pointercancel', pointerUp);
+    }
+    function pointerDown(ev){
+      ev.preventDefault();
+      dragging = true;
+      const pt = getSVGPoint(ev);
+      const cx = clamp(pt.x, x, x+w);
+      value = cxToValue(cx);
+      setVisual(value);
+      onChange(value, false);
+      window.addEventListener('pointermove', pointerMove);
+      window.addEventListener('pointerup', pointerUp);
+      window.addEventListener('pointercancel', pointerUp);
+    }
+
+    trackEl.addEventListener('pointerdown', pointerDown);
+    thumbEl.addEventListener('pointerdown', pointerDown);
+
+    return {
+      setValue(v){
+        value = clamp(v, min, max);
+        setVisual(value);
+        onChange(value, true);
+      }
+    };
+  }
+
+  function getSVGPoint(evt){
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    const ctm = svg.getScreenCTM().inverse();
+    return pt.matrixTransform(ctm);
+    }
+
+  const massSlider = sliderInit(
+    trackMass,
+    thumbMass,
+    trackMassActive,
+    limits.mass.min,
+    limits.mass.max,
+    mass,
+    (v, done) => {
+      mass = Math.round(v*10)/10;
+      massValueText.textContent = mass.toFixed(1);
+      refresh();
+    }
+  );
+
+  const kSlider = sliderInit(
+    trackK,
+    thumbK,
+    trackKActive,
+    limits.k.min,
+    limits.k.max,
+    k,
+    (v, done) => {
+      k = Math.round(v);
+      kValueText.textContent = k.toFixed(0);
+      refresh();
+    }
+  );
+
+  resetBtn.addEventListener('pointerdown', () => {
+    massSlider.setValue(3.0);
+    kSlider.setValue(150);
+  });
+
+  // Initialize positions and values
+  massValueText.textContent = mass.toFixed(1);
+  kValueText.textContent = k.toFixed(0);
+  currentExt = computeExtensionPx(mass, k);
+  layoutSpring(currentExt);
+  updateReadouts();
+
+})();
+</script>
+</body>
+</html>
