@@ -1,0 +1,206 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Magnetic or Not</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #f2f0ea;
+      font-family: sans-serif;
+    }
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .draggable {
+      cursor: grab;
+      transition: transform 0.2s ease;
+    }
+    .droppable.highlight {
+      stroke: #ffffff;
+      stroke-width: 3;
+    }
+    .feedback {
+      font-size: 24px;
+      fill: #333;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .feedback.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <rect width="800" height="600" fill="#f2f0ea"/>
+    <rect y="80" width="800" height="520" fill="#d9a369"/>
+
+    <text x="400" y="50" font-size="36" text-anchor="middle" fill="#222" font-weight="bold">MAGNETIC OR NOT</text>
+
+    <g id="paperclip1" class="draggable" transform="translate(100,150)">
+      <rect x="0" y="0" width="50" height="12" rx="6" fill="#ccc"/>
+    </g>
+
+    <g id="paperclip2" class="draggable" transform="translate(180,160)">
+      <rect x="0" y="0" width="50" height="12" rx="6" fill="#ccc"/>
+    </g>
+
+    <g id="coin" class="draggable" transform="translate(300,160)">
+      <circle r="20" cx="20" cy="20" fill="#996633"/>
+    </g>
+
+    <g id="purple_bead" class="draggable" transform="translate(400,100)">
+      <circle r="15" cx="15" cy="15" fill="#803fc9"/>
+    </g>
+
+    <g id="orange_bead" class="draggable" transform="translate(250,220)">
+      <circle r="14" cx="14" cy="14" fill="#ff6600"/>
+    </g>
+
+    <g id="yellow_ring" class="draggable" transform="translate(480,220)">
+      <circle r="18" cx="18" cy="18" fill="#ffcc66"/>
+      <circle r="8" cx="18" cy="18" fill="#d9a369"/>
+    </g>
+
+    <g id="foil" class="draggable" transform="translate(570,150)">
+      <path d="M0,0 Q10,30 30,10 Q50,30 60,0 Q40,20 20,0 Z" fill="#ddd"/>
+    </g>
+
+    <g id="magnet" transform="translate(180,260)">
+      <circle cx="30" cy="30" r="30" fill="#aef" stroke="#0099cc" stroke-width="4"/>
+      <rect x="26" y="16" width="8" height="28" fill="#0099cc"/>
+      <rect x="16" y="28" width="28" height="8" fill="#0099cc"/>
+    </g>
+
+    <g id="prediction_area">
+      <rect x="250" y="320" rx="10" ry="10" width="300" height="40" fill="#fff" stroke="#ccc"/>
+      <text x="400" y="345" font-size="16" text-anchor="middle" fill="#666">Make a prediction...</text>
+    </g>
+
+    <g id="test_button" transform="translate(300, 380)" class="draggable">
+      <rect width="80" height="30" rx="5" ry="5" fill="#66ccff"/>
+      <text x="40" y="20" text-anchor="middle" font-size="14" fill="#fff">Test</text>
+    </g>
+
+    <g id="sort_button" transform="translate(420, 380)" class="draggable">
+      <rect width="80" height="30" rx="5" ry="5" fill="#66cc99"/>
+      <text x="40" y="20" text-anchor="middle" font-size="14" fill="#fff">Sort</text>
+    </g>
+
+    <g id="bin_magnetic" class="droppable" transform="translate(100,440)">
+      <rect width="200" height="120" rx="10" ry="10" fill="#56b256"/>
+      <text x="100" y="70" text-anchor="middle" font-size="40" fill="#fff">🧲</text>
+    </g>
+
+    <g id="bin_nonmagnetic" class="droppable" transform="translate(500,440)">
+      <rect width="200" height="120" rx="10" ry="10" fill="#499dda"/>
+      <text x="100" y="70" text-anchor="middle" font-size="40" fill="#fff">🚫</text>
+    </g>
+
+    <text id="feedback" class="feedback" x="400" y="550" text-anchor="middle">Correct!</text>
+  </svg>
+  <script>
+    const objects = ['paperclip1', 'paperclip2', 'coin', 'purple_bead', 'orange_bead', 'yellow_ring', 'foil'];
+    const magneticItems = ['paperclip1', 'paperclip2'];
+    const drops = {
+      bin_magnetic: 'magnetic',
+      bin_nonmagnetic: 'nonmagnetic'
+    };
+    const svg = document.querySelector("svg");
+    const feedback = document.getElementById("feedback");
+
+    let selected = null;
+    let offset = {x: 0, y: 0};
+
+    function isOver(elem, event) {
+      const pt = svg.createSVGPoint();
+      pt.x = event.clientX;
+      pt.y = event.clientY;
+      const cursorpt = pt.matrixTransform(svg.getScreenCTM().inverse());
+      const bbox = elem.getBoundingClientRect();
+      const elemPt = svg.createSVGPoint();
+      elemPt.x = bbox.x;
+      elemPt.y = bbox.y;
+      return true;
+    }
+
+    function showFeedback(text) {
+      feedback.textContent = text;
+      feedback.classList.add("show");
+      setTimeout(() => feedback.classList.remove("show"), 2000);
+    }
+
+    function pointerDown(e) {
+      const target = e.currentTarget;
+      selected = target;
+      const transform = selected.getAttribute("transform");
+      const match = /translate\(([-\d.]+),\s*([-\d.]+)\)/.exec(transform);
+      let x = 0, y = 0;
+      if (match) {
+        x = parseFloat(match[1]);
+        y = parseFloat(match[2]);
+      }
+      offset.x = e.clientX - x;
+      offset.y = e.clientY - y;
+    }
+
+    function pointerMove(e) {
+      if (!selected) return;
+      const x = e.clientX - offset.x;
+      const y = e.clientY - offset.y;
+      selected.setAttribute("transform", `translate(${x},${y})`);
+    }
+
+    function pointerUp(e) {
+      if (!selected) return;
+      const selectedId = selected.id;
+      let snapped = false;
+
+      for (let binId in drops) {
+        const bin = document.getElementById(binId);
+        const binBox = bin.getBoundingClientRect();
+        const objBox = selected.getBoundingClientRect();
+
+        const inX = objBox.left + objBox.width/2 > binBox.left && objBox.left + objBox.width/2 < binBox.right;
+        const inY = objBox.top + objBox.height/2 > binBox.top && objBox.top + objBox.height/2 < binBox.bottom;
+
+        if (inX && inY) {
+          // Check if correct
+          const isMagnetic = magneticItems.includes(selectedId);
+          if ((drops[binId] === 'magnetic' && isMagnetic) ||
+              (drops[binId] === 'nonmagnetic' && !isMagnetic)) {
+            showFeedback("Correct!");
+            selected.removeEventListener("pointerdown", pointerDown);
+            selected.removeEventListener("pointermove", pointerMove);
+            selected.removeEventListener("pointerup", pointerUp);
+            selected.style.cursor = "default";
+          } else {
+            selected.setAttribute("transform", selected.dataset.original);
+            showFeedback("Try Again");
+          }
+          snapped = true;
+          break;
+        }
+      }
+      if (!snapped && selected.dataset.original) {
+        selected.setAttribute("transform", selected.dataset.original);
+      }
+      selected = null;
+    }
+
+    objects.forEach(id => {
+      const elem = document.getElementById(id);
+      elem.classList.add("draggable");
+      elem.dataset.original = elem.getAttribute("transform");
+      elem.addEventListener("pointerdown", pointerDown);
+      svg.addEventListener("pointermove", pointerMove);
+      svg.addEventListener("pointerup", pointerUp);
+    });
+  </script>
+</body>
+</html>
