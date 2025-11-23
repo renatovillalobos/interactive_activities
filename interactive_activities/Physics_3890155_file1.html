@@ -1,0 +1,203 @@
+<html>
+<head>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(#f1f7fc, #e9eff6);
+      width: 100%;
+      height: 100%;
+    }
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .button:hover {
+      filter: brightness(1.1);
+      cursor: pointer;
+    }
+    .clickable:hover {
+      cursor: pointer;
+    }
+    .draggable:hover {
+      cursor: grab;
+    }
+    .selected {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+<svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f7fc"/>
+      <stop offset="100%" stop-color="#e9eff6"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1600" height="900" fill="url(#bg)" />
+
+  <!-- Anchor Bar -->
+  <g id="pendulum-anchor">
+    <rect x="775" y="80" width="50" height="20" rx="10" fill="#587199" />
+    <circle cx="800" cy="100" r="20" fill="#4e637f" />
+  </g>
+
+  <!-- Pendulum Line and Weight -->
+  <g id="pendulum-group">
+    <line id="pendulum-line" x1="800" y1="120" x2="800" y2="420" stroke="#4e637f" stroke-width="8" stroke-linecap="round" />
+    <rect id="pendulum-weight" x="770" y="420" width="60" height="80" rx="15" fill="#4cbc7c" />
+  </g>
+
+  <!-- Length Slider -->
+  <g id="length-slider">
+    <rect x="650" y="580" width="300" height="20" rx="10" fill="#ced8e2" />
+    <circle id="slider-knob" cx="760" cy="590" r="25" fill="#f28c28" class="draggable" />
+  </g>
+
+  <!-- Weight Selector -->
+  <g id="weight-selector" class="clickable">
+    <circle cx="400" cy="340" r="40" fill="none" stroke="#fbd99c" stroke-width="8" />
+    <rect x="387" y="310" width="26" height="45" rx="6" fill="#536b8c" />
+    <rect x="377" y="350" width="46" height="42" rx="6" fill="#536b8c" />
+    <rect x="366" y="390" width="68" height="48" rx="10" fill="#536b8c" />
+  </g>
+
+  <!-- Gravity Selector -->
+  <g id="gravity-selector" class="clickable">
+    <rect x="1110" y="310" width="120" height="180" rx="30" fill="#ffffff" />
+    <circle cx="1170" cy="390" r="50" fill="#2764af" />
+    <path d="M1155 375c10 15 20 10 30 5s-10-20-15-10c-5 10-10 5-15 5z" fill="#65d76f"/>
+    <path d="M1175 400c5 15 20 20 25 0s-20-20-25 0z" fill="#65d76f"/>
+    <polyline points="1170,460 1155,475 1185,475" fill="none" stroke="#7d90a4" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- Start Button -->
+  <g id="start-button" class="button clickable">
+    <rect x="600" y="680" width="280" height="100" rx="50" fill="#f28c28" />
+    <text x="740" y="742" font-size="48" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">START</text>
+  </g>
+
+  <!-- Reset Button -->
+  <g id="reset-button" class="button clickable">
+    <rect x="920" y="695" width="120" height="80" rx="40" fill="#ced8e2" />
+    <circle cx="980" cy="735" r="20" fill="none" stroke="#8395af" stroke-width="8" />
+  </g>
+
+  <!-- Result Display -->
+  <text id="result-display" x="800" y="520" font-size="40" fill="#4e637f" text-anchor="middle" visibility="hidden">T = 2.00s</text>
+</svg>
+
+<script>
+  const svg = document.querySelector("svg");
+  const pendulumLine = document.getElementById("pendulum-line");
+  const pendulumWeight = document.getElementById("pendulum-weight");
+  const sliderKnob = document.getElementById("slider-knob");
+  const resultDisplay = document.getElementById("result-display");
+  const startButton = document.getElementById("start-button");
+  const resetButton = document.getElementById("reset-button");
+  const weightSelector = document.getElementById("weight-selector");
+  const gravitySelector = document.getElementById("gravity-selector");
+
+  let dragging = false;
+  let offsetX = 0;
+  let sliderTrackStart = 650;
+  let sliderTrackEnd = 950;
+  let defaultSliderX = 760;
+  let animationId = null;
+  let tStart = null;
+  let swinging = false;
+
+  let length = 300;
+  let gravity = 9.8;
+  let mass = 1;
+
+  sliderKnob.addEventListener("pointerdown", (e) => {
+    dragging = true;
+    offsetX = e.clientX - parseFloat(sliderKnob.getAttribute("cx"));
+    sliderKnob.setPointerCapture(e.pointerId);
+  });
+
+  svg.addEventListener("pointermove", (e) => {
+    if (dragging) {
+      let newX = e.clientX - offsetX;
+      newX = Math.max(sliderTrackStart, Math.min(sliderTrackEnd, newX));
+      sliderKnob.setAttribute("cx", newX);
+      const newLength = ((newX - sliderTrackStart) / (sliderTrackEnd - sliderTrackStart)) * 300 + 100;
+      length = newLength;
+      let newY = 120 + newLength;
+      pendulumLine.setAttribute("y2", newY);
+      pendulumWeight.setAttribute("y", newY);
+    }
+  });
+
+  svg.addEventListener("pointerup", () => {
+    dragging = false;
+  });
+
+  weightSelector.addEventListener("click", () => {
+    mass = mass === 1 ? 3 : 1;
+    weightSelector.classList.toggle("selected");
+  });
+
+  gravitySelector.addEventListener("click", () => {
+    if (gravity === 9.8) gravity = 3.7;
+    else if (gravity === 3.7) gravity = 1.6;
+    else gravity = 9.8;
+  });
+
+  startButton.addEventListener("click", () => {
+    if (swinging) return;
+    swinging = true;
+    const L = length / 100;
+    const g = gravity;
+    const T = 2 * Math.PI * Math.sqrt(L / g);
+    resultDisplay.textContent = "T = " + T.toFixed(2) + "s";
+    resultDisplay.setAttribute("visibility", "visible");
+
+    let amplitude = 30;
+    const originX = 800;
+    const originY = 120 + length;
+    tStart = null;
+
+    function animate(t) {
+      if (!tStart) tStart = t;
+      let elapsed = (t - tStart) / 1000;
+      let angle = amplitude * Math.cos(Math.sqrt(g / (L)) * elapsed);
+      let rad = angle * Math.PI / 180;
+      let x = originX + Math.sin(rad) * length;
+      let y = 120 + Math.cos(rad) * length;
+      pendulumLine.setAttribute("x2", x);
+      pendulumLine.setAttribute("y2", y);
+      pendulumWeight.setAttribute("x", x - 30);
+      pendulumWeight.setAttribute("y", y);
+
+      amplitude *= 0.995;
+      if (Math.abs(amplitude) < 1) {
+        swinging = false;
+      } else {
+        animationId = requestAnimationFrame(animate);
+      }
+    }
+
+    animate();
+  });
+
+  resetButton.addEventListener("click", () => {
+    if (animationId) cancelAnimationFrame(animationId);
+    swinging = false;
+    length = 300;
+    gravity = 9.8;
+    mass = 1;
+    sliderKnob.setAttribute("cx", defaultSliderX);
+    pendulumLine.setAttribute("x2", 800);
+    pendulumLine.setAttribute("y2", 420);
+    pendulumWeight.setAttribute("x", 770);
+    pendulumWeight.setAttribute("y", 420);
+    resultDisplay.setAttribute("visibility", "hidden");
+    weightSelector.classList.remove("selected");
+  });
+</script>
+</body>
+</html>
