@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Friction Simulation</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #f6f2ed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    svg {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    .simulate-btn {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .simulate-btn:hover {
+      filter: brightness(0.95);
+    }
+  </style>
+</head>
+<body>
+  <svg viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid meet">
+    <!-- Background -->
+    <rect x="0" y="0" width="1080" height="1920" fill="#f6f2ed"/>
+
+    <!-- Hand Icon -->
+    <g id="hand-icon" transform="translate(64, 72)">
+      <circle cx="0" cy="0" r="72" fill="#ffffff" stroke="#f6f2ed" stroke-width="4"/>
+      <path d="M-10,-18 Q-12,-35 0,-35 Q10,-35 10,-20 Q18,-35 28,-30 Q36,-25 30,-12 Q42,-10 38,2 Q35,12 25,8 Q26,24 12,24 Q0,24 -2,12 L-8,-10" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+    </g>
+
+    <!-- Surface Sections -->
+    <g id="surface-group">
+      <!-- Sandpaper -->
+      <g id="sandpaper" transform="translate(90,220)">
+        <rect width="900" height="400" rx="30" ry="30" fill="#f9b33a"/>
+        <rect x="35" y="0" width="6" height="400" fill="#1a1a1a"/>
+        <g id="car1" class="car" transform="translate(90,150)">
+          <rect width="80" height="80" rx="12" ry="12" fill="#e0332e"/>
+        </g>
+      </g>
+
+      <!-- Cardboard -->
+      <g id="cardboard" transform="translate(90,660)">
+        <rect width="900" height="400" rx="30" ry="30" fill="#dbac6d"/>
+        <rect x="35" y="0" width="6" height="400" fill="#1a1a1a"/>
+        <g id="car2" class="car" transform="translate(90,150)">
+          <rect width="80" height="80" rx="12" ry="12" fill="#e0332e"/>
+        </g>
+      </g>
+
+      <!-- Plastic -->
+      <g id="plastic" transform="translate(90,1100)">
+        <rect width="900" height="400" rx="30" ry="30" fill="#499ddc"/>
+        <rect x="35" y="0" width="6" height="400" fill="#1a1a1a"/>
+        <g id="car3" class="car" transform="translate(90,150)">
+          <rect width="80" height="80" rx="12" ry="12" fill="#e0332e"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- Simulate Button -->
+    <g id="simulate" class="simulate-btn" transform="translate(540,1620)">
+      <rect x="-180" y="0" width="360" height="120" rx="60" ry="60" fill="#e0ddd9"/>
+      <text x="0" y="80" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" fill="#1a1a1a">SIMULATE</text>
+    </g>
+  </svg>
+
+  <script>
+    const friction = {
+      sandpaper: 0.3,
+      cardboard: 0.15,
+      plastic: 0.05
+    };
+
+    const speed = 5;
+    const carData = [
+      { id: 'car1', surface: 'sandpaper', groupY: 220 },
+      { id: 'car2', surface: 'cardboard', groupY: 660 },
+      { id: 'car3', surface: 'plastic', groupY: 1100 }
+    ];
+
+    const svg = document.querySelector('svg');
+    const simulateButton = document.getElementById('simulate');
+
+    let activeCar = null;
+    let offsetX = 0;
+    let originalX = 0;
+
+    function getTransformPos(transform) {
+      const match = /translate\(([^,]+),([^)]+)\)/.exec(transform);
+      if (match) {
+        return { x: parseFloat(match[1]), y: parseFloat(match[2]) };
+      }
+      return { x: 0, y: 0 };
+    }
+
+    function setTransform(el, x, y) {
+      el.setAttribute('transform', `translate(${x},${y})`);
+    }
+
+    function onPointerDown(e) {
+      if (!e.target.closest('.car')) return;
+      activeCar = e.target.closest('.car');
+      const transform = activeCar.getAttribute('transform');
+      const pos = getTransformPos(transform);
+      originalX = pos.x;
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX;
+      pt.y = e.clientY;
+      const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+      offsetX = svgP.x - pos.x;
+      svg.setPointerCapture(e.pointerId);
+    }
+
+    function onPointerMove(e) {
+      if (!activeCar) return;
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX;
+      pt.y = e.clientY;
+      const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+      let newX = svgP.x - offsetX;
+
+      const parentGroup = activeCar.closest('g'); // e.g., sandpaper
+      const parentX = parseFloat(parentGroup.getAttribute('transform').split(',')[0].split('(')[1]);
+      const maxRight = 900 - 120; // surface width - car width - padding
+      const clampedX = Math.max(90, Math.min(newX, maxRight));
+
+      setTransform(activeCar, clampedX, 150);
+    }
+
+    function onPointerUp(e) {
+      if (activeCar) activeCar = null;
+    }
+
+    function simulateRace() {
+      carData.forEach(car => {
+        const carG = document.getElementById(car.id);
+        const pos = getTransformPos(carG.getAttribute('transform'));
+        const distance = (speed / friction[car.surface]) * 10;
+        const newX = pos.x + distance;
+        setTimeout(() => {
+          carG.style.transition = 'transform 2s linear';
+          carG.setAttribute('transform', `translate(${newX},150)`);
+        }, 50);
+
+        setTimeout(() => {
+          carG.style.transition = '';
+        }, 2100);
+      });
+    }
+
+    function resetPositions() {
+      carData.forEach(car => {
+        const carG = document.getElementById(car.id);
+        carG.setAttribute('transform', `translate(90,150)`);
+      });
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown);
+    svg.addEventListener('pointermove', onPointerMove);
+    svg.addEventListener('pointerup', onPointerUp);
+    simulateButton.addEventListener('click', () => {
+      simulateRace();
+      setTimeout(resetPositions, 4000);
+    });
+  </script>
+</body>
+</html>
