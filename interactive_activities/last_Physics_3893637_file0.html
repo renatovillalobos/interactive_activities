@@ -1,0 +1,228 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  html,body{height:100%;margin:0;background:#fff4e8;}
+  svg{width:100%;height:100%;}
+  #knob.active{filter:brightness(1.2)}
+  #track.active{fill:#3a424c}
+  .no-select{user-select:none;-webkit-user-select:none;-ms-user-select:none}
+</style>
+</head>
+<body>
+<svg id="lab" viewBox="0 0 768 1152" class="no-select">
+  <rect x="0" y="0" width="768" height="1152" fill="#fff4e8"></rect>
+
+  <g id="spring">
+    <path id="springPath" fill="none" stroke="#aab2bb" stroke-width="14" stroke-linecap="round"></path>
+  </g>
+
+  <g id="mass" cursor="grab">
+    <circle id="massCircle" cx="384" cy="640" r="95" fill="#1e68ff"></circle>
+  </g>
+
+  <g id="arrows" opacity="0.85">
+    <path d="M 540 632 C 520 612 520 668 540 688" fill="none" stroke="#323a43" stroke-width="10" stroke-linecap="round"/>
+    <path d="M 540 688 l -12 -6 l 3 12 z" fill="#323a43"/>
+    <path d="M 540 632 l -9 11 l 13 -1 z" fill="#323a43"/>
+  </g>
+
+  <g id="slider" cursor="pointer">
+    <rect id="track" x="154" y="960" width="460" height="84" rx="42" fill="#2f3741"></rect>
+    <circle id="knob" cx="384" cy="1002" r="36" fill="#bfc3c9"></circle>
+  </g>
+</svg>
+
+<script>
+(function(){
+  const svg = document.getElementById('lab');
+  const massCircle = document.getElementById('massCircle');
+  const springPath = document.getElementById('springPath');
+  const slider = document.getElementById('slider');
+  const track = document.getElementById('track');
+  const knob = document.getElementById('knob');
+
+  const cx = 384;
+  const yTop = 90; // fixed anchor
+  const r = 95;
+
+  const trackX = parseFloat(track.getAttribute('x'));
+  const trackY = parseFloat(track.getAttribute('y'));
+  const trackW = parseFloat(track.getAttribute('width'));
+  const trackH = parseFloat(track.getAttribute('height'));
+  const knobR = parseFloat(knob.getAttribute('r'));
+  const knobMin = trackX + knobR + 4;
+  const knobMax = trackX + trackW - knobR - 4;
+
+  let y = 640;               // mass center
+  let v = 0;                 // velocity
+  let kMin = 40, kMax = 380; // spring constant range
+  let c = 6.0;               // damping
+  let m = 1.0;               // mass
+  let Fg = 1650;             // gravity-like constant
+  let baseLength = 230;      // rest spring length without gravity
+  let draggingMass = false;
+  let draggingSlider = false;
+  let lastY = y;
+
+  // initialize slider position
+  let k = (kMin + kMax)/2;
+  setKnobFromK(k);
+
+  function setKnobFromK(kk){
+    const t = (kk - kMin) / (kMax - kMin);
+    const x = knobMin + t * (knobMax - knobMin);
+    knob.setAttribute('cx', x);
+  }
+
+  function kFromKnob(){
+    const x = parseFloat(knob.getAttribute('cx'));
+    const t = (x - knobMin) / (knobMax - knobMin);
+    return kMin + t*(kMax - kMin);
+  }
+
+  function equilibriumY(){
+    return yTop + baseLength + Fg / k;
+  }
+
+  function clamp(val, min, max){ return Math.max(min, Math.min(max, val)); }
+
+  function drawSpring(){
+    const tailMin = 110; // straight segment target
+    const yTopLimit = yTop;
+    const yBottomTop = y - r; // top of mass
+    const coilHeight = Math.max(80, (yBottomTop - yTopLimit - tailMin));
+    const coilBottom = yTopLimit + coilHeight;
+    const turns = 8;
+    const amp = 38;
+    const dy = coilHeight / turns;
+
+    let d = `M ${cx} ${yTopLimit}`;
+    for(let i=0;i<turns;i++){
+      const midY = yTopLimit + dy*(i+0.5);
+      const endY = yTopLimit + dy*(i+1);
+      const dir = (i%2===0)? 1 : -1;
+      d += ` Q ${cx + dir*amp} ${midY} ${cx} ${endY}`;
+    }
+    d += ` L ${cx} ${yBottomTop}`;
+    springPath.setAttribute('d', d);
+  }
+
+  function updateMass(){
+    massCircle.setAttribute('cx', cx);
+    massCircle.setAttribute('cy', y);
+    drawSpring();
+  }
+
+  function pointerToSvgY(evt){
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX; pt.y = evt.clientY;
+    const mtx = svg.getScreenCTM().inverse();
+    const loc = pt.matrixTransform(mtx);
+    return loc.y;
+  }
+
+  function pointerToSvgX(evt){
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX; pt.y = evt.clientY;
+    const mtx = svg.getScreenCTM().inverse();
+    const loc = pt.matrixTransform(mtx);
+    return loc.x;
+  }
+
+  // Mass drag
+  massCircle.addEventListener('pointerdown', (e)=>{
+    draggingMass = true;
+    massCircle.setPointerCapture(e.pointerId);
+    massCircle.style.cursor = 'grabbing';
+    lastY = pointerToSvgY(e);
+  });
+
+  massCircle.addEventListener('pointermove', (e)=>{
+    if(!draggingMass) return;
+    const py = pointerToSvgY(e);
+    const dy = py - lastY;
+    lastY = py;
+    // move with pointer
+    const yMin = yTop + 220;
+    const yMax = 830;
+    y = clamp(y + dy, yMin, yMax);
+    v = dy * 20; // capture velocity for bounce
+    updateMass();
+  });
+
+  function endMassDrag(e){
+    if(!draggingMass) return;
+    draggingMass = false;
+    massCircle.releasePointerCapture(e.pointerId);
+    massCircle.style.cursor = 'grab';
+  }
+  massCircle.addEventListener('pointerup', endMassDrag);
+  massCircle.addEventListener('pointercancel', endMassDrag);
+  massCircle.addEventListener('lostpointercapture', ()=>{ draggingMass = false; });
+
+  // Slider drag
+  slider.addEventListener('pointerdown', (e)=>{
+    draggingSlider = true;
+    slider.setPointerCapture(e.pointerId);
+    track.classList.add('active');
+    knob.classList.add('active');
+    moveKnob(e);
+  });
+
+  slider.addEventListener('pointermove', (e)=>{
+    if(!draggingSlider) return;
+    moveKnob(e);
+  });
+
+  function moveKnob(e){
+    const px = pointerToSvgX(e);
+    const nx = clamp(px, knobMin, knobMax);
+    knob.setAttribute('cx', nx);
+    k = kFromKnob();
+  }
+
+  function endSliderDrag(e){
+    if(!draggingSlider) return;
+    draggingSlider = false;
+    slider.releasePointerCapture(e.pointerId);
+    track.classList.remove('active');
+    knob.classList.remove('active');
+  }
+  slider.addEventListener('pointerup', endSliderDrag);
+  slider.addEventListener('pointercancel', endSliderDrag);
+  slider.addEventListener('lostpointercapture', ()=>{ draggingSlider = false; track.classList.remove('active'); knob.classList.remove('active'); });
+
+  // Animation loop
+  let lastT = null;
+  function step(ts){
+    if(lastT===null) lastT = ts;
+    const dt = Math.min(0.05, (ts - lastT)/1000);
+    lastT = ts;
+
+    if(!draggingMass){
+      k = kFromKnob();
+      const yEq = equilibriumY();
+      const a = -(k/m)*(y - yEq) - c*v;
+      v += a*dt;
+      y += v*dt;
+
+      // bounds with soft bounce
+      const yMin = yTop + 220;
+      const yMax = 830;
+      if(y < yMin){ y = yMin; v = -v*0.35; }
+      if(y > yMax){ y = yMax; v = -v*0.35; }
+    }
+
+    updateMass();
+    requestAnimationFrame(step);
+  }
+
+  // Initial render
+  updateMass();
+  requestAnimationFrame(step);
+})();
+</script>
+</body>
+</html>
