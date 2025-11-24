@@ -1,0 +1,413 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  html, body { height:100%; margin:0; background:#000; }
+  body { display:flex; align-items:center; justify-content:center; }
+  svg { width:100vmin; height:100vmin; touch-action:none; }
+  text { font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 1000 1000">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#050816"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#050b18"/>
+      <stop offset="100%" stop-color="#0b1120"/>
+    </linearGradient>
+    <linearGradient id="trackGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0d1726"/>
+      <stop offset="100%" stop-color="#0f1b2d"/>
+    </linearGradient>
+    <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="10" stdDeviation="20" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+    <filter id="tinyShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+    <linearGradient id="pinkGlow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff4b9a"/>
+      <stop offset="100%" stop-color="#ff6fb3"/>
+    </linearGradient>
+    <linearGradient id="blueGlow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="1000" fill="url(#bgGrad)"/>
+
+  <g id="card" filter="url(#softShadow)">
+    <rect x="60" y="60" rx="22" ry="22" width="880" height="880" fill="url(#cardGrad)" stroke="rgba(148,163,184,0.25)" stroke-width="1"/>
+  </g>
+
+  <g id="header">
+    <rect x="92" y="92" rx="10" ry="10" width="144" height="28" fill="#0b1220" stroke="rgba(148,163,184,0.22)" stroke-width="1"/>
+    <text x="164" y="112" text-anchor="middle" fill="#9ca3af" font-size="12" letter-spacing="0.08em">MINI LAB</text>
+    <text x="92" y="160" fill="#f9fafb" font-size="32" font-weight="600">Gravity Speed Race</text>
+    <text x="92" y="194" fill="#9ca3af" font-size="15">Drag each cutout to set height. Press Release to compare fall times.</text>
+  </g>
+
+  <g id="arena">
+    <g id="laneGuides">
+      <rect x="120" y="220" width="760" height="600" rx="18" ry="18" fill="#0a1222" opacity="0.28" stroke="rgba(148,163,184,0.12)"/>
+    </g>
+
+    <g id="lanes">
+      <g id="zoneMoon" data-planet="moon">
+        <text x="260" y="235" text-anchor="middle" fill="#e5e7eb" font-size="18" font-weight="600">Moon</text>
+        <rect x="196" y="248" rx="12" ry="12" width="128" height="26" fill="#0f172a" stroke="rgba(148,163,184,0.25)"/>
+        <text x="260" y="267" text-anchor="middle" fill="#9ca3af" font-size="13">g = 1.62 m/s²</text>
+
+        <g id="trackMoon">
+          <rect x="216" y="260" width="88" height="520" rx="16" ry="16" fill="url(#trackGrad)" stroke="rgba(148,163,184,0.18)"/>
+          <g id="ticksMoon" stroke="rgba(148,163,184,0.25)" stroke-width="2">
+            <line x1="304" x2="324" y1="780" y2="780"/>
+            <line x1="304" x2="324" y1="680" y2="680"/>
+            <line x1="304" x2="324" y1="580" y2="580"/>
+            <line x1="304" x2="324" y1="480" y2="480"/>
+            <line x1="304" x2="324" y1="380" y2="380"/>
+            <line x1="304" x2="324" y1="280" y2="280"/>
+          </g>
+          <rect x="200" y="780" width="120" height="8" rx="4" ry="4" fill="#111827"/>
+        </g>
+
+        <g id="readoutMoon">
+          <rect x="180" y="820" rx="20" ry="20" width="160" height="46" fill="#0b1220" stroke="rgba(148,163,184,0.25)"/>
+          <text id="timeMoon" x="260" y="848" text-anchor="middle" fill="#f9fafb" font-size="18" font-weight="600">0.00 s</text>
+        </g>
+
+        <g id="heightMoon">
+          <rect x="332" y="350" rx="10" ry="10" width="96" height="30" fill="#0f172a" stroke="rgba(148,163,184,0.25)"/>
+          <text id="hTextMoon" x="380" y="370" text-anchor="middle" fill="#9ca3af" font-size="13">h: 0.0 m</text>
+        </g>
+      </g>
+
+      <g id="zoneEarth" data-planet="earth">
+        <text x="500" y="235" text-anchor="middle" fill="#e5e7eb" font-size="18" font-weight="600">Earth</text>
+        <rect x="436" y="248" rx="12" ry="12" width="128" height="26" fill="#0f172a" stroke="rgba(148,163,184,0.25)"/>
+        <text x="500" y="267" text-anchor="middle" fill="#9ca3af" font-size="13">g = 9.81 m/s²</text>
+
+        <g id="trackEarth">
+          <rect x="456" y="260" width="88" height="520" rx="16" ry="16" fill="url(#trackGrad)" stroke="rgba(148,163,184,0.18)"/>
+          <g id="ticksEarth" stroke="rgba(148,163,184,0.25)" stroke-width="2">
+            <line x1="544" x2="564" y1="780" y2="780"/>
+            <line x1="544" x2="564" y1="680" y2="680"/>
+            <line x1="544" x2="564" y1="580" y2="580"/>
+            <line x1="544" x2="564" y1="480" y2="480"/>
+            <line x1="544" x2="564" y1="380" y2="380"/>
+            <line x1="544" x2="564" y1="280" y2="280"/>
+          </g>
+          <rect x="440" y="780" width="120" height="8" rx="4" ry="4" fill="#111827"/>
+        </g>
+
+        <g id="readoutEarth">
+          <rect x="420" y="820" rx="20" ry="20" width="160" height="46" fill="#0b1220" stroke="rgba(148,163,184,0.25)"/>
+          <text id="timeEarth" x="500" y="848" text-anchor="middle" fill="#f9fafb" font-size="18" font-weight="600">0.00 s</text>
+        </g>
+
+        <g id="heightEarth">
+          <rect x="572" y="350" rx="10" ry="10" width="96" height="30" fill="#0f172a" stroke="rgba(148,163,184,0.25)"/>
+          <text id="hTextEarth" x="620" y="370" text-anchor="middle" fill="#9ca3af" font-size="13">h: 0.0 m</text>
+        </g>
+      </g>
+
+      <g id="zoneJupiter" data-planet="jupiter">
+        <text x="740" y="235" text-anchor="middle" fill="#e5e7eb" font-size="18" font-weight="600">Jupiter</text>
+        <rect x="676" y="248" rx="12" ry="12" width="128" height="26" fill="#0f172a" stroke="rgba(148,163,184,0.25)"/>
+        <text x="740" y="267" text-anchor="middle" fill="#9ca3af" font-size="13">g = 24.79 m/s²</text>
+
+        <g id="trackJupiter">
+          <rect x="696" y="260" width="88" height="520" rx="16" ry="16" fill="url(#trackGrad)" stroke="rgba(148,163,184,0.18)"/>
+          <g id="ticksJupiter" stroke="rgba(148,163,184,0.25)" stroke-width="2">
+            <line x1="784" x2="804" y1="780" y2="780"/>
+            <line x1="784" x2="804" y1="680" y2="680"/>
+            <line x1="784" x2="804" y1="580" y2="580"/>
+            <line x1="784" x2="804" y1="480" y2="480"/>
+            <line x1="784" x2="804" y1="380" y2="380"/>
+            <line x1="784" x2="804" y1="280" y2="280"/>
+          </g>
+          <rect x="680" y="780" width="120" height="8" rx="4" ry="4" fill="#111827"/>
+        </g>
+
+        <g id="readoutJupiter">
+          <rect x="660" y="820" rx="20" ry="20" width="160" height="46" fill="#0b1220" stroke="rgba(148,163,184,0.25)"/>
+          <text id="timeJupiter" x="740" y="848" text-anchor="middle" fill="#f9fafb" font-size="18" font-weight="600">0.00 s</text>
+        </g>
+
+        <g id="heightJupiter">
+          <rect x="812" y="350" rx="10" ry="10" width="96" height="30" fill="#0f172a" stroke="rgba(148,163,184,0.25)"/>
+          <text id="hTextJupiter" x="860" y="370" text-anchor="middle" fill="#9ca3af" font-size="13">h: 0.0 m</text>
+        </g>
+      </g>
+    </g>
+
+    <g id="controls">
+      <g id="btnRelease" cursor="pointer" filter="url(#tinyShadow)">
+        <rect x="692" y="108" rx="24" ry="24" width="208" height="52" fill="url(#pinkGlow)" stroke="#ff9ac6" stroke-opacity="0.4"/>
+        <text x="796" y="142" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="700">Release</text>
+      </g>
+      <g id="btnReset" cursor="pointer" filter="url(#tinyShadow)">
+        <rect x="564" y="108" rx="24" ry="24" width="112" height="52" fill="#0b1120" stroke="#ff4b9a" stroke-opacity="0.5"/>
+        <text x="620" y="142" text-anchor="middle" fill="#ff4b9a" font-size="16" font-weight="700">Reset</text>
+      </g>
+    </g>
+
+    <g id="dragMoon" class="draggable" data-planet="moon" cursor="grab">
+      <g id="paperMoon">
+        <circle cx="260" cy="360" r="16" fill="#f9fafb"/>
+        <path d="M246,382 q14,-10 28,0 v28 q0,8 -8,8 h-12 q-8,0 -8,-8 z" fill="#e5e7eb"/>
+        <rect x="254" y="418" width="12" height="38" rx="6" fill="#f3f4f6"/>
+        <path d="M255,456 l-18,22 a6,6 0 0 0 9,8 l16,-20" fill="none" stroke="#f9fafb" stroke-width="6" stroke-linecap="round"/>
+        <path d="M265,456 l18,22 a6,6 0 0 1 -9,8 l-16,-20" fill="none" stroke="#f9fafb" stroke-width="6" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <g id="dragEarth" class="draggable" data-planet="earth" cursor="grab">
+      <g id="paperEarth">
+        <circle cx="500" cy="360" r="16" fill="#f9fafb"/>
+        <path d="M486,382 q14,-10 28,0 v28 q0,8 -8,8 h-12 q-8,0 -8,-8 z" fill="#e5e7eb"/>
+        <rect x="494" y="418" width="12" height="38" rx="6" fill="#f3f4f6"/>
+        <path d="M495,456 l-18,22 a6,6 0 0 0 9,8 l16,-20" fill="none" stroke="#f9fafb" stroke-width="6" stroke-linecap="round"/>
+        <path d="M505,456 l18,22 a6,6 0 0 1 -9,8 l-16,-20" fill="none" stroke="#f9fafb" stroke-width="6" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <g id="dragJupiter" class="draggable" data-planet="jupiter" cursor="grab">
+      <g id="paperJupiter">
+        <circle cx="740" cy="360" r="16" fill="#f9fafb"/>
+        <path d="M726,382 q14,-10 28,0 v28 q0,8 -8,8 h-12 q-8,0 -8,-8 z" fill="#e5e7eb"/>
+        <rect x="734" y="418" width="12" height="38" rx="6" fill="#f3f4f6"/>
+        <path d="M735,456 l-18,22 a6,6 0 0 0 9,8 l16,-20" fill="none" stroke="#f9fafb" stroke-width="6" stroke-linecap="round"/>
+        <path d="M745,456 l18,22 a6,6 0 0 1 -9,8 l-16,-20" fill="none" stroke="#f9fafb" stroke-width="6" stroke-linecap="round"/>
+      </g>
+    </g>
+
+  </g>
+
+  <script>
+  (function(){
+    const scalePxPerMeter = 10;
+    const trackTop = 260;
+    const groundY = 780;
+    const trackHeight = 520;
+    const laneCenters = { moon:260, earth:500, jupiter:740 };
+    const gVals = { moon:1.62, earth:9.81, jupiter:24.79 };
+
+    const tokens = {
+      moon: { g: gVals.moon, group: document.getElementById('dragMoon'), x: laneCenters.moon, y: 360, vy:0, running:false, t0:0, y0:0, t:0, timeText:document.getElementById('timeMoon'), hText:document.getElementById('hTextMoon') },
+      earth:{ g: gVals.earth, group: document.getElementById('dragEarth'), x: laneCenters.earth, y: 360, vy:0, running:false, t0:0, y0:0, t:0, timeText:document.getElementById('timeEarth'), hText:document.getElementById('hTextEarth') },
+      jupiter:{ g: gVals.jupiter, group: document.getElementById('dragJupiter'), x: laneCenters.jupiter, y: 360, vy:0, running:false, t0:0, y0:0, t:0, timeText:document.getElementById('timeJupiter'), hText:document.getElementById('hTextJupiter') }
+    };
+
+    // Position token groups initially (translate so their internal shapes centered at lane)
+    function setTokenTransform(key) {
+      const t = tokens[key];
+      t.group.setAttribute('transform', `translate(${t.x-260 + (key==='earth'?240:(key==='jupiter'?480:0))}, ${t.y-360})`);
+      // Group positioning hack above ensures head circle centers match x,y; but we can directly set children cx, etc.
+    }
+
+    // Instead, move by setting internal shapes positions relative to center
+    function moveToken(key, y) {
+      const cx = laneCenters[key];
+      y = Math.max(trackTop+20, Math.min(groundY-20, y));
+      tokens[key].y = y;
+
+      const group = tokens[key].group;
+      const head = group.querySelector('circle');
+      const torso = group.querySelector('path:nth-of-type(1)');
+      const legRect = group.querySelector('rect');
+      const leg1 = group.querySelector('path:nth-of-type(2)');
+      const leg2 = group.querySelector('path:nth-of-type(3)');
+
+      // compute offsets relative to head center as in initial drawing (head at (cx,360))
+      const dy = y - 360;
+      const dx = cx - parseFloat(head.getAttribute('cx'));
+
+      head.setAttribute('cx', cx);
+      head.setAttribute('cy', 360 + dy);
+
+      function shiftPath(p, dx, dy){
+        const d = p.getAttribute('d').replace(/-?\d+(\.\d+)?/g, function(n, dec, idx){
+          return n;
+        });
+      }
+
+      // Rebuild shapes positions based on dy
+      // Torso path: M(cx-14,382+dy) q14,-10 28,0 v28 q0,8 -8,8 h-12 q-8,0 -8,-8 z
+      torso.setAttribute('d', `M${cx-14},${382+dy} q14,-10 28,0 v28 q0,8 -8,8 h-12 q-8,0 -8,-8 z`);
+      legRect.setAttribute('x', cx-6);
+      legRect.setAttribute('y', 418+dy);
+      // Legs
+      leg1.setAttribute('d', `M${cx-5},${456+dy} l-18,22 a6,6 0 0 0 9,8 l16,-20`);
+      leg2.setAttribute('d', `M${cx+5},${456+dy} l18,22 a6,6 0 0 1 -9,8 l-16,-20`);
+
+      updateHeightText(key);
+    }
+
+    function updateHeightText(key){
+      const t = tokens[key];
+      const hMeters = ((groundY - t.y) / scalePxPerMeter);
+      t.hText.textContent = `h: ${hMeters.toFixed(1)} m`;
+    }
+
+    // Initialize positions
+    moveToken('moon', 360);
+    moveToken('earth', 360);
+    moveToken('jupiter', 360);
+
+    // Drag handling
+    let dragging = null;
+    let pointerId = null;
+    function onPointerDown(e){
+      const group = e.currentTarget;
+      const key = group.id.replace('drag','').toLowerCase();
+      if(tokens[key].running) return;
+      dragging = key;
+      pointerId = e.pointerId;
+      group.setPointerCapture(pointerId);
+      group.style.cursor = 'grabbing';
+      e.preventDefault();
+    }
+    function onPointerMove(e){
+      if(!dragging || e.pointerId !== pointerId) return;
+      const key = dragging;
+      const y = e.clientY * (1000 / Math.min(window.innerWidth, window.innerHeight)); // approximate because SVG scaled to vmin
+      // We need mapping from client to SVG; compute bbox transform via getBoundingClientRect
+      const svg = document.querySelector('svg');
+      const rect = svg.getBoundingClientRect();
+      const scale = 1000 / Math.min(rect.width, rect.height);
+      const svgY = (e.clientY - rect.top - (rect.height - Math.min(rect.width, rect.height))/2) * scale;
+      moveToken(key, svgY);
+    }
+    function onPointerUp(e){
+      if(!dragging) return;
+      const key = dragging;
+      tokens[key].group.releasePointerCapture(pointerId);
+      tokens[key].group.style.cursor = 'grab';
+      dragging = null;
+      pointerId = null;
+    }
+
+    Object.values(tokens).forEach(t=>{
+      t.group.addEventListener('pointerdown', onPointerDown);
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+    });
+
+    // Buttons interactivity
+    const btnRelease = document.getElementById('btnRelease');
+    const btnReset = document.getElementById('btnReset');
+
+    function pulse(el, scaleTo){
+      el.setAttribute('transform', `scale(${scaleTo}) translate(${(1-scaleTo)*-500}, ${(1-scaleTo)*-500})`);
+      setTimeout(()=>{ el.removeAttribute('transform'); }, 120);
+    }
+
+    btnRelease.addEventListener('pointerdown', ()=> pulse(btnRelease, 0.98));
+    btnReset.addEventListener('pointerdown', ()=> pulse(btnReset, 0.98));
+
+    function formatTime(t){ return t.toFixed(2)+' s'; }
+
+    let rafId = null;
+    function anyRunning(){ return Object.values(tokens).some(t=>t.running); }
+
+    function startRelease(){
+      Object.keys(tokens).forEach(key=>{
+        const t = tokens[key];
+        if(t.running) return;
+        const h = (groundY - t.y) / scalePxPerMeter; // meters
+        if(h <= 0.01){
+          t.timeText.textContent = '0.00 s';
+          return;
+        }
+        t.running = true;
+        t.t = 0;
+        t.y0 = t.y;
+        t.t0 = performance.now();
+        t.timeText.setAttribute('fill', '#3b82f6');
+      });
+      if(anyRunning()) loop();
+    }
+
+    function loop(now){
+      if(!anyRunning()){
+        cancelAnimationFrame(rafId);
+        rafId = null;
+        return;
+      }
+      const timeNow = performance.now();
+      Object.keys(tokens).forEach(key=>{
+        const t = tokens[key];
+        if(!t.running) return;
+        const dt = (timeNow - t.t0)/1000;
+        const h0 = (groundY - t.y0)/scalePxPerMeter;
+        const g = t.g;
+        let s = 0.5 * g * dt * dt; // meters fallen
+        if(s >= h0){
+          // impact
+          const tf = Math.sqrt((2*h0)/g);
+          t.timeText.textContent = formatTime(tf);
+          moveToken(key, groundY-20);
+          t.running = false;
+          t.timeText.setAttribute('fill', '#22c55e');
+          // soft bounce micro animation
+          const group = t.group;
+          const originalY = t.y;
+          let bounce = 0;
+          const bounceAnim = ()=>{
+            bounce += 1;
+            const offset = (bounce<6)? - (6-bounce) : 0;
+            moveToken(key, originalY + offset);
+            if(bounce<6) requestAnimationFrame(bounceAnim);
+          };
+          requestAnimationFrame(bounceAnim);
+        } else {
+          const sPx = s * scalePxPerMeter;
+          moveToken(key, t.y0 + sPx);
+          t.timeText.textContent = formatTime(dt);
+        }
+      });
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function resetAll(){
+      ['moon','earth','jupiter'].forEach((key,i)=>{
+        const y = 360 + i*30; // stagger slightly
+        moveToken(key, y);
+        tokens[key].running = false;
+        tokens[key].timeText.textContent = '0.00 s';
+        tokens[key].timeText.setAttribute('fill', '#f9fafb');
+      });
+    }
+
+    btnRelease.addEventListener('click', startRelease);
+    btnReset.addEventListener('click', resetAll);
+
+    // Initial height text
+    Object.keys(tokens).forEach(updateHeightText);
+
+    // Hover effects for buttons
+    function addButtonHover(g, fillSelector){
+      const rect = g.querySelector('rect');
+      g.addEventListener('pointerenter', ()=>{
+        rect.setAttribute('filter','url(#tinyShadow)');
+        rect.setAttribute('opacity','0.96');
+      });
+      g.addEventListener('pointerleave', ()=>{
+        rect.removeAttribute('filter');
+        rect.setAttribute('opacity','1');
+      });
+    }
+    addButtonHover(btnRelease);
+    addButtonHover(btnReset);
+  })();
+  </script>
+</svg>
+</body>
+</html>
