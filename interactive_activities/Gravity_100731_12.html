@@ -1,0 +1,452 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  html,body{height:100%;margin:0}
+  body{display:grid;place-items:center;background:#000;font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif}
+  svg{width:100vmin;height:100vmin;touch-action:none}
+  .micro{font-size:12px;letter-spacing:.08em;fill:#e5e7eb;opacity:.9}
+  .title{font-size:28px;font-weight:600;fill:#f9fafb}
+  .caption{font-size:15px;fill:#9ca3af}
+  .label{font-size:12px;letter-spacing:.06em;fill:#e5e7eb}
+  .laneLabel{font-size:13px;letter-spacing:.08em;font-weight:600;fill:#e5e7eb}
+  .btnText{font-size:16px;font-weight:600;fill:#ffffff}
+  .softStroke{stroke:rgba(148,163,184,0.25);stroke-width:1}
+  .inactive{opacity:.55}
+  .hint{font-size:13px;fill:#9ca3af}
+  .noselect{user-select:none}
+  .hoverable{transition:transform .12s ease, opacity .15s ease}
+  .hoverable:active{transform:translateY(1px)}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#050816"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#050b18"/>
+      <stop offset="100%" stop-color="#0b1120"/>
+    </linearGradient>
+    <linearGradient id="btnGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff4b9a"/>
+      <stop offset="100%" stop-color="#e11d8b"/>
+    </linearGradient>
+    <linearGradient id="btnGradSecondary" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+    <filter id="glowPink" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowBlue" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="gb"/>
+      <feMerge>
+        <feMergeNode in="gb"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="900" fill="url(#bgGrad)"/>
+
+  <g id="card">
+    <rect x="60" y="60" rx="24" ry="24" width="780" height="780" fill="url(#cardGrad)" class="softStroke" filter="url(#softShadow)"/>
+    <g transform="translate(90,100)">
+      <text class="micro noselect">PLANET HOPPER</text>
+      <text class="title noselect" y="36">Gravity Drop Lab</text>
+      <text class="caption noselect" y="62">Drag each astronaut into the matching planet lane. Press RELEASE to see how gravity changes falling speed.</text>
+    </g>
+
+    <g id="lanes" class="noselect">
+      <g id="lane_moon" transform="translate(90,210)" class="hoverable">
+        <rect id="dz_moon" width="220" height="540" rx="18" fill="#0b1220" class="softStroke"/>
+        <g transform="translate(14,14)">
+          <rect width="88" height="26" rx="13" fill="#0f172a" class="softStroke"/>
+          <circle cx="13" cy="13" r="7" fill="#4f46e5"/>
+          <text x="28" y="18" class="laneLabel">MOON</text>
+        </g>
+        <rect x="16" y="498" width="188" height="12" rx="6" fill="#0f172a" class="softStroke"/>
+      </g>
+
+      <g id="lane_mars" transform="translate(340,210)" class="hoverable">
+        <rect id="dz_mars" width="220" height="540" rx="18" fill="#0b1220" class="softStroke"/>
+        <g transform="translate(14,14)">
+          <rect width="86" height="26" rx="13" fill="#0f172a" class="softStroke"/>
+          <circle cx="13" cy="13" r="7" fill="#3b82f6"/>
+          <text x="28" y="18" class="laneLabel">MARS</text>
+        </g>
+        <rect x="16" y="498" width="188" height="12" rx="6" fill="#0f172a" class="softStroke"/>
+      </g>
+
+      <g id="lane_earth" transform="translate(590,210)" class="hoverable">
+        <rect id="dz_earth" width="220" height="540" rx="18" fill="#0b1220" class="softStroke"/>
+        <g transform="translate(14,14)">
+          <rect width="92" height="26" rx="13" fill="#0f172a" class="softStroke"/>
+          <circle cx="13" cy="13" r="7" fill="#22c55e"/>
+          <text x="28" y="18" class="laneLabel">EARTH</text>
+        </g>
+        <rect x="16" y="498" width="188" height="12" rx="6" fill="#0f172a" class="softStroke"/>
+      </g>
+    </g>
+
+    <g id="controls" transform="translate(90,820)">
+      <g id="btnRelease" class="hoverable" cursor="pointer" transform="translate(0,0)">
+        <rect x="0" y="-6" rx="22" ry="22" width="170" height="44" fill="url(#btnGrad)" filter="url(#glowPink)"/>
+        <text class="btnText" x="85" y="22" text-anchor="middle">RELEASE</text>
+      </g>
+      <g id="btnReset" class="hoverable" cursor="pointer" transform="translate(190,0)">
+        <rect x="0" y="-6" rx="22" ry="22" width="140" height="44" fill="url(#btnGradSecondary)" class="softStroke"/>
+        <text class="btnText" x="70" y="22" text-anchor="middle" fill="#e5e7eb">RESET</text>
+      </g>
+      <text id="helperMsg" class="hint" x="350" y="20">Place each astronaut in its planet lane to enable RELEASE.</text>
+    </g>
+
+    <g id="astronauts">
+      <g id="astro_moon" class="draggable hoverable" data-planet="moon" transform="translate(170,280)" cursor="grab">
+        <g id="shape_moon">
+          <circle cx="30" cy="18" r="14" fill="#0b1120" stroke="#e5e7eb" stroke-width="2"/>
+          <path d="M22,18 a8,8 0 0 1 16,0" fill="none" stroke="#94a3b8" stroke-width="2" opacity=".8"/>
+          <rect x="18" y="34" width="24" height="28" rx="6" fill="#111827" stroke="#e5e7eb" stroke-width="1.5"/>
+          <rect x="8" y="36" width="8" height="20" rx="4" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="44" y="36" width="8" height="20" rx="4" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="20" y="62" width="8" height="20" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="32" y="62" width="8" height="20" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="16" y="40" width="28" height="6" rx="3" fill="#1f2937"/>
+          <rect x="8" y="90" width="44" height="18" rx="9" fill="#0f172a" class="softStroke"/>
+          <text x="30" y="103" text-anchor="middle" class="label">MOON</text>
+        </g>
+      </g>
+
+      <g id="astro_mars" class="draggable hoverable" data-planet="mars" transform="translate(420,280)" cursor="grab">
+        <g id="shape_mars">
+          <circle cx="30" cy="18" r="14" fill="#0b1120" stroke="#e5e7eb" stroke-width="2"/>
+          <path d="M22,18 a8,8 0 0 1 16,0" fill="none" stroke="#94a3b8" stroke-width="2" opacity=".8"/>
+          <rect x="18" y="34" width="24" height="28" rx="6" fill="#111827" stroke="#e5e7eb" stroke-width="1.5"/>
+          <rect x="8" y="36" width="8" height="20" rx="4" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="44" y="36" width="8" height="20" rx="4" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="20" y="62" width="8" height="20" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="32" y="62" width="8" height="20" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="16" y="40" width="28" height="6" rx="3" fill="#1f2937"/>
+          <rect x="8" y="90" width="44" height="18" rx="9" fill="#0f172a" class="softStroke"/>
+          <text x="30" y="103" text-anchor="middle" class="label">MARS</text>
+        </g>
+      </g>
+
+      <g id="astro_earth" class="draggable hoverable" data-planet="earth" transform="translate(670,280)" cursor="grab">
+        <g id="shape_earth">
+          <circle cx="30" cy="18" r="14" fill="#0b1120" stroke="#e5e7eb" stroke-width="2"/>
+          <path d="M22,18 a8,8 0 0 1 16,0" fill="none" stroke="#94a3b8" stroke-width="2" opacity=".8"/>
+          <rect x="18" y="34" width="24" height="28" rx="6" fill="#111827" stroke="#e5e7eb" stroke-width="1.5"/>
+          <rect x="8" y="36" width="8" height="20" rx="4" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="44" y="36" width="8" height="20" rx="4" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="20" y="62" width="8" height="20" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="32" y="62" width="8" height="20" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1"/>
+          <rect x="16" y="40" width="28" height="6" rx="3" fill="#1f2937"/>
+          <rect x="8" y="90" width="44" height="18" rx="9" fill="#0f172a" class="softStroke"/>
+          <text x="30" y="103" text-anchor="middle" class="label">EARTH</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+<script>
+(function(){
+  const svg = document.querySelector('svg');
+
+  const planets = ['moon','mars','earth'];
+  const gVal = {earth:9.8, mars:3.71, moon:1.62};
+  const laneIds = {moon:'dz_moon', mars:'dz_mars', earth:'dz_earth'};
+  const astroIds = {moon:'astro_moon', mars:'astro_mars', earth:'astro_earth'};
+  const laneGroups = {moon:document.getElementById('lane_moon'), mars:document.getElementById('lane_mars'), earth:document.getElementById('lane_earth')};
+  const lanes = {moon:document.getElementById('dz_moon'), mars:document.getElementById('dz_mars'), earth:document.getElementById('dz_earth')};
+  const btnRelease = document.getElementById('btnRelease');
+  const btnReset = document.getElementById('btnReset');
+  const helper = document.getElementById('helperMsg');
+
+  const startPos = {
+    moon:{x:170,y:280},
+    mars:{x:420,y:280},
+    earth:{x:670,y:280}
+  };
+  const state = {
+    locked:{moon:false,mars:false,earth:false},
+    animating:false,
+    dragging:false
+  };
+
+  const astro = {
+    moon:document.getElementById('astro_moon'),
+    mars:document.getElementById('astro_mars'),
+    earth:document.getElementById('astro_earth')
+  };
+
+  function setTransform(el, x, y){
+    el.setAttribute('transform', `translate(${x},${y})`);
+  }
+
+  function getTransform(el){
+    const t = el.getAttribute('transform')||'translate(0,0)';
+    const m = /translate\(([-\d.]+),\s*([-\d.]+)\)/.exec(t);
+    return {x: m?parseFloat(m[1]):0, y: m?parseFloat(m[2]):0};
+  }
+
+  function svgPoint(evt){
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX; pt.y = evt.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  function bbox(el){
+    return el.getBBox();
+  }
+
+  function laneBounds(key){
+    const b = bbox(lanes[key]);
+    const g = laneGroups[key].transform.baseVal.consolidate();
+    const offsetX = g ? g.matrix.e : 0;
+    const offsetY = g ? g.matrix.f : 0;
+    return {x:b.x+offsetX, y:b.y+offsetY, width:b.width, height:b.height};
+  }
+
+  function isInside(bounds, x, y){
+    return x>=bounds.x && x<=bounds.x+bounds.width && y>=bounds.y && y<=bounds.y+bounds.height;
+  }
+
+  function allLocked(){
+    return planets.every(p => state.locked[p]);
+  }
+
+  function setReleaseEnabled(enabled){
+    if(enabled){
+      btnRelease.classList.remove('inactive');
+      btnRelease.style.filter = 'url(#glowPink)';
+      helper.textContent = 'Ready! Press RELEASE to drop all astronauts.';
+      helper.setAttribute('fill','#e5e7eb');
+    }else{
+      btnRelease.classList.add('inactive');
+      btnRelease.style.filter = '';
+      helper.textContent = 'Place each astronaut in its planet lane to enable RELEASE.';
+      helper.setAttribute('fill','#9ca3af');
+    }
+  }
+
+  function highlightLane(key, on){
+    const rect = lanes[key];
+    rect.setAttribute('stroke', on ? 'rgba(59,130,246,0.8)' : 'rgba(148,163,184,0.25)');
+    rect.setAttribute('filter', on ? 'url(#glowBlue)' : '');
+  }
+
+  function clearHighlights(){
+    planets.forEach(p=>highlightLane(p,false));
+  }
+
+  function setupDrag(key){
+    const g = astro[key];
+    let offset = {x:0,y:0};
+    function onDown(evt){
+      if(state.animating) return;
+      state.dragging = true;
+      g.style.cursor = 'grabbing';
+      const pt = svgPoint(evt);
+      const t = getTransform(g);
+      offset.x = pt.x - t.x;
+      offset.y = pt.y - t.y;
+      g.style.transition = 'transform .05s';
+      g.setAttribute('opacity','1');
+      svg.setPointerCapture(evt.pointerId || 1);
+      evt.preventDefault();
+    }
+    function onMove(evt){
+      if(!state.dragging || state.animating) return;
+      const pt = svgPoint(evt);
+      const nx = pt.x - offset.x;
+      const ny = pt.y - offset.y;
+      setTransform(g, nx, ny);
+      const center = {x:nx+30, y:ny+55};
+      clearHighlights();
+      planets.forEach(p=>{
+        const b = laneBounds(p);
+        if(isInside(b, center.x, center.y)) highlightLane(p, true);
+      });
+    }
+    function onUp(evt){
+      if(!state.dragging) return;
+      state.dragging = false;
+      g.style.cursor = 'grab';
+      clearHighlights();
+      const t = getTransform(g);
+      const center = {x: t.x+30, y: t.y+55};
+      let over = null;
+      planets.forEach(p=>{
+        const b = laneBounds(p);
+        if(isInside(b, center.x, center.y)) over = p;
+      });
+      if(over === key){
+        const snap = startPos[key]; // top of its lane
+        animateSnap(g, t.x, t.y, snap.x, snap.y, 160);
+        state.locked[key] = true;
+      }else{
+        const snap = startPos[key];
+        animateSnap(g, t.x, t.y, snap.x, snap.y, 200);
+        state.locked[key] = false;
+      }
+      setReleaseEnabled(allLocked());
+      evt.preventDefault();
+    }
+    g.addEventListener('pointerdown', onDown);
+    svg.addEventListener('pointermove', onMove);
+    svg.addEventListener('pointerup', onUp);
+    svg.addEventListener('pointercancel', onUp);
+  }
+
+  function animateSnap(el, x0, y0, x1, y1, dur){
+    const t0 = performance.now();
+    function easeOut(t){return 1 - Math.pow(1 - t, 3);}
+    function step(t){
+      const p = Math.min(1, (t - t0) / dur);
+      const e = easeOut(p);
+      const x = x0 + (x1 - x0)*e;
+      const y = y0 + (y1 - y0)*e;
+      setTransform(el, x, y);
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function floorYFor(key){
+    const laneB = laneBounds(key);
+    const g = astro[key];
+    const ab = g.getBBox(); // size of astronaut content
+    const margin = 18;
+    const y = laneB.y + laneB.height - ab.height - margin - 12; // keep above base bar
+    return y;
+  }
+
+  function dropAstronaut(key, done){
+    const g = astro[key];
+    const t = getTransform(g);
+    const yFloor = floorYFor(key);
+    const baseTimeEarth = 1400;
+    const duration = baseTimeEarth * Math.sqrt(gVal.earth / gVal[key]);
+    const start = performance.now();
+
+    function easeInQuad(p){return p*p;}
+
+    function animate(now){
+      const p = Math.min(1, (now - start) / duration);
+      const e = easeInQuad(p);
+      const y = t.y + (yFloor - t.y)*e;
+      setTransform(g, t.x, y);
+      if(p<1){
+        requestAnimationFrame(animate);
+      }else{
+        bounce(g, t.x, yFloor, done);
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+
+  function bounce(g, x, y0, done){
+    const amp = 10;
+    const dur = 240;
+    const start = performance.now();
+    function easeOutBack(p){const c1=1.70158;const c3=c1+1;return 1 + c3*Math.pow(p-1,3) + c1*Math.pow(p-1,2);}
+    function step(now){
+      const p = Math.min(1, (now - start)/dur);
+      const e = easeOutBack(p);
+      const y = y0 - amp*(1 - e);
+      setTransform(g, x, y);
+      if(p<1) requestAnimationFrame(step);
+      else {
+        setTransform(g, x, y0);
+        if(done) done();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function releaseAll(){
+    if(state.animating) return;
+    if(!allLocked()){
+      helper.textContent = 'Place all astronauts first.';
+      helper.setAttribute('fill','#fca5a5');
+      flashHelper();
+      return;
+    }
+    state.animating = true;
+    setReleaseEnabled(false);
+    helper.textContent = 'Dropping... Observe different speeds!';
+    helper.setAttribute('fill','#93c5fd');
+
+    planets.forEach(k=>{
+      astro[k].style.pointerEvents = 'none';
+    });
+
+    let finished = 0;
+    planets.forEach(k=>{
+      dropAstronaut(k, ()=>{
+        finished++;
+        if(finished===planets.length){
+          state.animating = false;
+          helper.textContent = 'All landed. Reset to try again.';
+          helper.setAttribute('fill','#22c55e');
+        }
+      });
+    });
+  }
+
+  function resetAll(){
+    if(state.animating) return;
+    planets.forEach(k=>{
+      const p = startPos[k];
+      setTransform(astro[k], p.x, p.y);
+      astro[k].style.pointerEvents = 'auto';
+      state.locked[k] = (true); // since we snap to top of correct lane
+    });
+    setReleaseEnabled(allLocked());
+    helper.textContent = 'Ready! Press RELEASE to drop all astronauts.';
+    helper.setAttribute('fill','#e5e7eb');
+  }
+
+  function flashHelper(){
+    const original = helper.getAttribute('fill');
+    let count = 0;
+    function step(){
+      helper.setAttribute('opacity', count%2? '1':'0.6');
+      count++;
+      if(count<6) setTimeout(step, 80);
+      else helper.setAttribute('opacity','1');
+    }
+    step();
+    setTimeout(()=>helper.setAttribute('fill', original), 800);
+  }
+
+  // Initialize
+  planets.forEach(k=>setupDrag(k));
+  // Lock initially because astronauts start in correct lanes
+  planets.forEach(k=>state.locked[k] = true);
+  setReleaseEnabled(true);
+
+  btnRelease.addEventListener('click', releaseAll);
+  btnReset.addEventListener('click', ()=>{
+    state.animating = false;
+    clearHighlights();
+    resetAll();
+  });
+
+})();
+</script>
+</svg>
+</body>
+</html>
