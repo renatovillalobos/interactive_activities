@@ -1,0 +1,322 @@
+<html>
+<head>
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:#f4f4f4;
+}
+body {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+svg {
+  width:min(100vw,100vh);
+  height:min(100vw,100vh);
+}
+text {
+  font-family: Arial, sans-serif;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 800">
+  <rect x="0" y="0" width="800" height="800" fill="#ffffff"/>
+
+  <rect x="40" y="40" width="720" height="80" rx="8" ry="8" fill="#f2f4f8" stroke="#d0d4dc" stroke-width="1"/>
+  <text x="60" y="80" font-size="28" fill="#222222" font-weight="bold">Planetary Drop Race</text>
+  <text x="60" y="108" font-size="16" fill="#555555">Compare how fast an object falls on different planets.</text>
+
+  <rect x="40" y="140" width="720" height="620" rx="10" ry="10" fill="#f9fafc" stroke="#d0d4dc" stroke-width="1"/>
+
+  <rect x="60" y="160" width="680" height="50" rx="6" ry="6" fill="#ffffff" stroke="#d0d4dc" stroke-width="1"/>
+  <text x="80" y="190" font-size="18" fill="#333333" font-weight="bold">Select a planet and drop the object to see how fast it falls.</text>
+
+  <rect x="60" y="230" width="400" height="300" rx="8" ry="8" fill="#ffffff" stroke="#d0d4dc" stroke-width="1"/>
+
+  <rect x="80" y="250" width="360" height="40" rx="4" ry="4" fill="#f2f4f8"/>
+  <text x="100" y="276" font-size="18" fill="#333333" font-weight="bold">Planets</text>
+
+  <g id="planetEarth" cursor="pointer">
+    <rect x="80" y="310" width="170" height="80" rx="6" ry="6" fill="#e8f3ff" stroke="#4c8fe8" stroke-width="2"/>
+    <circle cx="115" cy="350" r="20" fill="#4c8fe8"/>
+    <path d="M105 345 Q115 335 125 345 T145 345 Q135 360 120 360 Q110 360 105 345" fill="#7fd38a"/>
+    <text x="150" y="338" font-size="16" fill="#1f3a60" font-weight="bold">Earth</text>
+    <text x="150" y="358" font-size="14" fill="#35527a">g = 9.8 m/s²</text>
+  </g>
+
+  <g id="planetMoon" cursor="pointer">
+    <rect x="270" y="310" width="170" height="80" rx="6" ry="6" fill="#ffffff" stroke="#d0d4dc" stroke-width="1"/>
+    <circle cx="305" cy="350" r="20" fill="#d9dde7"/>
+    <circle cx="298" cy="343" r="4" fill="#b4b9c7"/>
+    <circle cx="314" cy="356" r="3" fill="#b4b9c7"/>
+    <text x="340" y="338" font-size="16" fill="#333333" font-weight="bold">Moon</text>
+    <text x="340" y="358" font-size="14" fill="#666666">g = 1.6 m/s²</text>
+  </g>
+
+  <g id="planetJupiter" cursor="pointer">
+    <rect x="80" y="410" width="170" height="80" rx="6" ry="6" fill="#ffffff" stroke="#d0d4dc" stroke-width="1"/>
+    <circle cx="115" cy="450" r="20" fill="#f2c48a"/>
+    <path d="M95 442 H135" stroke="#e69b5a" stroke-width="4"/>
+    <path d="M97 457 H133" stroke="#e69b5a" stroke-width="3"/>
+    <text x="150" y="438" font-size="16" fill="#333333" font-weight="bold">Jupiter</text>
+    <text x="150" y="458" font-size="14" fill="#666666">g = 24.8 m/s²</text>
+  </g>
+
+  <g id="planetMars" cursor="pointer">
+    <rect x="270" y="410" width="170" height="80" rx="6" ry="6" fill="#ffffff" stroke="#d0d4dc" stroke-width="1"/>
+    <circle cx="305" cy="450" r="20" fill="#e47a5f"/>
+    <path d="M298 438 Q305 432 312 438" stroke="#c6543a" stroke-width="2" fill="none"/>
+    <path d="M295 458 Q305 452 315 458" stroke="#c6543a" stroke-width="2" fill="none"/>
+    <text x="340" y="438" font-size="16" fill="#333333" font-weight="bold">Mars</text>
+    <text x="340" y="458" font-size="14" fill="#666666">g = 3.7 m/s²</text>
+  </g>
+
+  <rect x="480" y="230" width="260" height="300" rx="8" ry="8" fill="#ffffff" stroke="#d0d4dc" stroke-width="1"/>
+
+  <rect x="500" y="250" width="220" height="40" rx="4" ry="4" fill="#f2f4f8"/>
+  <text x="520" y="276" font-size="18" fill="#333333" font-weight="bold">Drop Zone</text>
+
+  <rect id="dropZone" x="500" y="310" width="220" height="180" rx="8" ry="8" fill="#f9fafc" stroke="#c4cad6" stroke-width="2" stroke-dasharray="6,4"/>
+
+  <text x="610" y="345" font-size="14" text-anchor="middle" fill="#888888">Drag the object</text>
+  <text x="610" y="365" font-size="14" text-anchor="middle" fill="#888888">here and press</text>
+  <text x="610" y="385" font-size="14" text-anchor="middle" fill="#888888">Drop</text>
+
+  <g id="groundLine">
+    <rect x="510" y="470" width="200" height="6" rx="3" ry="3" fill="#d0d4dc"/>
+  </g>
+
+  <g id="objectStart">
+    <circle cx="140" cy="560" r="22" fill="#ffb74d" stroke="#e6892e" stroke-width="2"/>
+    <path d="M130 552 L150 552 L145 570 L135 570 Z" fill="#ffffff"/>
+    <text x="120" y="604" font-size="16" fill="#333333">Object</text>
+  </g>
+
+  <g id="draggableObject" cursor="pointer">
+    <circle id="objCircle" cx="140" cy="560" r="22" fill="#ffb74d" stroke="#e6892e" stroke-width="2"/>
+    <path id="objPattern" d="M130 552 L150 552 L145 570 L135 570 Z" fill="#ffffff"/>
+  </g>
+
+  <rect x="230" y="530" width="180" height="70" rx="8" ry="8" fill="#ffffff" stroke="#d0d4dc" stroke-width="1"/>
+  <text x="245" y="555" font-size="14" fill="#555555">Selected planet:</text>
+  <text id="selectedPlanetLabel" x="245" y="580" font-size="18" fill="#222222" font-weight="bold">None</text>
+
+  <rect x="440" y="530" width="140" height="70" rx="8" ry="8" fill="#ffffff" stroke="#d0d4dc" stroke-width="1"/>
+  <text x="455" y="555" font-size="14" fill="#555555">Drop time</text>
+  <text id="timeLabel" x="455" y="583" font-size="22" fill="#222222" font-weight="bold">--.-- s</text>
+
+  <g id="startButton" cursor="pointer">
+    <rect x="610" y="530" width="110" height="40" rx="20" ry="20" fill="#4c8fe8"/>
+    <text x="665" y="556" font-size="16" fill="#ffffff" text-anchor="middle" font-weight="bold">Drop</text>
+  </g>
+
+  <g id="resetButton" cursor="pointer">
+    <rect x="610" y="580" width="110" height="30" rx="15" ry="15" fill="#ffffff" stroke="#4c8fe8" stroke-width="1"/>
+    <text x="665" y="600" font-size="14" fill="#4c8fe8" text-anchor="middle" font-weight="bold">Reset</text>
+  </g>
+
+  <rect x="60" y="640" width="680" height="100" rx="8" ry="8" fill="#ffffff" stroke="#d0d4dc" stroke-width="1"/>
+  <text x="80" y="670" font-size="16" fill="#333333" font-weight="bold">Instructions</text>
+  <text x="80" y="694" font-size="14" fill="#555555">1. Click a planet to select it.</text>
+  <text x="80" y="714" font-size="14" fill="#555555">2. Drag the object into the Drop Zone.</text>
+  <text x="80" y="734" font-size="14" fill="#555555">3. Press Drop to see how long it takes to fall on that planet.</text>
+
+<script>
+var svg = document.querySelector('svg');
+var pt = svg.createSVGPoint();
+
+var planets = {
+  planetEarth: {name: 'Earth', g: 9.8},
+  planetMoon: {name: 'Moon', g: 1.6},
+  planetJupiter: {name: 'Jupiter', g: 24.8},
+  planetMars: {name: 'Mars', g: 3.7}
+};
+
+var selectedPlanetId = null;
+var selectedPlanetData = null;
+
+var planetGroups = ['planetEarth','planetMoon','planetJupiter','planetMars'];
+
+planetGroups.forEach(function(id){
+  var g = document.getElementById(id);
+  g.addEventListener('click', function(){
+    planetGroups.forEach(function(pid){
+      var pg = document.getElementById(pid);
+      var rect = pg.querySelector('rect');
+      if(pid === id){
+        rect.setAttribute('fill','#e8f3ff');
+        rect.setAttribute('stroke','#4c8fe8');
+        rect.setAttribute('stroke-width','2');
+      } else {
+        rect.setAttribute('fill','#ffffff');
+        rect.setAttribute('stroke','#d0d4dc');
+        rect.setAttribute('stroke-width','1');
+      }
+    });
+    selectedPlanetId = id;
+    selectedPlanetData = planets[id];
+    document.getElementById('selectedPlanetLabel').textContent = selectedPlanetData.name;
+  });
+});
+
+var dragObj = document.getElementById('draggableObject');
+var objCircle = document.getElementById('objCircle');
+var objPattern = document.getElementById('objPattern');
+
+var startPos = {x: 140, y: 560};
+var currentPos = {x: 140, y: 560};
+var isDragging = false;
+var dragOffset = {x:0, y:0};
+var isFalling = false;
+
+function svgPoint(clientX, clientY){
+  pt.x = clientX;
+  pt.y = clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+function moveObjectTo(x,y){
+  objCircle.setAttribute('cx',x);
+  objCircle.setAttribute('cy',y);
+  var dx = x - 140;
+  var dy = y - 560;
+  objPattern.setAttribute('transform','translate('+dx+','+dy+')');
+  currentPos.x = x;
+  currentPos.y = y;
+}
+
+dragObj.addEventListener('pointerdown', function(e){
+  if(isFalling) return;
+  isDragging = true;
+  dragObj.setPointerCapture(e.pointerId);
+  var p = svgPoint(e.clientX, e.clientY);
+  dragOffset.x = p.x - currentPos.x;
+  dragOffset.y = p.y - currentPos.y;
+  dragObj.style.transition = 'none';
+  dragObj.style.opacity = '0.9';
+  dragObj.style.transform = 'scale(1.05)';
+});
+svg.addEventListener('pointermove', function(e){
+  if(!isDragging || isFalling) return;
+  var p = svgPoint(e.clientX, e.clientY);
+  var nx = p.x - dragOffset.x;
+  var ny = p.y - dragOffset.y;
+  moveObjectTo(nx, ny);
+});
+svg.addEventListener('pointerup', function(e){
+  if(!isDragging) return;
+  isDragging = false;
+  dragObj.releasePointerCapture(e.pointerId);
+  dragObj.style.opacity = '1';
+  dragObj.style.transform = 'scale(1)';
+});
+
+var dropZone = document.getElementById('dropZone');
+var dz = {
+  x: parseFloat(dropZone.getAttribute('x')),
+  y: parseFloat(dropZone.getAttribute('y')),
+  w: parseFloat(dropZone.getAttribute('width')),
+  h: parseFloat(dropZone.getAttribute('height'))
+};
+
+function isInDropZone(){
+  var x = currentPos.x;
+  var y = currentPos.y;
+  return x > dz.x && x < dz.x + dz.w && y > dz.y && y < dz.y + dz.h;
+}
+
+var startButton = document.getElementById('startButton');
+var resetButton = document.getElementById('resetButton');
+var timeLabel = document.getElementById('timeLabel');
+
+var animationFrame = null;
+var fallStartTime = null;
+var fallDuration = 0;
+var fallStartY = dz.y + 20;
+var groundY = 470;
+
+function computeFallTime(g){
+  var h = groundY - fallStartY;
+  var t = Math.sqrt((2*h)/g) / 60;
+  return t;
+}
+
+function startFall(){
+  if(!selectedPlanetData) return;
+  if(!isInDropZone()) return;
+  if(isFalling) return;
+
+  var g = selectedPlanetData.g;
+  fallDuration = computeFallTime(g);
+  fallStartTime = null;
+  isFalling = true;
+
+  movetoStartOfFall();
+
+  dropZone.setAttribute('stroke','#4c8fe8');
+  dropZone.style.opacity = '1';
+
+  function step(timestamp){
+    if(!fallStartTime) fallStartTime = timestamp;
+    var elapsed = (timestamp - fallStartTime)/1000;
+    var t = Math.min(elapsed / fallDuration, 1);
+    var ease = t<0.5 ? 2*t*t : -1+(4-2*t)*t;
+    var y = fallStartY + (groundY - fallStartY) * ease;
+    moveObjectTo(currentPos.x, y);
+    timeLabel.textContent = (fallDuration).toFixed(2) + ' s';
+
+    if(t < 1){
+      animationFrame = requestAnimationFrame(step);
+    } else {
+      isFalling = false;
+      dropZone.setAttribute('stroke','#c4cad6');
+    }
+  }
+  animationFrame = requestAnimationFrame(step);
+}
+
+function movetoStartOfFall(){
+  var xCenter = dz.x + dz.w/2;
+  moveObjectTo(xCenter, fallStartY);
+}
+
+startButton.addEventListener('pointerdown', function(){
+  startButton.querySelector('rect').setAttribute('fill','#3b76d1');
+});
+startButton.addEventListener('pointerup', function(){
+  startButton.querySelector('rect').setAttribute('fill','#4c8fe8');
+  startFall();
+});
+startButton.addEventListener('pointerleave', function(){
+  startButton.querySelector('rect').setAttribute('fill','#4c8fe8');
+});
+
+function resetAll(){
+  if(animationFrame) cancelAnimationFrame(animationFrame);
+  isFalling = false;
+  isDragging = false;
+  moveObjectTo(startPos.x, startPos.y);
+  timeLabel.textContent = '--.-- s';
+  dropZone.setAttribute('stroke','#c4cad6');
+}
+
+resetButton.addEventListener('pointerdown', function(){
+  resetButton.querySelector('rect').setAttribute('fill','#e8f3ff');
+});
+resetButton.addEventListener('pointerup', function(){
+  resetButton.querySelector('rect').setAttribute('fill','#ffffff');
+  resetAll();
+});
+resetButton.addEventListener('pointerleave', function(){
+  resetButton.querySelector('rect').setAttribute('fill','#ffffff');
+});
+
+moveObjectTo(startPos.x, startPos.y);
+</script>
+</svg>
+</body>
+</html>
