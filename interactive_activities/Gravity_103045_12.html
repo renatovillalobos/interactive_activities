@@ -1,0 +1,437 @@
+<html>
+<head>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: radial-gradient(1200px 1200px at 70% 20%, #050816 0%, #020617 60%);
+    display: grid;
+    place-items: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  }
+  svg {
+    width: min(92vmin, 980px);
+    height: min(92vmin, 980px);
+    touch-action: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .noselect { user-select: none; pointer-events: none; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 1000 1000">
+  <defs>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#071128"/>
+      <stop offset="100%" stop-color="#0b1120"/>
+    </linearGradient>
+    <linearGradient id="panelGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1226"/>
+      <stop offset="100%" stop-color="#0a1222"/>
+    </linearGradient>
+    <linearGradient id="fallGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f1a34"/>
+      <stop offset="100%" stop-color="#0b162a"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="btnGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff5fb0"/>
+      <stop offset="100%" stop-color="#ff2e88"/>
+    </linearGradient>
+    <linearGradient id="btnGradHover" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff76bb"/>
+      <stop offset="100%" stop-color="#ff4599"/>
+    </linearGradient>
+    <linearGradient id="blueGlow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4f46e5" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.7"/>
+    </linearGradient>
+    <linearGradient id="earthGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1f9cf0"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <linearGradient id="marsGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff7a59"/>
+      <stop offset="100%" stop-color="#f43f5e"/>
+    </linearGradient>
+    <linearGradient id="moonGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#9aa4b2"/>
+      <stop offset="100%" stop-color="#6b7280"/>
+    </linearGradient>
+    <clipPath id="clipCard">
+      <rect x="40" y="40" width="920" height="920" rx="24" ry="24"/>
+    </clipPath>
+  </defs>
+
+  <rect x="40" y="40" width="920" height="920" rx="24" ry="24" fill="url(#cardGrad)" stroke="rgba(148,163,184,0.25)" stroke-width="1" filter="url(#cardShadow)"/>
+
+  <g id="header" transform="translate(72,96)">
+    <text x="0" y="0" font-size="30" fill="#f9fafb" font-weight="700">Gravity Drop Challenge</text>
+    <text x="0" y="34" font-size="14" fill="#9ca3af">Drag a planet to the START line, then press DROP to see how fast it falls.</text>
+  </g>
+
+  <g id="layout">
+    <g id="trayPanel" transform="translate(72,200)">
+      <rect x="0" y="0" width="420" height="640" rx="20" fill="url(#panelGrad)" stroke="rgba(148,163,184,0.20)" stroke-width="1"/>
+      <text x="24" y="40" fill="#9ca3af" font-size="12" font-weight="700" letter-spacing="0.08em">PLANETS</text>
+      <text x="24" y="70" fill="#e5e7eb" font-size="16">Pick one and drag it to the start line.</text>
+      <rect x="20" y="96" width="380" height="520" rx="16" fill="#0b1326" stroke="rgba(148,163,184,0.15)"/>
+    </g>
+
+    <g id="dropZone" transform="translate(508,200)">
+      <rect x="0" y="0" width="420" height="640" rx="20" fill="url(#panelGrad)" stroke="rgba(148,163,184,0.20)" stroke-width="1"/>
+      <text x="24" y="40" fill="#9ca3af" font-size="12" font-weight="700" letter-spacing="0.08em">DROP ZONE</text>
+      <text x="24" y="70" fill="#e5e7eb" font-size="16">Place planets on the START line.</text>
+
+      <g id="fallArea" transform="translate(20,96)">
+        <rect x="0" y="0" width="380" height="480" rx="16" fill="url(#fallGrad)" stroke="rgba(148,163,184,0.15)"/>
+        <g id="startLine">
+          <path d="M0,36 H380" stroke="url(#blueGlow)" stroke-dasharray="6,8" stroke-width="2" opacity="0.9"/>
+          <text x="8" y="26" fill="#a5b4fc" font-size="12" font-weight="700" letter-spacing="0.08em">START</text>
+        </g>
+        <g id="groundLine">
+          <path d="M0,460 H380" stroke="#334155" stroke-width="3"/>
+          <text x="8" y="448" fill="#9ca3af" font-size="12" font-weight="700" letter-spacing="0.08em">GROUND</text>
+        </g>
+      </g>
+
+      <g id="controls" transform="translate(20,596)">
+        <g id="btnReset" cursor="pointer">
+          <rect x="0" y="0" width="120" height="44" rx="22" fill="#0b1326" stroke="#64748b" stroke-opacity="0.5" stroke-width="1"/>
+          <text x="60" y="28" text-anchor="middle" fill="#e5e7eb" font-size="14" font-weight="600">Reset</text>
+        </g>
+        <g id="btnDrop" transform="translate(260,0)" cursor="pointer" filter="url(#softGlow)">
+          <rect id="btnDropBg" x="0" y="0" width="120" height="44" rx="22" fill="url(#btnGrad)"/>
+          <text x="60" y="28" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">DROP</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <g id="tokens" transform="translate(0,0)">
+    <g id="token-earth" class="draggable" data-planet="earth" data-state="tray" transform="translate(160,360)" cursor="grab">
+      <circle cx="0" cy="0" r="36" fill="url(#earthGrad)" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+      <circle cx="0" cy="0" r="40" fill="none" stroke="#22c55e" stroke-opacity="0" stroke-width="2"/>
+      <text x="0" y="5" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">EARTH</text>
+    </g>
+    <g id="token-mars" class="draggable" data-planet="mars" data-state="tray" transform="translate(300,360)" cursor="grab">
+      <circle cx="0" cy="0" r="36" fill="url(#marsGrad)" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+      <circle cx="0" cy="0" r="40" fill="none" stroke="#22c55e" stroke-opacity="0" stroke-width="2"/>
+      <text x="0" y="5" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">MARS</text>
+    </g>
+    <g id="token-moon" class="draggable" data-planet="moon" data-state="tray" transform="translate(240,460)" cursor="grab">
+      <circle cx="0" cy="0" r="36" fill="url(#moonGrad)" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+      <circle cx="0" cy="0" r="40" fill="none" stroke="#22c55e" stroke-opacity="0" stroke-width="2"/>
+      <text x="0" y="5" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">MOON</text>
+    </g>
+  </g>
+
+  <g id="helperText" class="noselect">
+    <text x="92" y="770" fill="#9ca3af" font-size="12">Tip: Place one or more planets on the START line, then press DROP.</text>
+  </g>
+</svg>
+
+<script>
+(function() {
+  const svg = document.querySelector('svg');
+
+  const dropZone = {
+    x: 508 + 20,
+    y: 200 + 96,
+    w: 380,
+    h: 480
+  };
+  const startY = dropZone.y + 36;
+  const groundY = dropZone.y + dropZone.h - 20;
+
+  const r = 36;
+
+  const tokens = [
+    document.getElementById('token-earth'),
+    document.getElementById('token-mars'),
+    document.getElementById('token-moon')
+  ];
+
+  const btnDrop = document.getElementById('btnDrop');
+  const btnDropBg = document.getElementById('btnDropBg');
+  const btnReset = document.getElementById('btnReset');
+
+  const gValues = { earth: 9.81, mars: 3.71, moon: 1.62 };
+  const accelScale = 51; // px/s^2 per m/s^2
+
+  const state = {
+    draggingId: null,
+    dragOffset: {x:0,y:0},
+    pointerId: null,
+    animating: false,
+    lastTs: 0
+  };
+
+  const readyGlowOpacity = 0.9;
+
+  tokens.forEach(g => {
+    g.dataset.x = getTranslate(g).x;
+    g.dataset.y = getTranslate(g).y;
+    g.dataset.vy = 0;
+    g.style.transition = 'transform 120ms ease';
+    g.addEventListener('pointerdown', onPointerDown);
+  });
+
+  function onPointerDown(e) {
+    const g = e.currentTarget;
+    const s = g.dataset.state;
+    if (s === 'falling') return;
+    if (s === 'landed') return;
+
+    const pt = clientToSvg(e.clientX, e.clientY);
+    const pos = getTranslate(g);
+    state.draggingId = g.id;
+    state.pointerId = e.pointerId;
+    g.setPointerCapture(e.pointerId);
+    g.style.transition = 'none';
+    g.setAttribute('cursor','grabbing');
+    g.parentNode.appendChild(g);
+
+    state.dragOffset.x = pt.x - pos.x;
+    state.dragOffset.y = pt.y - pos.y;
+
+    // scale up slightly
+    scaleToken(g, 1.06);
+    e.preventDefault();
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+  }
+
+  function onPointerMove(e) {
+    if (!state.draggingId) return;
+    const g = document.getElementById(state.draggingId);
+    if (e.pointerId !== state.pointerId) return;
+    const pt = clientToSvg(e.clientX, e.clientY);
+    const nx = pt.x - state.dragOffset.x;
+    const ny = pt.y - state.dragOffset.y;
+
+    setTranslate(g, nx, ny, false);
+  }
+
+  function onPointerUp(e) {
+    if (!state.draggingId || e.pointerId !== state.pointerId) return;
+    const g = document.getElementById(state.draggingId);
+    g.releasePointerCapture(e.pointerId);
+    g.setAttribute('cursor','grab');
+    g.style.transition = 'transform 160ms ease';
+    scaleToken(g, 1.0);
+
+    const pos = getTranslate(g);
+    // Check if inside drop zone horizontally and near start line vertically
+    const cx = pos.x;
+    const cy = pos.y;
+
+    const inX = (cx >= dropZone.x + r) && (cx <= dropZone.x + dropZone.w - r);
+    const nearStart = (cy >= startY - 50) && (cy <= startY + 50);
+
+    if (inX && nearStart) {
+      const clampedX = clamp(cx, dropZone.x + r + 4, dropZone.x + dropZone.w - r - 4);
+      const targetY = startY;
+      setTranslate(g, clampedX, targetY, true);
+      g.dataset.state = 'ready';
+      g.dataset.vy = 0;
+      setReadyGlow(g, true);
+    } else {
+      // return to tray position defaults
+      returnToTray(g);
+    }
+
+    state.draggingId = null;
+    state.pointerId = null;
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+  }
+
+  function returnToTray(g) {
+    setReadyGlow(g, false);
+    g.dataset.state = 'tray';
+    const id = g.id;
+    let target = {x:0, y:0};
+    if (id === 'token-earth') target = {x:160, y:360};
+    if (id === 'token-mars') target = {x:300, y:360};
+    if (id === 'token-moon') target = {x:240, y:460};
+    setTranslate(g, target.x, target.y, true);
+    g.dataset.vy = 0;
+  }
+
+  function setReadyGlow(g, on) {
+    const ring = g.querySelector('circle:nth-child(2)');
+    ring.setAttribute('stroke-opacity', on ? readyGlowOpacity : 0);
+  }
+
+  function scaleToken(g, s) {
+    const pos = getTranslate(g);
+    g.setAttribute('transform', `translate(${pos.x},${pos.y}) scale(${s})`);
+  }
+
+  function setTranslate(g, x, y, save) {
+    // If currently scaled, preserve scale
+    const tf = g.getAttribute('transform') || '';
+    const scaleMatch = tf.match(/scale\(([^)]+)\)/);
+    const s = scaleMatch ? parseFloat(scaleMatch[1]) : 1;
+    g.setAttribute('transform', `translate(${x},${y}) scale(${s})`);
+    if (save) {
+      g.dataset.x = x;
+      g.dataset.y = y;
+    }
+  }
+
+  function getTranslate(g) {
+    const tf = g.getAttribute('transform') || '';
+    const m = tf.match(/translate\(([^,]+),([^)]+)\)/);
+    if (m) return {x: parseFloat(m[1]), y: parseFloat(m[2])};
+    return {x: 0, y: 0};
+    }
+
+  function clientToSvg(cx, cy) {
+    const pt = svg.createSVGPoint();
+    pt.x = cx; pt.y = cy;
+    const res = pt.matrixTransform(svg.getScreenCTM().inverse());
+    return {x: res.x, y: res.y};
+  }
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  // Buttons interactivity
+  btnDrop.addEventListener('pointerenter', () => btnDropBg.setAttribute('fill', 'url(#btnGradHover)'));
+  btnDrop.addEventListener('pointerleave', () => btnDropBg.setAttribute('fill', 'url(#btnGrad)'));
+  btnDrop.addEventListener('pointerdown', () => {
+    btnDrop.setAttribute('transform', 'translate(260,2)');
+    startDrop();
+  });
+  btnDrop.addEventListener('pointerup', () => {
+    btnDrop.setAttribute('transform', 'translate(260,0)');
+  });
+
+  btnReset.addEventListener('pointerdown', () => resetAll());
+
+  function startDrop() {
+    let anyReady = false;
+    tokens.forEach(g => {
+      if (g.dataset.state === 'ready') {
+        anyReady = true;
+        g.dataset.state = 'falling';
+        g.dataset.vy = 0;
+        // ensure no glow
+        setReadyGlow(g, false);
+      }
+    });
+
+    if (!anyReady) {
+      // brief start line shimmer
+      shimmerStartLine();
+      return;
+    }
+
+    if (!state.animating) {
+      state.animating = true;
+      state.lastTs = performance.now();
+      requestAnimationFrame(tick);
+    }
+  }
+
+  function shimmerStartLine() {
+    const startLine = document.querySelector('#startLine path');
+    let t = 0;
+    const dur = 500;
+    const orig = startLine.getAttribute('stroke-dasharray');
+    const anim = (ts0 => {
+      return function step(ts){
+        t = ts - ts0;
+        const alpha = 0.9 + 0.4 * Math.sin((t / 500) * Math.PI * 2);
+        startLine.setAttribute('opacity', String(alpha));
+        if (t < dur) requestAnimationFrame(step);
+        else startLine.setAttribute('opacity', '0.9');
+      }
+    })(performance.now());
+    requestAnimationFrame(anim);
+  }
+
+  function tick(ts) {
+    const dt = Math.min(32, ts - state.lastTs) / 1000; // seconds
+    state.lastTs = ts;
+
+    let stillFalling = false;
+
+    tokens.forEach(g => {
+      if (g.dataset.state === 'falling') {
+        const planet = g.dataset.planet;
+        const a = accelScale * gValues[planet];
+        let vy = parseFloat(g.dataset.vy) || 0;
+        let pos = getTranslate(g);
+        vy += a * dt;
+        let ny = pos.y + vy * dt;
+
+        // stop at ground
+        if (ny + r >= groundY) {
+          ny = groundY - r;
+          landToken(g);
+        } else {
+          stillFalling = true;
+          g.dataset.vy = vy;
+          setTranslate(g, pos.x, ny, true);
+        }
+      }
+    });
+
+    if (stillFalling) {
+      requestAnimationFrame(tick);
+    } else {
+      state.animating = false;
+    }
+  }
+
+  function landToken(g) {
+    g.dataset.state = 'landed';
+    g.dataset.vy = 0;
+
+    // micro pop + green ring
+    const ring = g.querySelector('circle:nth-child(2)');
+    ring.setAttribute('stroke', '#22c55e');
+    ring.setAttribute('stroke-opacity', '0.0');
+    // pop
+    popToken(g, ring);
+  }
+
+  function popToken(g, ring) {
+    const pos = getTranslate(g);
+    g.style.transition = 'transform 120ms ease';
+    g.setAttribute('transform', `translate(${pos.x},${pos.y}) scale(1.06)`);
+    ring.setAttribute('stroke-opacity', '0.85');
+    setTimeout(() => {
+      g.setAttribute('transform', `translate(${pos.x},${pos.y}) scale(1.0)`);
+      setTimeout(() => {
+        ring.setAttribute('stroke-opacity', '0.25');
+      }, 160);
+    }, 120);
+  }
+
+  function resetAll() {
+    tokens.forEach(g => {
+      g.dataset.state = 'tray';
+      g.dataset.vy = 0;
+      setReadyGlow(g, false);
+      returnToTray(g);
+    });
+    state.animating = false;
+  }
+
+})();
+</script>
+</body>
+</html>
