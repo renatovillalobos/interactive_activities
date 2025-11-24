@@ -1,0 +1,397 @@
+<html>
+<head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at top, #020617 0%, #050816 45%, #020617 100%);
+  height: 100%;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+svg {
+  width: min(95vmin, 800px);
+  height: min(95vmin, 800px);
+  touch-action: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 800">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="50%" stop-color="#050816"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#050b18"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="accentPink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff4b9a"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="planet1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="planet2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="planet3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="planet4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="800" height="800" fill="url(#bgGrad)"/>
+
+  <g id="mainCard">
+    <rect x="60" y="60" width="680" height="680" rx="28" fill="url(#cardGrad)" stroke="rgba(148,163,184,0.35)" stroke-width="1.5"/>
+  </g>
+
+  <g id="header">
+    <rect x="84" y="82" width="130" height="26" rx="13" fill="rgba(15,23,42,0.9)" stroke="rgba(148,163,184,0.4)" stroke-width="1"/>
+    <text x="98" y="100" fill="#9ca3af" font-size="11" letter-spacing="2" font-weight="600">MINI LAB</text>
+
+    <text x="84" y="142" fill="#f9fafb" font-size="26" font-weight="600">Planetary Speed Comparison</text>
+    <text x="84" y="172" fill="#9ca3af" font-size="14">Drag the object to a planet to compare free-fall speeds.</text>
+  </g>
+
+  <g id="infoPanel">
+    <rect x="84" y="204" width="290" height="130" rx="18" fill="#020617" opacity="0.9" stroke="rgba(148,163,184,0.25)" stroke-width="1"/>
+    <text x="104" y="230" fill="#9ca3af" font-size="11" letter-spacing="2" font-weight="600">CURRENT PLANET</text>
+    <text id="planetNameText" x="104" y="258" fill="#e5e7eb" font-size="20" font-weight="600">None</text>
+
+    <text x="104" y="285" fill="#9ca3af" font-size="13">Acceleration due to gravity:</text>
+    <text id="gValueText" x="104" y="308" fill="#e5e7eb" font-size="18" font-weight="600">—</text>
+    <text x="210" y="308" fill="#9ca3af" font-size="14">m/s²</text>
+
+    <rect x="104" y="322" width="190" height="6" rx="3" fill="#020617" stroke="rgba(148,163,184,0.35)" stroke-width="1"/>
+    <rect id="speedBar" x="104" y="322" width="0" height="6" rx="3" fill="url(#accentPink)"/>
+  </g>
+
+  <g id="controlPanel">
+    <rect x="410" y="204" width="254" height="130" rx="18" fill="#020617" opacity="0.9" stroke="rgba(148,163,184,0.25)" stroke-width="1"/>
+    <text x="430" y="230" fill="#9ca3af" font-size="11" letter-spacing="2" font-weight="600">TRY IT</text>
+    <text x="430" y="255" fill="#e5e7eb" font-size="14">1. Drag the object onto a planet.</text>
+    <text x="430" y="275" fill="#e5e7eb" font-size="14">2. Release to see how fast it falls.</text>
+
+    <g id="resetButton" cursor="pointer">
+      <rect x="430" y="294" width="120" height="36" rx="18" fill="none" stroke="rgba(148,163,184,0.5)" stroke-width="1.5"/>
+      <text x="450" y="317" fill="#e5e7eb" font-size="14" font-weight="500">Reset position</text>
+    </g>
+  </g>
+
+  <g id="planetRow">
+    <rect x="84" y="356" width="580" height="330" rx="22" fill="#020617" opacity="0.9" stroke="rgba(148,163,184,0.3)" stroke-width="1.5"/>
+
+    <g id="planetEarth" class="planet" data-name="Earth" data-g="9.8" data-speed="0.65">
+      <circle cx="168" cy="452" r="56" fill="url(#planet1)" stroke="#a5b4fc" stroke-width="2"/>
+      <path d="M130 450 Q150 430 170 438 T210 448 Q190 470 160 470 T130 450Z" fill="rgba(15,23,42,0.85)"/>
+      <text x="168" y="524" fill="#e5e7eb" font-size="16" text-anchor="middle" font-weight="600">Earth</text>
+      <text x="168" y="546" fill="#9ca3af" font-size="12" text-anchor="middle">g = 9.8 m/s²</text>
+    </g>
+
+    <g id="planetMoon" class="planet" data-name="Moon" data-g="1.6" data-speed="0.2">
+      <circle cx="312" cy="452" r="50" fill="url(#planet2)" stroke="#bbf7d0" stroke-width="2"/>
+      <circle cx="295" cy="438" r="6" fill="rgba(15,23,42,0.7)"/>
+      <circle cx="325" cy="462" r="8" fill="rgba(15,23,42,0.8)"/>
+      <circle cx="305" cy="470" r="4" fill="rgba(15,23,42,0.8)"/>
+      <text x="312" y="524" fill="#e5e7eb" font-size="16" text-anchor="middle" font-weight="600">Moon</text>
+      <text x="312" y="546" fill="#9ca3af" font-size="12" text-anchor="middle">g = 1.6 m/s²</text>
+    </g>
+
+    <g id="planetMars" class="planet" data-name="Mars" data-g="3.7" data-speed="0.4">
+      <circle cx="456" cy="452" r="52" fill="url(#planet3)" stroke="#fed7aa" stroke-width="2"/>
+      <path d="M414 448 Q440 430 456 432 T498 448 Q478 466 454 468 T414 448Z" fill="rgba(15,23,42,0.5)"/>
+      <text x="456" y="524" fill="#e5e7eb" font-size="16" text-anchor="middle" font-weight="600">Mars</text>
+      <text x="456" y="546" fill="#9ca3af" font-size="12" text-anchor="middle">g = 3.7 m/s²</text>
+    </g>
+
+    <g id="planetJupiter" class="planet" data-name="Jupiter" data-g="24.8" data-speed="1.0">
+      <circle cx="600" cy="452" r="62" fill="url(#planet4)" stroke="#bae6fd" stroke-width="2"/>
+      <path d="M548 440 Q576 430 600 432 T652 440 Q626 454 600 456 T548 440Z" fill="rgba(15,23,42,0.5)"/>
+      <path d="M548 466 Q576 458 600 460 T652 466 Q626 478 600 480 T548 466Z" fill="rgba(15,23,42,0.4)"/>
+      <text x="600" y="524" fill="#e5e7eb" font-size="16" text-anchor="middle" font-weight="600">Jupiter</text>
+      <text x="600" y="546" fill="#9ca3af" font-size="12" text-anchor="middle">g = 24.8 m/s²</text>
+    </g>
+
+    <g id="dropHint">
+      <text x="374" y="604" fill="#64748b" font-size="13" text-anchor="middle">Drag the object onto a planet's surface</text>
+    </g>
+  </g>
+
+  <g id="draggableObject" cursor="pointer">
+    <circle id="objectShadow" cx="210" cy="640" r="18" fill="rgba(15,23,42,0.8)" opacity="0.4"/>
+    <circle id="objectBody" cx="210" cy="630" r="18" fill="url(#accentPink)" stroke="#fecaca" stroke-width="1.5"/>
+    <path d="M202 624 L218 624 L210 638 Z" fill="#f9fafb" opacity="0.9"/>
+  </g>
+
+  <g id="speedLabel">
+    <rect id="speedChip" x="338" y="618" width="188" height="32" rx="16" fill="rgba(15,23,42,0.9)" stroke="rgba(148,163,184,0.4)" stroke-width="1"/>
+    <text x="352" y="638" fill="#9ca3af" font-size="12">Relative fall speed:</text>
+    <text id="speedText" x="470" y="638" fill="#e5e7eb" font-size="14" font-weight="600" text-anchor="end">—</text>
+  </g>
+
+  <g id="tooltip" opacity="0">
+    <rect id="tooltipRect" x="0" y="0" width="120" height="32" rx="8" fill="rgba(15,23,42,0.95)" stroke="rgba(148,163,184,0.6)" stroke-width="1"/>
+    <text id="tooltipText" x="10" y="21" fill="#e5e7eb" font-size="12">Drop on a planet</text>
+  </g>
+</svg>
+
+<script>
+(function() {
+  const svg = document.querySelector('svg');
+  const objGroup = document.getElementById('draggableObject');
+  const objBody = document.getElementById('objectBody');
+  const objShadow = document.getElementById('objectShadow');
+  const resetButton = document.getElementById('resetButton');
+  const planetGroups = Array.from(document.querySelectorAll('.planet'));
+  const speedBar = document.getElementById('speedBar');
+  const planetNameText = document.getElementById('planetNameText');
+  const gValueText = document.getElementById('gValueText');
+  const speedText = document.getElementById('speedText');
+  const tooltip = document.getElementById('tooltip');
+  const tooltipRect = document.getElementById('tooltipRect');
+  const tooltipText = document.getElementById('tooltipText');
+
+  let dragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+  let startPos = { x: 210, y: 630, sx: 210, sy: 640 };
+  let activePlanet = null;
+  let animFrame = null;
+
+  function setObjectPosition(x, y) {
+    objBody.setAttribute('cx', x);
+    objBody.setAttribute('cy', y);
+    objShadow.setAttribute('cx', x);
+    objShadow.setAttribute('cy', y + 10);
+  }
+
+  function getObjectPosition() {
+    return {
+      x: parseFloat(objBody.getAttribute('cx')),
+      y: parseFloat(objBody.getAttribute('cy'))
+    };
+  }
+
+  function pointInCircle(px, py, cx, cy, r) {
+    const dx = px - cx;
+    const dy = py - cy;
+    return dx * dx + dy * dy <= r * r;
+  }
+
+  function hitTestPlanets(x, y) {
+    for (const g of planetGroups) {
+      const circle = g.querySelector('circle');
+      const cx = parseFloat(circle.getAttribute('cx'));
+      const cy = parseFloat(circle.getAttribute('cy'));
+      const r = parseFloat(circle.getAttribute('r')) + 4;
+      if (pointInCircle(x, y, cx, cy, r)) return g;
+    }
+    return null;
+  }
+
+  function setPlanetState(planetGroup) {
+    activePlanet = planetGroup;
+    if (!planetGroup) {
+      planetNameText.textContent = 'None';
+      gValueText.textContent = '—';
+      speedText.textContent = '—';
+      animateBarTo(0);
+      return;
+    }
+    const name = planetGroup.dataset.name;
+    const g = planetGroup.dataset.g;
+    const speed = parseFloat(planetGroup.dataset.speed || '0');
+    planetNameText.textContent = name;
+    gValueText.textContent = g;
+    speedText.textContent = (speed * 100).toFixed(0) + '%';
+    animateBarTo(speed);
+  }
+
+  function animateBarTo(fraction) {
+    const maxWidth = 190;
+    const targetWidth = Math.max(0, Math.min(1, fraction)) * maxWidth;
+    const currentWidth = parseFloat(speedBar.getAttribute('width') || '0');
+    const duration = 200;
+    const start = performance.now();
+    cancelAnimationFrame(animFrame);
+    function step(ts) {
+      const t = Math.min(1, (ts - start) / duration);
+      const w = currentWidth + (targetWidth - currentWidth) * t;
+      speedBar.setAttribute('width', w);
+      if (t < 1) {
+        animFrame = requestAnimationFrame(step);
+      }
+    }
+    animFrame = requestAnimationFrame(step);
+  }
+
+  function showTooltip(message, x, y) {
+    tooltipText.textContent = message;
+    const bbox = tooltipText.getBBox();
+    const padX = 10;
+    const padY = 8;
+    const w = bbox.width + padX * 2;
+    const h = bbox.height + padY * 2;
+    tooltipRect.setAttribute('width', w);
+    tooltipRect.setAttribute('height', h);
+    let tx = x - w / 2;
+    let ty = y - h - 12;
+    if (tx < 80) tx = 80;
+    if (tx + w > 720) tx = 720 - w;
+    if (ty < 80) ty = y + 20;
+    tooltip.setAttribute('transform', `translate(${tx},${ty})`);
+    tooltip.setAttribute('opacity', 1);
+  }
+
+  function hideTooltip() {
+    tooltip.setAttribute('opacity', 0);
+  }
+
+  function onPointerDown(evt) {
+    evt.preventDefault();
+    dragging = true;
+    objBody.setAttribute('transform', 'scale(1.06)');
+    objBody.style.transition = 'transform 80ms ease-out';
+    objShadow.style.transition = 'opacity 80ms ease-out';
+    objShadow.setAttribute('opacity', 0.6);
+    const pt = getSVGPoint(evt);
+    const pos = getObjectPosition();
+    offsetX = pt.x - pos.x;
+    offsetY = pt.y - pos.y;
+  }
+
+  function onPointerMove(evt) {
+    if (!dragging) return;
+    evt.preventDefault();
+    const pt = getSVGPoint(evt);
+    const x = pt.x - offsetX;
+    const y = pt.y - offsetY;
+    setObjectPosition(x, y);
+  }
+
+  function onPointerUp(evt) {
+    if (!dragging) return;
+    dragging = false;
+    objBody.setAttribute('transform', 'scale(1)');
+    objShadow.setAttribute('opacity', 0.4);
+    const pos = getObjectPosition();
+    const planet = hitTestPlanets(pos.x, pos.y);
+    if (planet) {
+      const circle = planet.querySelector('circle');
+      const cx = parseFloat(circle.getAttribute('cx'));
+      const cy = parseFloat(circle.getAttribute('cy'));
+      dropToPlanet(cx, cy + parseFloat(circle.getAttribute('r')) + 6, planet);
+      hideTooltip();
+    } else {
+      snapBack();
+      showTooltip('Drop on a planet', pos.x, pos.y);
+      setTimeout(hideTooltip, 900);
+    }
+  }
+
+  function dropToPlanet(targetX, targetY, planet) {
+    const start = getObjectPosition();
+    const duration = 260;
+    const startTime = performance.now();
+    cancelAnimationFrame(animFrame);
+    function step(ts) {
+      const t = Math.min(1, (ts - startTime) / duration);
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      const x = start.x + (targetX - start.x) * ease;
+      const y = start.y + (targetY - start.y) * ease;
+      setObjectPosition(x, y);
+      if (t < 1) {
+        animFrame = requestAnimationFrame(step);
+      } else {
+        setPlanetState(planet);
+      }
+    }
+    animFrame = requestAnimationFrame(step);
+  }
+
+  function snapBack() {
+    const start = getObjectPosition();
+    const duration = 260;
+    const startTime = performance.now();
+    cancelAnimationFrame(animFrame);
+    function step(ts) {
+      const t = Math.min(1, (ts - startTime) / duration);
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      const x = start.x + (startPos.x - start.x) * ease;
+      const y = start.y + (startPos.y - start.y) * ease;
+      setObjectPosition(x, y);
+      if (t < 1) {
+        animFrame = requestAnimationFrame(step);
+      }
+    }
+    animFrame = requestAnimationFrame(step);
+  }
+
+  function getSVGPoint(evt) {
+    const pt = svg.createSVGPoint();
+    if (evt.touches && evt.touches.length) {
+      pt.x = evt.touches[0].clientX;
+      pt.y = evt.touches[0].clientY;
+    } else {
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+    }
+    const m = svg.getScreenCTM().inverse();
+    return pt.matrixTransform(m);
+  }
+
+  function resetAll() {
+    cancelAnimationFrame(animFrame);
+    setObjectPosition(startPos.x, startPos.y);
+    setPlanetState(null);
+    hideTooltip();
+  }
+
+  objGroup.addEventListener('pointerdown', onPointerDown);
+  svg.addEventListener('pointermove', onPointerMove);
+  svg.addEventListener('pointerup', onPointerUp);
+  svg.addEventListener('pointerleave', onPointerUp);
+  svg.addEventListener('touchstart', function(e){e.preventDefault();}, {passive:false});
+
+  resetButton.addEventListener('pointerdown', function() {
+    resetAll();
+    resetButton.querySelector('rect').setAttribute('fill', 'rgba(15,23,42,1)');
+  });
+  resetButton.addEventListener('pointerup', function() {
+    resetButton.querySelector('rect').setAttribute('fill', 'none');
+  });
+  resetButton.addEventListener('pointerleave', function() {
+    resetButton.querySelector('rect').setAttribute('fill', 'none');
+  });
+
+  planetGroups.forEach(g => {
+    g.addEventListener('pointerenter', () => {
+      const circle = g.querySelector('circle');
+      circle.setAttribute('stroke-width', 3);
+    });
+    g.addEventListener('pointerleave', () => {
+      const circle = g.querySelector('circle');
+      circle.setAttribute('stroke-width', 2);
+    });
+  });
+
+  setObjectPosition(startPos.x, startPos.y);
+})();
+</script>
+</body>
+</html>
