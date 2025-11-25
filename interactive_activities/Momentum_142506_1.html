@@ -1,0 +1,318 @@
+<html>
+<head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:#f0f0f0;
+}
+svg {
+  width: 90vmin;
+  height: 90vmin;
+}
+text {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 800">
+  <rect x="0" y="0" width="800" height="800" fill="#f6f7fb"/>
+  <rect x="40" y="40" width="720" height="80" rx="14" ry="14" fill="#ffffff" stroke="#d0d4e4" stroke-width="2"/>
+  <text x="60" y="90" font-size="26" fill="#22253b" font-weight="600">Momentum Collision Lab</text>
+  <rect x="40" y="140" width="720" height="620" rx="18" ry="18" fill="#ffffff" stroke="#d0d4e4" stroke-width="2"/>
+  <rect x="60" y="160" width="200" height="40" rx="10" ry="10" fill="#eef1ff"/>
+  <text x="72" y="187" font-size="18" fill="#34395a" font-weight="600">Choose an activity</text>
+  <rect x="60" y="210" width="210" height="540" rx="14" ry="14" fill="#f2f4ff" stroke="#d0d4e4" stroke-width="1.5"/>
+  <g id="tab_bouncing">
+    <rect x="70" y="225" width="190" height="60" rx="10" ry="10" fill="#4f6bff"/>
+    <text x="90" y="260" font-size="18" fill="#ffffff" font-weight="600">Bouncing Balls</text>
+  </g>
+  <g id="tab_sticky">
+    <rect x="70" y="300" width="190" height="60" rx="10" ry="10" fill="#ffffff" stroke="#d0d4e4" stroke-width="1"/>
+    <text x="90" y="335" font-size="18" fill="#4a4e6b" font-weight="500">Sticky Collisions</text>
+  </g>
+  <g id="tab_pool">
+    <rect x="70" y="375" width="190" height="60" rx="10" ry="10" fill="#ffffff" stroke="#d0d4e4" stroke-width="1"/>
+    <text x="90" y="410" font-size="18" fill="#4a4e6b" font-weight="500">Pool Ball Math</text>
+  </g>
+  <rect x="60" y="470" width="210" height="80" rx="12" ry="12" fill="#ffffff" stroke="#d0d4e4" stroke-width="1"/>
+  <text x="75" y="500" font-size="16" fill="#555977" font-weight="600">Step</text>
+  <text id="stepLabel" x="75" y="525" font-size="22" fill="#22253b" font-weight="700">1 of 4</text>
+  <rect x="295" y="160" width="445" height="70" rx="12" ry="12" fill="#f2f4ff"/>
+  <text id="titleText" x="315" y="205" font-size="22" fill="#22253b" font-weight="600">Bouncing Balls</text>
+  <rect x="295" y="245" width="445" height="120" rx="12" ry="12" fill="#ffffff" stroke="#e0e3f0" stroke-width="1"/>
+  <text x="315" y="275" font-size="16" fill="#555977" font-weight="600">Learning purpose</text>
+  <text id="purposeText1" x="315" y="300" font-size="14" fill="#33374f">Understand conservation of momentum</text>
+  <text id="purposeText2" x="315" y="320" font-size="14" fill="#33374f">in elastic collisions.</text>
+  <rect x="295" y="375" width="215" height="120" rx="12" ry="12" fill="#ffffff" stroke="#e0e3f0" stroke-width="1"/>
+  <text x="315" y="405" font-size="16" fill="#555977" font-weight="600">Materials</text>
+  <text id="materialsText1" x="315" y="430" font-size="14" fill="#33374f">Ping pong balls, ruler, marker</text>
+  <rect x="525" y="375" width="215" height="120" rx="12" ry="12" fill="#ffffff" stroke="#e0e3f0" stroke-width="1"/>
+  <text x="545" y="405" font-size="16" fill="#555977" font-weight="600">Drag to simulate</text>
+  <g id="sim_panel">
+    <rect x="545" y="420" width="175" height="65" rx="8" ry="8" fill="#f6f7fb" stroke="#d0d4e4" stroke-width="1"/>
+    <text x="555" y="440" font-size="13" fill="#73789a">Drag the blue ball</text>
+    <text x="555" y="457" font-size="13" fill="#73789a">towards the grey ball</text>
+  </g>
+  <rect x="295" y="510" width="445" height="210" rx="12" ry="12" fill="#f6f7fb" stroke="#e0e3f0" stroke-width="1"/>
+  <text x="315" y="540" font-size="16" fill="#555977" font-weight="600">Procedure</text>
+  <text id="proc1" x="315" y="565" font-size="14" fill="#33374f">1. Place two ping pong balls on a flat surface.</text>
+  <text id="proc2" x="315" y="585" font-size="14" fill="#33374f">2. Use a ruler to propel one ball towards the</text>
+  <text id="proc2b" x="335" y="605" font-size="14" fill="#33374f">stationary ball to simulate a head-on</text>
+  <text id="proc3" x="315" y="625" font-size="14" fill="#33374f">3. Observe how the balls move apart after the</text>
+  <text id="proc3b" x="335" y="645" font-size="14" fill="#33374f">collision.</text>
+  <text id="proc4" x="315" y="665" font-size="14" fill="#33374f">4. Measure and mark the direction and distance</text>
+  <text id="proc4b" x="335" y="685" font-size="14" fill="#33374f">each ball moves.</text>
+  <rect x="60" y="565" width="210" height="80" rx="12" ry="12" fill="#ffffff" stroke="#d0d4e4" stroke-width="1"/>
+  <text x="75" y="595" font-size="16" fill="#555977" font-weight="600">Collision type</text>
+  <text id="collisionLabel" x="75" y="620" font-size="18" fill="#22253b" font-weight="700">Elastic</text>
+  <g id="btn_prev">
+    <rect x="60" y="665" width="95" height="65" rx="10" ry="10" fill="#ffffff" stroke="#d0d4e4" stroke-width="1"/>
+    <text x="88" y="703" font-size="16" fill="#4a4e6b">Prev</text>
+  </g>
+  <g id="btn_next">
+    <rect x="175" y="665" width="95" height="65" rx="10" ry="10" fill="#4f6bff"/>
+    <text x="203" y="703" font-size="16" fill="#ffffff">Next</text>
+  </g>
+  <g id="sim_area">
+    <rect x="330" y="395" width="160" height="80" rx="10" ry="10" fill="#f6f7fb" stroke="#d0d4e4" stroke-width="1"/>
+    <text x="340" y="415" font-size="13" fill="#73789a">Head-on view</text>
+    <line x1="345" y1="440" x2="465" y2="440" stroke="#c1c5d8" stroke-width="3"/>
+    <g id="ball_stationary">
+      <circle cx="450" cy="440" r="14" fill="#c6cad8"/>
+    </g>
+    <g id="ball_draggable">
+      <circle cx="360" cy="440" r="14" fill="#4f6bff"/>
+    </g>
+  </g>
+<script>
+var activities = [
+  {
+    title:"Bouncing Balls",
+    purpose:["Understand conservation of momentum","in elastic collisions."],
+    materials:["Ping pong balls, ruler, marker"],
+    collision:"Elastic",
+    steps:[
+      "1. Place two ping pong balls on a flat surface.",
+      "2. Use a ruler to propel one ball towards the",
+      "   stationary ball to simulate a head-on",
+      "3. Observe how the balls move apart after the",
+      "   collision.",
+      "4. Measure and mark the direction and distance",
+      "   each ball moves."
+    ]
+  },
+  {
+    title:"Sticky Collisions",
+    purpose:["Explain why objects stick together","in inelastic collisions."],
+    materials:["Velcro strips, small toy cars"],
+    collision:"Inelastic",
+    steps:[
+      "1. Attach Velcro strips to the front of two toy cars.",
+      "2. Roll one car towards the stationary car to",
+      "   represent an inelastic collision.",
+      "3. Explain how the Velcro causes the cars to",
+      "   stick together after the collision.",
+      "4. Discuss why momentum is conserved despite",
+      "   the loss of kinetic energy."
+    ]
+  },
+  {
+    title:"Pool Ball Math",
+    purpose:["Predict post-collision velocities","in simple scenarios."],
+    materials:["Pool balls of different masses, pool table, cue stick"],
+    collision:"Elastic",
+    steps:[
+      "1. Set up pool balls with one ball stationary",
+      "   and the other in motion.",
+      "2. Use the cue stick to strike the moving ball",
+      "   towards the stationary one.",
+      "3. Predict and visually show how the velocities",
+      "   of the balls change post-collision.",
+      "4. Reinforce the concept of momentum",
+      "   conservation in this dynamic scenario."
+    ]
+  }
+];
+var currentActivity=0;
+var currentStep=1;
+var titleText=document.getElementById("titleText");
+var purposeText1=document.getElementById("purposeText1");
+var purposeText2=document.getElementById("purposeText2");
+var materialsText1=document.getElementById("materialsText1");
+var collisionLabel=document.getElementById("collisionLabel");
+var stepLabel=document.getElementById("stepLabel");
+var proc1=document.getElementById("proc1");
+var proc2=document.getElementById("proc2");
+var proc2b=document.getElementById("proc2b");
+var proc3=document.getElementById("proc3");
+var proc3b=document.getElementById("proc3b");
+var proc4=document.getElementById("proc4");
+var proc4b=document.getElementById("proc4b");
+function setText(el,text){el.textContent=text;}
+function updateProcedure(activityIndex,step){
+  var s=activities[activityIndex].steps;
+  var t1=s[0]||"";
+  var t2=(s[1]||"");
+  var t2b=(s[2]||"");
+  var t3=(s[3]||"");
+  var t3b=(s[4]||"");
+  var t4=(s[5]||"");
+  var t4b=(s[6]||"");
+  if(step===1){
+    setText(proc1,t1);
+    setText(proc2,"");
+    setText(proc2b,"");
+    setText(proc3,"");
+    setText(proc3b,"");
+    setText(proc4,"");
+    setText(proc4b,"");
+  }else if(step===2){
+    setText(proc1,t1);
+    setText(proc2,t2);
+    setText(proc2b,t2b);
+    setText(proc3,"");
+    setText(proc3b,"");
+    setText(proc4,"");
+    setText(proc4b,"");
+  }else if(step===3){
+    setText(proc1,t1);
+    setText(proc2,t2);
+    setText(proc2b,t2b);
+    setText(proc3,t3);
+    setText(proc3b,t3b);
+    setText(proc4,"");
+    setText(proc4b,"");
+  }else{
+    setText(proc1,t1);
+    setText(proc2,t2);
+    setText(proc2b,t2b);
+    setText(proc3,t3);
+    setText(proc3b,t3b);
+    setText(proc4,t4);
+    setText(proc4b,t4b);
+  }
+}
+function loadActivity(index){
+  currentActivity=index;
+  currentStep=1;
+  var a=activities[index];
+  setText(titleText,a.title);
+  setText(purposeText1,a.purpose[0]||"");
+  setText(purposeText2,a.purpose[1]||"");
+  setText(materialsText1,a.materials[0]||"");
+  setText(collisionLabel,a.collision);
+  setText(stepLabel,currentStep+" of 4");
+  updateProcedure(index,currentStep);
+  document.querySelector("#tab_bouncing rect").setAttribute("fill",index===0?"#4f6bff":"#ffffff");
+  document.querySelector("#tab_bouncing rect").setAttribute("stroke",index===0?"none":"#d0d4e4");
+  document.querySelector("#tab_bouncing text").setAttribute("fill",index===0?"#ffffff":"#4a4e6b");
+  document.querySelector("#tab_sticky rect").setAttribute("fill",index===1?"#4f6bff":"#ffffff");
+  document.querySelector("#tab_sticky rect").setAttribute("stroke",index===1?"none":"#d0d4e4");
+  document.querySelector("#tab_sticky text").setAttribute("fill",index===1?"#ffffff":"#4a4e6b");
+  document.querySelector("#tab_pool rect").setAttribute("fill",index===2?"#4f6bff":"#ffffff");
+  document.querySelector("#tab_pool rect").setAttribute("stroke",index===2?"none":"#d0d4e4");
+  document.querySelector("#tab_pool text").setAttribute("fill",index===2?"#ffffff":"#4a4e6b");
+}
+document.getElementById("btn_next").addEventListener("click",function(){
+  if(currentStep<4){currentStep++;setText(stepLabel,currentStep+" of 4");updateProcedure(currentActivity,currentStep);}
+});
+document.getElementById("btn_prev").addEventListener("click",function(){
+  if(currentStep>1){currentStep--;setText(stepLabel,currentStep+" of 4");updateProcedure(currentActivity,currentStep);}
+});
+document.getElementById("tab_bouncing").addEventListener("click",function(){loadActivity(0);resetBalls();});
+document.getElementById("tab_sticky").addEventListener("click",function(){loadActivity(1);resetBalls();});
+document.getElementById("tab_pool").addEventListener("click",function(){loadActivity(2);resetBalls();});
+var svg=document.querySelector("svg");
+var dragBall=document.querySelector("#ball_draggable circle");
+var staticBall=document.querySelector("#ball_stationary circle");
+var lineStart=345;
+var lineEnd=465;
+var dragData={dragging:false,offsetX:0};
+var originX=parseFloat(dragBall.getAttribute("cx"));
+function svgPoint(evt){
+  var pt=svg.createSVGPoint();
+  if(evt.touches && evt.touches.length>0){
+    pt.x=evt.touches[0].clientX;
+    pt.y=evt.touches[0].clientY;
+  }else{
+    pt.x=evt.clientX;
+    pt.y=evt.clientY;
+  }
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+function startDrag(evt){
+  evt.preventDefault();
+  dragData.dragging=true;
+  var p=svgPoint(evt);
+  dragData.offsetX=p.x-parseFloat(dragBall.getAttribute("cx"));
+  dragBall.setAttribute("transform","scale(1.05)");
+  dragBall.style.transition="transform 0.1s";
+}
+function moveDrag(evt){
+  if(!dragData.dragging)return;
+  evt.preventDefault();
+  var p=svgPoint(evt);
+  var newX=p.x-dragData.offsetX;
+  if(newX<lineStart+14)newX=lineStart+14;
+  if(newX>lineEnd-28)newX=lineEnd-28;
+  dragBall.setAttribute("cx",newX);
+  var staticX=parseFloat(staticBall.getAttribute("cx"));
+  if(newX>staticX-30){
+    triggerCollision();
+    dragData.dragging=false;
+  }
+}
+function endDrag(evt){
+  if(!dragData.dragging)return;
+  dragData.dragging=false;
+  dragBall.setAttribute("transform","scale(1)");
+}
+function triggerCollision(){
+  var blue=dragBall;
+  var grey=staticBall;
+  var blueStart=parseFloat(blue.getAttribute("cx"));
+  var greyStart=parseFloat(grey.getAttribute("cx"));
+  var blueEnd=blueStart+40;
+  var greyEnd=greyStart+40;
+  var dur=250;
+  blue.style.transition="cx "+dur+"ms linear, opacity "+dur+"ms";
+  grey.style.transition="cx "+dur+"ms linear, opacity "+dur+"ms";
+  blue.setAttribute("cx",blueEnd);
+  grey.setAttribute("cx",greyEnd);
+  blue.setAttribute("opacity","0.5");
+  grey.setAttribute("opacity","1");
+  setTimeout(function(){
+    blue.style.transition="cx 200ms linear, opacity 200ms";
+    grey.style.transition="cx 200ms linear, opacity 200ms";
+    blue.setAttribute("cx",originX);
+    grey.setAttribute("cx",450);
+    blue.setAttribute("opacity","1");
+  },dur+150);
+}
+function resetBalls(){
+  dragBall.style.transition="cx 200ms, opacity 200ms";
+  staticBall.style.transition="cx 200ms, opacity 200ms";
+  dragBall.setAttribute("cx",originX);
+  staticBall.setAttribute("cx",450);
+  dragBall.setAttribute("opacity","1");
+  staticBall.setAttribute("opacity","1");
+}
+dragBall.addEventListener("mousedown",startDrag);
+dragBall.addEventListener("touchstart",startDrag,{passive:false});
+svg.addEventListener("mousemove",moveDrag);
+svg.addEventListener("touchmove",moveDrag,{passive:false});
+window.addEventListener("mouseup",endDrag);
+window.addEventListener("touchend",endDrag);
+loadActivity(0);
+</script>
+</svg>
+</body>
+</html>
