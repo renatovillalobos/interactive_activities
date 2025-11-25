@@ -1,0 +1,231 @@
+<html>
+<head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f3f5f9;
+}
+svg {
+  width: 98vmin;
+  height: 98vmin;
+}
+text {
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 800">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f9fc"/>
+      <stop offset="100%" stop-color="#edf1f8"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="800" height="800" fill="url(#bgGrad)"/>
+  <rect x="60" y="40" width="680" height="60" rx="12" ry="12" fill="#ffffff" stroke="#d0d7e5" stroke-width="2"/>
+  <text x="80" y="78" font-size="24" fill="#1f2933" font-weight="600">Momentum Mini-Lab Ideas</text>
+  <rect x="60" y="120" width="680" height="620" rx="18" ry="18" fill="#ffffff" stroke="#d0d7e5" stroke-width="2"/>
+  <rect x="80" y="140" width="640" height="60" rx="10" ry="10" fill="#f3f5fb" stroke="#d0d7e5" stroke-width="1.5"/>
+  <text x="100" y="178" font-size="20" fill="#111827" font-weight="600">Choose a lab idea, then drag the blue marker to the key sentence.</text>
+  <rect x="80" y="220" width="200" height="40" rx="8" ry="8" fill="#e5edff" stroke="#4f46e5" stroke-width="1.5"/>
+  <text x="95" y="246" font-size="16" fill="#111827" font-weight="600">Bouncing Balls</text>
+  <rect x="300" y="220" width="200" height="40" rx="8" ry="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="315" y="246" font-size="16" fill="#4b5563" font-weight="500">Sticky Collisions</text>
+  <rect x="520" y="220" width="200" height="40" rx="8" ry="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="535" y="246" font-size="16" fill="#4b5563" font-weight="500">Pool Ball Math</text>
+  <g id="panel-bouncing">
+    <rect x="80" y="280" width="640" height="440" rx="14" ry="14" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.5"/>
+    <text x="100" y="320" font-size="20" fill="#111827" font-weight="600">Bouncing Balls</text>
+    <text x="100" y="350" font-size="14" fill="#6b7280">Learning purpose:</text>
+    <text x="250" y="350" font-size="14" fill="#374151">Understand conservation of momentum in elastic collisions.</text>
+    <text x="100" y="380" font-size="14" fill="#6b7280">Materials:</text>
+    <text x="180" y="380" font-size="14" fill="#374151">Ping pong balls, ruler, marker</text>
+    <text x="100" y="410" font-size="14" fill="#111827" font-weight="600">Procedure</text>
+    <circle cx="115" cy="440" r="4" fill="#9ca3af"/>
+    <text x="130" y="444" font-size="14" fill="#374151">Place two ping pong balls on a flat surface.</text>
+    <circle cx="115" cy="470" r="4" fill="#9ca3af"/>
+    <text x="130" y="474" font-size="14" fill="#374151">Use a ruler to propel one ball towards the stationary ball to simulate a head-on elastic collision.</text>
+    <circle cx="115" cy="500" r="4" fill="#9ca3af"/>
+    <text x="130" y="504" font-size="14" fill="#374151">Observe how the balls move apart after the collision.</text>
+    <circle cx="115" cy="530" r="4" fill="#9ca3af"/>
+    <text x="130" y="534" font-size="14" fill="#374151">Measure and mark the direction and distance each ball moves to demonstrate conservation of momentum.</text>
+    <rect x="100" y="560" width="460" height="120" rx="10" ry="10" fill="#ffffff" stroke="#c7d2fe" stroke-width="1.5"/>
+    <text x="120" y="590" font-size="14" fill="#111827" font-weight="600">Drag the blue marker onto the sentence that best shows momentum is conserved.</text>
+    <rect id="drop-1" x="120" y="605" width="420" height="25" rx="6" ry="6" fill="#ecfeff" stroke="#22c55e" stroke-width="1.2" opacity="0.15"/>
+    <text x="130" y="623" font-size="13" fill="#0f172a">Hint: Look for what happens to both balls after they collide.</text>
+    <circle id="marker" cx="540" cy="620" r="10" fill="#2563eb" stroke="#1d4ed8" stroke-width="2"/>
+  </g>
+  <g id="panel-sticky" opacity="0">
+    <rect x="80" y="280" width="640" height="440" rx="14" ry="14" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.5"/>
+    <text x="100" y="320" font-size="20" fill="#111827" font-weight="600">Sticky Collisions</text>
+    <text x="100" y="350" font-size="14" fill="#6b7280">Learning purpose:</text>
+    <text x="250" y="350" font-size="14" fill="#374151">Explain why objects stick together in inelastic collisions.</text>
+    <text x="100" y="380" font-size="14" fill="#6b7280">Materials:</text>
+    <text x="180" y="380" font-size="14" fill="#374151">Velcro strips, small toy cars</text>
+    <text x="100" y="410" font-size="14" fill="#111827" font-weight="600">Procedure</text>
+    <circle cx="115" cy="440" r="4" fill="#9ca3af"/>
+    <text x="130" y="444" font-size="14" fill="#374151">Attach Velcro strips to the front of two toy cars.</text>
+    <circle cx="115" cy="470" r="4" fill="#9ca3af"/>
+    <text x="130" y="474" font-size="14" fill="#374151">Roll one car towards the stationary car to represent an inelastic collision.</text>
+    <circle cx="115" cy="500" r="4" fill="#9ca3af"/>
+    <text x="130" y="504" font-size="14" fill="#374151">Explain how the Velcro causes the cars to stick together after the collision.</text>
+    <circle cx="115" cy="530" r="4" fill="#9ca3af"/>
+    <text x="130" y="534" font-size="14" fill="#374151">Discuss why momentum is conserved in this scenario despite the loss of kinetic energy.</text>
+    <rect x="100" y="560" width="460" height="120" rx="10" ry="10" fill="#ffffff" stroke="#c7d2fe" stroke-width="1.5"/>
+    <text x="120" y="590" font-size="14" fill="#111827" font-weight="600">Drag the blue marker onto the sentence that best shows momentum is conserved.</text>
+    <rect id="drop-2" x="120" y="605" width="420" height="25" rx="6" ry="6" fill="#ecfeff" stroke="#22c55e" stroke-width="1.2" opacity="0.15"/>
+    <text x="130" y="623" font-size="13" fill="#0f172a">Hint: Which step actually mentions momentum staying the same?</text>
+    <circle id="marker-2" cx="540" cy="620" r="10" fill="#2563eb" stroke="#1d4ed8" stroke-width="2"/>
+  </g>
+  <g id="panel-pool" opacity="0">
+    <rect x="80" y="280" width="640" height="440" rx="14" ry="14" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.5"/>
+    <text x="100" y="320" font-size="20" fill="#111827" font-weight="600">Pool Ball Math</text>
+    <text x="100" y="350" font-size="14" fill="#6b7280">Learning purpose:</text>
+    <text x="250" y="350" font-size="14" fill="#374151">Predict post-collision velocities in simple scenarios.</text>
+    <text x="100" y="380" font-size="14" fill="#6b7280">Materials:</text>
+    <text x="180" y="380" font-size="14" fill="#374151">Pool balls of different masses, pool table, cue stick</text>
+    <text x="100" y="410" font-size="14" fill="#111827" font-weight="600">Procedure</text>
+    <circle cx="115" cy="440" r="4" fill="#9ca3af"/>
+    <text x="130" y="444" font-size="14" fill="#374151">Set up pool balls on a pool table with one ball stationary and the other in motion.</text>
+    <circle cx="115" cy="470" r="4" fill="#9ca3af"/>
+    <text x="130" y="474" font-size="14" fill="#374151">Use the cue stick to strike the moving ball towards the stationary one.</text>
+    <circle cx="115" cy="500" r="4" fill="#9ca3af"/>
+    <text x="130" y="504" font-size="14" fill="#374151">Predict and visually show how the velocities of the balls change post-collision based on their masses and initial speeds.</text>
+    <circle cx="115" cy="530" r="4" fill="#9ca3af"/>
+    <text x="130" y="534" font-size="14" fill="#374151">Reinforce the concept of momentum conservation in this dynamic scenario.</text>
+    <rect x="100" y="560" width="460" height="120" rx="10" ry="10" fill="#ffffff" stroke="#c7d2fe" stroke-width="1.5"/>
+    <text x="120" y="590" font-size="14" fill="#111827" font-weight="600">Drag the blue marker onto the sentence that best shows momentum is conserved.</text>
+    <rect id="drop-3" x="120" y="605" width="420" height="25" rx="6" ry="6" fill="#ecfeff" stroke="#22c55e" stroke-width="1.2" opacity="0.15"/>
+    <text x="130" y="623" font-size="13" fill="#0f172a">Hint: Look for the step that explicitly reinforces conservation of momentum.</text>
+    <circle id="marker-3" cx="540" cy="620" r="10" fill="#2563eb" stroke="#1d4ed8" stroke-width="2"/>
+  </g>
+  <rect id="check-btn" x="580" y="560" width="120" height="36" rx="8" ry="8" fill="#4f46e5"/>
+  <text id="check-label" x="603" y="583" font-size="14" fill="#ffffff" font-weight="600">Check</text>
+  <rect id="feedback-bg" x="580" y="604" width="120" height="32" rx="8" ry="8" fill="#dcfce7" opacity="0"/>
+  <text id="feedback-text" x="590" y="625" font-size="13" fill="#166534" opacity="0">Nice!</text>
+  <script>
+  const btnB = document.querySelector('rect[x="80"][y="220"]');
+  const btnS = document.querySelector('rect[x="300"][y="220"]');
+  const btnP = document.querySelector('rect[x="520"][y="220"]');
+  const panelB = document.getElementById('panel-bouncing');
+  const panelS = document.getElementById('panel-sticky');
+  const panelP = document.getElementById('panel-pool');
+  const marker1 = document.getElementById('marker');
+  const marker2 = document.getElementById('marker-2');
+  const marker3 = document.getElementById('marker-3');
+  const drop1 = document.getElementById('drop-1');
+  const drop2 = document.getElementById('drop-2');
+  const drop3 = document.getElementById('drop-3');
+  const checkBtn = document.getElementById('check-btn');
+  const feedbackBg = document.getElementById('feedback-bg');
+  const feedbackText = document.getElementById('feedback-text');
+  const svg = document.querySelector('svg');
+  let activePanel = 'b';
+  let dragging = null;
+  let offsetX = 0, offsetY = 0;
+  let locked1 = false, locked2 = false, locked3 = false;
+  function setTab(active) {
+    activePanel = active;
+    panelB.setAttribute('opacity', active==='b'?1:0);
+    panelS.setAttribute('opacity', active==='s'?1:0);
+    panelP.setAttribute('opacity', active==='p'?1:0);
+  }
+  btnB.addEventListener('click', ()=>setTab('b'));
+  btnS.addEventListener('click', ()=>setTab('s'));
+  btnP.addEventListener('click', ()=>setTab('p'));
+  function getPoint(evt){
+    const pt = svg.createSVGPoint();
+    if(evt.touches && evt.touches.length){
+      pt.x = evt.touches[0].clientX;
+      pt.y = evt.touches[0].clientY;
+    } else {
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+    }
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+  function startDrag(e, marker, lockedFlag){
+    if(lockedFlag) return;
+    dragging = marker;
+    const p = getPoint(e);
+    offsetX = p.x - parseFloat(marker.getAttribute('cx'));
+    offsetY = p.y - parseFloat(marker.getAttribute('cy'));
+    marker.setAttribute('transform','scale(1.1)');
+  }
+  marker1.addEventListener('mousedown',e=>startDrag(e,marker1,locked1));
+  marker1.addEventListener('touchstart',e=>startDrag(e,marker1,locked1),{passive:false});
+  marker2.addEventListener('mousedown',e=>startDrag(e,marker2,locked2));
+  marker2.addEventListener('touchstart',e=>startDrag(e,marker2,locked2),{passive:false});
+  marker3.addEventListener('mousedown',e=>startDrag(e,marker3,locked3));
+  marker3.addEventListener('touchstart',e=>startDrag(e,marker3,locked3),{passive:false});
+  function dragMove(e){
+    if(!dragging) return;
+    e.preventDefault();
+    const p = getPoint(e);
+    dragging.setAttribute('cx', p.x - offsetX);
+    dragging.setAttribute('cy', p.y - offsetY);
+  }
+  function endDrag(){
+    if(!dragging) return;
+    let drop, lockRef;
+    if(dragging===marker1){drop=drop1; lockRef='locked1'}
+    if(dragging===marker2){drop=drop2; lockRef='locked2'}
+    if(dragging===marker3){drop=drop3; lockRef='locked3'}
+    const cx = parseFloat(dragging.getAttribute('cx'));
+    const cy = parseFloat(dragging.getAttribute('cy'));
+    const dx = parseFloat(drop.getAttribute('x'));
+    const dy = parseFloat(drop.getAttribute('y'));
+    const dw = parseFloat(drop.getAttribute('width'));
+    const dh = parseFloat(drop.getAttribute('height'));
+    if(cx>dx && cx<dx+dw && cy>dy && cy<dy+dh){
+      dragging.setAttribute('cx', dx+dw-12);
+      dragging.setAttribute('cy', dy+dh/2);
+      dragging.setAttribute('transform','scale(1)');
+      if(lockRef==='locked1') locked1=true;
+      if(lockRef==='locked2') locked2=true;
+      if(lockRef==='locked3') locked3=true;
+      drop.setAttribute('opacity','0.35');
+    } else {
+      if(dragging===marker1){dragging.setAttribute('cx',540); dragging.setAttribute('cy',620);}
+      if(dragging===marker2){dragging.setAttribute('cx',540); dragging.setAttribute('cy',620);}
+      if(dragging===marker3){dragging.setAttribute('cx',540); dragging.setAttribute('cy',620);}
+      dragging.setAttribute('transform','scale(1)');
+    }
+    dragging=null;
+  }
+  svg.addEventListener('mousemove',dragMove);
+  svg.addEventListener('touchmove',dragMove,{passive:false});
+  window.addEventListener('mouseup',endDrag);
+  window.addEventListener('touchend',endDrag);
+  checkBtn.addEventListener('click',()=>{
+    let correct=false;
+    if(activePanel==='b') correct=locked1;
+    if(activePanel==='s') correct=locked2;
+    if(activePanel==='p') correct=locked3;
+    if(correct){
+      feedbackBg.setAttribute('fill','#dcfce7');
+      feedbackText.textContent='Correct!';
+    } else {
+      feedbackBg.setAttribute('fill','#fee2e2');
+      feedbackText.textContent='Try again';
+    }
+    feedbackBg.setAttribute('opacity','1');
+    feedbackText.setAttribute('opacity','1');
+    setTimeout(()=>{
+      feedbackBg.setAttribute('opacity','0');
+      feedbackText.setAttribute('opacity','0');
+    },1200);
+  });
+  </script>
+</svg>
+</body>
+</html>
