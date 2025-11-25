@@ -1,0 +1,330 @@
+<html>
+<head>
+<style>
+html, body {
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:#f0f0f0;
+}
+body {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+svg {
+  width:100vmin;
+  height:100vmin;
+}
+text {
+  font-family: Arial, sans-serif;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 800">
+  <defs>
+    <style type="text/css"><![CDATA[
+      .title { font-size:28px; font-weight:bold; fill:#222222; }
+      .subtitle { font-size:16px; fill:#444444; }
+      .label { font-size:14px; fill:#222222; }
+      .small { font-size:12px; fill:#555555; }
+      .panelTitle { font-size:18px; font-weight:bold; fill:#222222; }
+      .procedureStep { font-size:12px; fill:#333333; }
+      .buttonText { font-size:14px; fill:#ffffff; font-weight:bold; }
+    ]]></style>
+  </defs>
+
+  <rect x="0" y="0" width="800" height="800" fill="#f7f7fa"/>
+
+  <g id="header">
+    <rect x="40" y="30" width="720" height="70" rx="14" ry="14" fill="#ffffff" stroke="#d5d7e0" stroke-width="1.5"/>
+    <text x="60" y="60" class="title">Momentum &amp; Collisions Lab</text>
+    <text x="60" y="86" class="subtitle">Drag the correct activity card into each collision type box.</text>
+  </g>
+
+  <g id="leftPanel">
+    <rect x="40" y="120" width="350" height="640" rx="18" ry="18" fill="#ffffff" stroke="#d5d7e0" stroke-width="1.5"/>
+    <text x="60" y="150" class="panelTitle">Activity Cards</text>
+
+    <g id="card1" class="draggable" cursor="pointer">
+      <rect x="60" y="180" width="310" height="150" rx="12" ry="12" fill="#fef9e6" stroke="#e3c76a" stroke-width="1.5"/>
+      <text x="80" y="205" class="label">Ball Bounce Collision</text>
+      <text x="80" y="228" class="small">Learning purpose: Understanding elastic</text>
+      <text x="80" y="244" class="small">collisions</text>
+      <text x="80" y="270" class="small">Materials: Two balls, flat surface</text>
+      <text x="80" y="296" class="small">Procedure involves dropping a larger</text>
+      <text x="80" y="312" class="small">ball, then a smaller one to see bounce.</text>
+    </g>
+
+    <g id="card2" class="draggable" cursor="pointer">
+      <rect x="60" y="350" width="310" height="150" rx="12" ry="12" fill="#e9f5ff" stroke="#76a9e5" stroke-width="1.5"/>
+      <text x="80" y="375" class="label">Magnetic Car Crash</text>
+      <text x="80" y="398" class="small">Learning purpose: Explaining inelastic</text>
+      <text x="80" y="414" class="small">collisions</text>
+      <text x="80" y="440" class="small">Materials: Two toy cars with magnets,</text>
+      <text x="80" y="456" class="small">smooth track</text>
+      <text x="80" y="482" class="small">Cars stick together after they collide.</text>
+    </g>
+
+    <g id="card3" class="draggable" cursor="pointer">
+      <rect x="60" y="520" width="310" height="210" rx="12" ry="12" fill="#f2ecff" stroke="#b79be8" stroke-width="1.5"/>
+      <text x="80" y="545" class="label">Velocity Prediction Challenge</text>
+      <text x="80" y="568" class="small">Learning purpose: Predicting post-</text>
+      <text x="80" y="584" class="small">collision velocities</text>
+      <text x="80" y="610" class="small">Materials: Pencil, paper, ruler, objects</text>
+      <text x="80" y="626" class="small">of different masses</text>
+      <text x="80" y="652" class="small">Draw paths, predict positions after a</text>
+      <text x="80" y="668" class="small">collision, then compare with results.</text>
+    </g>
+  </g>
+
+  <g id="rightPanel">
+    <rect x="410" y="120" width="350" height="640" rx="18" ry="18" fill="#ffffff" stroke="#d5d7e0" stroke-width="1.5"/>
+    <text x="430" y="150" class="panelTitle">Collision Types</text>
+
+    <g id="zoneElastic">
+      <rect x="430" y="180" width="310" height="190" rx="14" ry="14" fill="#f9fbff" stroke="#a8b7e8" stroke-width="1.5"/>
+      <text x="450" y="205" class="label">Elastic Collision</text>
+      <text x="450" y="230" class="small">Total kinetic energy is (approximately)</text>
+      <text x="450" y="246" class="small">conserved in the collision.</text>
+
+      <circle cx="520" cy="295" r="24" fill="#fde2a4" stroke="#f0b94a" stroke-width="2"/>
+      <circle cx="585" cy="295" r="14" fill="#f4b47b" stroke="#d58035" stroke-width="1.5"/>
+      <path d="M470 295 L495 295" stroke="#777" stroke-width="2" marker-end="url(#arrowHead)"/>
+      <path d="M610 295 L640 295" stroke="#777" stroke-width="2" marker-end="url(#arrowHead)"/>
+
+      <rect id="dropElastic" x="450" y="320" width="270" height="40" rx="10" ry="10" fill="#ffffff" stroke="#c5d0f1" stroke-width="1.2" stroke-dasharray="4,4" opacity="0.9"/>
+      <text x="463" y="345" class="small" fill="#7a84a4">Drop the matching activity card here</text>
+    </g>
+
+    <g id="zoneInelastic">
+      <rect x="430" y="390" width="310" height="190" rx="14" ry="14" fill="#fff8f8" stroke="#e8a8a8" stroke-width="1.5"/>
+      <text x="450" y="415" class="label">Inelastic Collision</text>
+      <text x="450" y="440" class="small">Objects stick together or deform;</text>
+      <text x="450" y="456" class="small">kinetic energy is not conserved.</text>
+
+      <rect x="470" y="470" width="40" height="24" rx="6" ry="6" fill="#c0d8f2" stroke="#7da2d5" stroke-width="1.5"/>
+      <rect x="515" y="470" width="40" height="24" rx="6" ry="6" fill="#f7c0c0" stroke="#d98a8a" stroke-width="1.5"/>
+      <rect x="485" y="505" width="60" height="24" rx="6" ry="6" fill="#e4bfd2" stroke="#c588a9" stroke-width="1.5"/>
+
+      <path d="M445 482 L465 482" stroke="#777" stroke-width="2" marker-end="url(#arrowHead)"/>
+      <path d="M565 482 L595 482" stroke="#777" stroke-width="2" marker-end="url(#arrowHead)"/>
+
+      <rect id="dropInelastic" x="450" y="530" width="270" height="40" rx="10" ry="10" fill="#ffffff" stroke="#f0b6b6" stroke-width="1.2" stroke-dasharray="4,4" opacity="0.9"/>
+      <text x="463" y="555" class="small" fill="#a47a7a">Drop the matching activity card here</text>
+    </g>
+
+    <g id="zoneMomentum">
+      <rect x="430" y="600" width="310" height="140" rx="14" ry="14" fill="#f5f9f1" stroke="#b2d48b" stroke-width="1.5"/>
+      <text x="450" y="625" class="label">Momentum Prediction</text>
+      <text x="450" y="650" class="small">Use conservation of momentum to</text>
+      <text x="450" y="666" class="small">predict post-collision motion.</text>
+
+      <path d="M460 690 L540 690" stroke="#6f8f5a" stroke-width="2"/>
+      <circle cx="480" cy="690" r="10" fill="#d7e8c1" stroke="#96b86e" stroke-width="1.5"/>
+      <circle cx="520" cy="690" r="16" fill="#c0d89a" stroke="#7ea759" stroke-width="1.5"/>
+
+      <rect id="dropMomentum" x="560" y="662" width="160" height="40" rx="10" ry="10" fill="#ffffff" stroke="#c7e1a1" stroke-width="1.2" stroke-dasharray="4,4" opacity="0.9"/>
+      <text x="570" y="687" class="small" fill="#6c8a4b">Drop the matching activity card here</text>
+    </g>
+  </g>
+
+  <g id="controls">
+    <rect x="560" y="45" width="200" height="50" rx="25" ry="25" fill="#4b7bec" id="checkButton"/>
+    <text x="605" y="76" class="buttonText">Check Answers</text>
+  </g>
+
+  <g id="feedback">
+    <rect x="430" y="310" width="0" height="40" rx="10" ry="10" fill="#4caf50" opacity="0" id="correctBanner"/>
+    <text x="450" y="336" class="buttonText" id="correctText" opacity="0">All matches correct!</text>
+
+    <rect x="430" y="360" width="0" height="40" rx="10" ry="10" fill="#e53935" opacity="0" id="tryAgainBanner"/>
+    <text x="450" y="386" class="buttonText" id="tryAgainText" opacity="0">Check the matches again.</text>
+  </g>
+
+  <marker id="arrowHead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+    <path d="M0,0 L10,3.5 L0,7 z" fill="#777"/>
+  </marker>
+</svg>
+<script>
+var svg = document.querySelector("svg");
+var selected = null;
+var offset = {x:0, y:0};
+var originalPositions = {};
+var lockedCards = {};
+
+function storeOriginalPosition(card) {
+  var rect = card.getBBox();
+  originalPositions[card.id] = {x:rect.x, y:rect.y};
+}
+
+["card1","card2","card3"].forEach(function(id){
+  var card = document.getElementById(id);
+  storeOriginalPosition(card);
+});
+
+function getMousePosition(evt) {
+  var CTM = svg.getScreenCTM();
+  if (evt.touches && evt.touches.length > 0) {
+    evt = evt.touches[0];
+  }
+  return {
+    x: (evt.clientX - CTM.e) / CTM.a,
+    y: (evt.clientY - CTM.f) / CTM.d
+  };
+}
+
+function startDrag(evt) {
+  if (lockedCards[evt.currentTarget.id]) return;
+  selected = evt.currentTarget;
+  svg.appendChild(selected);
+  var mousePos = getMousePosition(evt);
+  var box = selected.getBBox();
+  offset.x = mousePos.x - box.x;
+  offset.y = mousePos.y - box.y;
+  selected.style.transition = "none";
+}
+
+function drag(evt) {
+  if (!selected) return;
+  evt.preventDefault();
+  var coord = getMousePosition(evt);
+  var newX = coord.x - offset.x;
+  var newY = coord.y - offset.y;
+  var dx = newX - selected.getBBox().x;
+  var dy = newY - selected.getBBox().y;
+  selected.setAttribute("transform","translate("+dx+","+dy+")");
+}
+
+function endDrag(evt) {
+  if (!selected) return;
+  var droppedOn = getDropZone(selected);
+  var targetZoneId = null;
+  if (selected.id === "card1") targetZoneId = "dropElastic";
+  if (selected.id === "card2") targetZoneId = "dropInelastic";
+  if (selected.id === "card3") targetZoneId = "dropMomentum";
+
+  if (droppedOn && droppedOn.id === targetZoneId) {
+    snapToZone(selected, droppedOn);
+    lockedCards[selected.id] = true;
+  } else {
+    resetCard(selected);
+  }
+  selected = null;
+}
+
+function getDropZone(card) {
+  var zones = ["dropElastic","dropInelastic","dropMomentum"].map(function(id){return document.getElementById(id);});
+  var box = card.getBBox();
+  var centerX = box.x + box.width/2;
+  var centerY = box.y + box.height/2;
+  for (var i=0;i<zones.length;i++) {
+    var z = zones[i];
+    var zb = z.getBBox();
+    if (centerX > zb.x && centerX < zb.x+zb.width && centerY > zb.y && centerY < zb.y+zb.height) {
+      return z;
+    }
+  }
+  return null;
+}
+
+function snapToZone(card, zone) {
+  var cardBox = card.getBBox();
+  var zoneBox = zone.getBBox();
+  var dx = zoneBox.x + (zoneBox.width - cardBox.width)/2 - cardBox.x;
+  var dy = zoneBox.y + (zoneBox.height - cardBox.height)/2 - cardBox.y;
+  card.setAttribute("transform","translate("+dx+","+dy+")");
+  card.style.transition = "transform 0.2s ease-out";
+}
+
+function resetCard(card) {
+  var orig = originalPositions[card.id];
+  var box = card.getBBox();
+  var dx = orig.x - box.x;
+  var dy = orig.y - box.y;
+  card.setAttribute("transform","translate("+dx+","+dy+")");
+  card.style.transition = "transform 0.25s ease-out";
+}
+
+function attachDragEvents(cardId) {
+  var el = document.getElementById(cardId);
+  el.addEventListener("mousedown", startDrag);
+  el.addEventListener("touchstart", startDrag, {passive:false});
+}
+["card1","card2","card3"].forEach(attachDragEvents);
+
+svg.addEventListener("mousemove", drag);
+svg.addEventListener("touchmove", drag, {passive:false});
+svg.addEventListener("mouseup", endDrag);
+svg.addEventListener("mouseleave", endDrag);
+svg.addEventListener("touchend", endDrag);
+
+var checkButton = document.getElementById("checkButton");
+checkButton.style.cursor = "pointer";
+
+function showFeedback(correct) {
+  var correctBanner = document.getElementById("correctBanner");
+  var correctText = document.getElementById("correctText");
+  var tryBanner = document.getElementById("tryAgainBanner");
+  var tryText = document.getElementById("tryAgainText");
+
+  correctBanner.style.transition = "opacity 0.25s ease, width 0.25s ease";
+  correctText.style.transition = "opacity 0.25s ease";
+  tryBanner.style.transition = "opacity 0.25s ease, width 0.25s ease";
+  tryText.style.transition = "opacity 0.25s ease";
+
+  if (correct) {
+    tryBanner.setAttribute("width",0);
+    tryBanner.setAttribute("opacity",0);
+    tryText.setAttribute("opacity",0);
+    correctBanner.setAttribute("width",230);
+    correctBanner.setAttribute("opacity",0.9);
+    correctText.setAttribute("opacity",1);
+  } else {
+    correctBanner.setAttribute("width",0);
+    correctBanner.setAttribute("opacity",0);
+    correctText.setAttribute("opacity",0);
+    tryBanner.setAttribute("width",260);
+    tryBanner.setAttribute("opacity",0.9);
+    tryText.setAttribute("opacity",1);
+  }
+}
+
+checkButton.addEventListener("mousedown", function(){
+  checkButton.setAttribute("fill","#3259c7");
+});
+checkButton.addEventListener("mouseup", function(){
+  checkButton.setAttribute("fill","#4b7bec");
+});
+checkButton.addEventListener("mouseleave", function(){
+  checkButton.setAttribute("fill","#4b7bec");
+});
+checkButton.addEventListener("touchstart", function(){
+  checkButton.setAttribute("fill","#3259c7");
+},{passive:true});
+checkButton.addEventListener("touchend", function(){
+  checkButton.setAttribute("fill","#4b7bec");
+},{passive:true});
+
+checkButton.addEventListener("click", function(){
+  var zones = {
+    dropElastic: null,
+    dropInelastic: null,
+    dropMomentum: null
+  };
+  ["card1","card2","card3"].forEach(function(id){
+    var card = document.getElementById(id);
+    var zone = getDropZone(card);
+    if (zone) zones[zone.id] = id;
+  });
+  var correct =
+    zones.dropElastic === "card1" &&
+    zones.dropInelastic === "card2" &&
+    zones.dropMomentum === "card3";
+  showFeedback(correct);
+});
+</script>
+</body>
+</html>
