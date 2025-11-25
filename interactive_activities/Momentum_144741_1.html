@@ -1,0 +1,276 @@
+<html>
+<head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #f0f0f0;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+svg {
+  width: 90vmin;
+  height: 90vmin;
+}
+text {
+  font-family: Arial, sans-serif;
+}
+button {
+  font-family: Arial, sans-serif;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 800">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="800" height="800" fill="url(#bgGrad)"/>
+
+  <rect x="60" y="60" width="680" height="680" rx="24" ry="24" fill="#ffffff" stroke="#d0d7e2" stroke-width="2"/>
+
+  <text x="80" y="110" font-size="28" fill="#1f2933" font-weight="bold">Marble Collision Simulator</text>
+  <text x="80" y="142" font-size="16" fill="#52606d">Explore how marbles collide and classify the collision.</text>
+
+  <rect x="80" y="180" width="640" height="340" rx="16" ry="16" fill="#f5f7fa" stroke="#d0d7e2" stroke-width="1.5"/>
+
+  <path d="M110 330 H690" stroke="#cbd2e1" stroke-width="3" stroke-linecap="round"/>
+
+  <g id="movingMarble">
+    <circle cx="200" cy="330" r="26" fill="#4f46e5" stroke="#312e81" stroke-width="2"/>
+    <circle cx="192" cy="322" r="6" fill="#a5b4fc" opacity="0.8"/>
+    <circle cx="210" cy="338" r="4" fill="#c7d2fe" opacity="0.9"/>
+  </g>
+
+  <g id="stationaryMarble">
+    <circle cx="560" cy="330" r="26" fill="#10b981" stroke="#047857" stroke-width="2"/>
+    <circle cx="552" cy="322" r="6" fill="#6ee7b7" opacity="0.8"/>
+    <circle cx="570" cy="338" r="4" fill="#a7f3d0" opacity="0.9"/>
+  </g>
+
+  <path d="M200 248 L230 248" stroke="#4b5563" stroke-width="2" marker-end="none"/>
+  <path d="M216 241 L230 248 L216 255 Z" fill="#4b5563"/>
+
+  <text x="190" y="230" font-size="14" fill="#4b5563">Initial velocity</text>
+
+  <path d="M560 408 L530 408" stroke="#4b5563" stroke-width="2"/>
+  <path d="M544 401 L530 408 L544 415 Z" fill="#4b5563"/>
+
+  <text x="480" y="390" font-size="14" fill="#4b5563">Final velocity</text>
+
+  <rect x="80" y="540" width="310" height="180" rx="14" ry="14" fill="#f9fafb" stroke="#d0d7e2" stroke-width="1.5"/>
+
+  <text x="100" y="570" font-size="18" fill="#111827" font-weight="bold">Run Experiment</text>
+  <text x="100" y="598" font-size="14" fill="#4b5563">1. Drag the purple marble and release to launch.</text>
+  <text x="100" y="620" font-size="14" fill="#4b5563">2. Observe motion before and after collision.</text>
+  <text x="100" y="642" font-size="14" fill="#4b5563">3. Decide if collision is elastic or inelastic.</text>
+
+  <g id="runButton">
+    <rect x="100" y="660" width="140" height="40" rx="10" ry="10" fill="#2563eb"/>
+    <text x="170" y="685" font-size="16" fill="#ffffff" text-anchor="middle">Reset</text>
+  </g>
+
+  <rect x="410" y="540" width="310" height="180" rx="14" ry="14" fill="#f9fafb" stroke="#d0d7e2" stroke-width="1.5"/>
+
+  <text x="430" y="570" font-size="18" fill="#111827" font-weight="bold">Classify Collision</text>
+  <text x="430" y="598" font-size="14" fill="#4b5563">Based on the motion, choose the type.</text>
+
+  <g id="elasticOption">
+    <rect x="430" y="620" width="130" height="40" rx="10" ry="10" fill="#ffffff" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="495" y="646" font-size="16" fill="#111827" text-anchor="middle">Elastic</text>
+  </g>
+
+  <g id="inelasticOption">
+    <rect x="590" y="620" width="130" height="40" rx="10" ry="10" fill="#ffffff" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="655" y="646" font-size="16" fill="#111827" text-anchor="middle">Inelastic</text>
+  </g>
+
+  <text id="feedbackText" x="430" y="690" font-size="14" fill="#4b5563">Run the collision, then select a type.</text>
+
+  <circle id="dragHandle" cx="200" cy="330" r="34" fill="transparent"/>
+
+  <circle id="elasticHighlight" cx="495" cy="640" r="26" fill="#34d399" opacity="0"/>
+  <circle id="inelasticHighlight" cx="655" cy="640" r="26" fill="#f97316" opacity="0"/>
+
+</svg>
+<script>
+var svg = document.querySelector('svg');
+var movingMarble = document.getElementById('movingMarble');
+var stationaryMarble = document.getElementById('stationaryMarble');
+var dragHandle = document.getElementById('dragHandle');
+var runButton = document.getElementById('runButton');
+var elasticOption = document.getElementById('elasticOption');
+var inelasticOption = document.getElementById('inelasticOption');
+var feedbackText = document.getElementById('feedbackText');
+var elasticHighlight = document.getElementById('elasticHighlight');
+var inelasticHighlight = document.getElementById('inelasticHighlight');
+
+var startX = 200;
+var startY = 330;
+var targetX = 560;
+var targetY = 330;
+
+var dragging = false;
+var dragOffsetX = 0;
+var collisionRun = false;
+var animationFrame = null;
+var marbleState = 'ready';
+var dragStartPoint = null;
+
+function getPoint(evt){
+  var pt = svg.createSVGPoint();
+  if (evt.touches && evt.touches.length) {
+    pt.x = evt.touches[0].clientX;
+    pt.y = evt.touches[0].clientY;
+  } else {
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+  }
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+function setMarblePosition(x, y){
+  movingMarble.setAttribute('transform','translate('+(x-startX)+','+(y-startY)+')');
+  dragHandle.setAttribute('cx',x);
+  dragHandle.setAttribute('cy',y);
+}
+
+function resetMarbles(){
+  if (animationFrame) cancelAnimationFrame(animationFrame);
+  movingMarble.setAttribute('transform','translate(0,0)');
+  dragHandle.setAttribute('cx',startX);
+  dragHandle.setAttribute('cy',startY);
+  stationaryMarble.setAttribute('transform','translate(0,0)');
+  collisionRun = false;
+  marbleState = 'ready';
+  dragStartPoint = null;
+  feedbackText.textContent = 'Run the collision, then select a type.';
+  elasticHighlight.setAttribute('opacity','0');
+  inelasticHighlight.setAttribute('opacity','0');
+  elasticOption.querySelector('rect').setAttribute('fill','#ffffff');
+  inelasticOption.querySelector('rect').setAttribute('fill','#ffffff');
+}
+
+function onDown(evt){
+  if (marbleState !== 'ready') return;
+  evt.preventDefault();
+  dragging = true;
+  var p = getPoint(evt);
+  dragStartPoint = {x:p.x, y:p.y};
+  dragOffsetX = p.x - parseFloat(dragHandle.getAttribute('cx'));
+}
+
+function onMove(evt){
+  if (!dragging || marbleState !== 'ready') return;
+  evt.preventDefault();
+  var p = getPoint(evt);
+  var newX = p.x - dragOffsetX;
+  if (newX < 120) newX = 120;
+  if (newX > targetX - 80) newX = targetX - 80;
+  setMarblePosition(newX, startY);
+}
+
+function onUp(evt){
+  if (!dragging || marbleState !== 'ready') return;
+  dragging = false;
+  var p = getPoint(evt);
+  if (!dragStartPoint) return;
+  var dx = p.x - dragStartPoint.x;
+  var speed = Math.min(Math.max(dx / 4, 1), 6);
+  if (dx < 20) {
+    setMarblePosition(startX, startY);
+    return;
+  }
+  marbleState = 'moving';
+  collisionRun = true;
+  feedbackText.textContent = 'Watch the collision, then classify.';
+  animateCollision(speed);
+}
+
+function animateCollision(speed){
+  var startTime = null;
+  var initialX = parseFloat(dragHandle.getAttribute('cx'));
+  function step(ts){
+    if (!startTime) startTime = ts;
+    var elapsed = (ts - startTime)/16.67;
+    var move = speed * elapsed;
+    var newX = initialX + move;
+    if (newX >= targetX - 52) {
+      setMarblePosition(targetX - 52, startY);
+      animatePostCollision();
+      return;
+    }
+    setMarblePosition(newX, startY);
+    animationFrame = requestAnimationFrame(step);
+  }
+  animationFrame = requestAnimationFrame(step);
+}
+
+function animatePostCollision(){
+  var startTime = null;
+  function step(ts){
+    if (!startTime) startTime = ts;
+    var t = (ts - startTime)/1000;
+    var mMove = Math.min(40 * t, 40);
+    var sMove = Math.min(60 * t, 60);
+    movingMarble.setAttribute('transform','translate('+(targetX-52-startX - mMove)+','+(startY-targetY)+')');
+    dragHandle.setAttribute('cx',targetX-52 - mMove);
+    dragHandle.setAttribute('cy',startY);
+    stationaryMarble.setAttribute('transform','translate('+sMove+',0)');
+    if (t < 1.2) {
+      animationFrame = requestAnimationFrame(step);
+    } else {
+      marbleState = 'done';
+      hintOutcome();
+    }
+  }
+  animationFrame = requestAnimationFrame(step);
+}
+
+function hintOutcome(){
+  inelasticHighlight.setAttribute('opacity','0.35');
+  elasticHighlight.setAttribute('opacity','0');
+}
+
+function optionClick(type){
+  if (!collisionRun) {
+    feedbackText.textContent = 'First, drag and release the purple marble.';
+    return;
+  }
+  elasticOption.querySelector('rect').setAttribute('fill','#ffffff');
+  inelasticOption.querySelector('rect').setAttribute('fill','#ffffff');
+  elasticHighlight.setAttribute('opacity','0');
+  inelasticHighlight.setAttribute('opacity','0');
+  if (type === 'elastic') {
+    elasticOption.querySelector('rect').setAttribute('fill','#dbeafe');
+    elasticHighlight.setAttribute('opacity','0.5');
+    feedbackText.textContent = 'Not quite. Here the marbles lose some shared motion: inelastic.';
+  } else {
+    inelasticOption.querySelector('rect').setAttribute('fill','#ffedd5');
+    inelasticHighlight.setAttribute('opacity','0.8');
+    feedbackText.textContent = 'Correct: this is modeled as an inelastic collision.';
+  }
+}
+
+dragHandle.addEventListener('mousedown', onDown);
+svg.addEventListener('mousemove', onMove);
+window.addEventListener('mouseup', onUp);
+
+dragHandle.addEventListener('touchstart', onDown, {passive:false});
+svg.addEventListener('touchmove', onMove, {passive:false});
+window.addEventListener('touchend', onUp);
+
+runButton.addEventListener('click', resetMarbles);
+elasticOption.addEventListener('click', function(){optionClick('elastic');});
+inelasticOption.addEventListener('click', function(){optionClick('inelastic');});
+</script>
+</body>
+</html>
