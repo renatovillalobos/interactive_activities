@@ -1,0 +1,339 @@
+<html>
+<head>
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  height:100%;
+  background:#f0f0f0;
+}
+.container{
+  width:100vmin;
+  height:100vmin;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+svg{
+  width:100%;
+  height:100%;
+}
+text{
+  font-family: Arial, sans-serif;
+}
+button{
+  display:none;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+
+<rect x="0" y="0" width="800" height="800" fill="#ffffff"/>
+
+<rect x="60" y="40" width="680" height="80" rx="16" ry="16" fill="#f5f5f5" stroke="#dddddd" stroke-width="2"/>
+<text x="80" y="80" font-size="26" fill="#222222">Bouncing Ball Animation</text>
+<text x="80" y="108" font-size="16" fill="#555555">Predict post-collision velocities using momentum conservation.</text>
+
+<rect x="60" y="140" width="520" height="380" rx="20" ry="20" fill="#fdfdfd" stroke="#dddddd" stroke-width="2"/>
+
+<rect x="80" y="170" width="480" height="260" rx="12" ry="12" fill="#e9f3ff" stroke="#b8d3ff" stroke-width="2"/>
+
+<path d="M90 380 H550" stroke="#bbbbbb" stroke-width="4" stroke-linecap="round"/>
+
+<g id="ball1" cursor="pointer">
+  <circle id="ball1Circle" cx="180" cy="360" r="26" fill="#ff6666" stroke="#cc4444" stroke-width="3"/>
+  <text id="ball1Label" x="180" y="366" font-size="16" fill="#ffffff" text-anchor="middle">m₁</text>
+</g>
+
+<g id="ball2" cursor="pointer">
+  <circle id="ball2Circle" cx="480" cy="360" r="34" fill="#66aaff" stroke="#4477cc" stroke-width="3"/>
+  <text id="ball2Label" x="480" y="366" font-size="16" fill="#ffffff" text-anchor="middle">m₂</text>
+</g>
+
+<path id="arrow1" d="M160 320 H230" stroke="#ff6666" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowHeadRed)"/>
+<path id="arrow2" d="M500 320 H430" stroke="#66aaff" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowHeadBlue)"/>
+
+<defs>
+  <marker id="arrowHeadRed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+    <path d="M0 0 L9 3 L0 6 Z" fill="#ff6666"/>
+  </marker>
+  <marker id="arrowHeadBlue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+    <path d="M0 0 L9 3 L0 6 Z" fill="#66aaff"/>
+  </marker>
+</defs>
+
+<rect x="80" y="440" width="480" height="60" rx="12" ry="12" fill="#ffffff" stroke="#e0e0e0" stroke-width="2"/>
+<text x="100" y="465" font-size="14" fill="#444444">Initial velocities:</text>
+<text id="v1Text" x="100" y="490" font-size="14" fill="#ff6666">v₁ = +3.0 m/s</text>
+<text id="v2Text" x="260" y="490" font-size="14" fill="#66aaff">v₂ = -2.0 m/s</text>
+
+<text x="420" y="465" font-size="14" fill="#444444">Mass ratio:</text>
+<text id="massRatioText" x="420" y="490" font-size="14" fill="#444444">m₂ is heavier</text>
+
+<rect x="600" y="140" width="140" height="380" rx="20" ry="20" fill="#fdfdfd" stroke="#dddddd" stroke-width="2"/>
+
+<text x="620" y="170" font-size="16" fill="#222222">Controls</text>
+
+<text x="620" y="205" font-size="13" fill="#555555">Drag a ball</text>
+<text x="620" y="222" font-size="13" fill="#555555">left/right to</text>
+<text x="620" y="239" font-size="13" fill="#555555">change its</text>
+<text x="620" y="256" font-size="13" fill="#555555">velocity.</text>
+
+<text x="620" y="290" font-size="13" fill="#555555">Drag a ball</text>
+<text x="620" y="307" font-size="13" fill="#555555">up/down to</text>
+<text x="620" y="324" font-size="13" fill="#555555">change its</text>
+<text x="620" y="341" font-size="13" fill="#555555">mass.</text>
+
+<g id="predictButton" cursor="pointer">
+  <rect x="620" y="360" width="100" height="40" rx="10" ry="10" fill="#4caf50"/>
+  <text x="670" y="386" font-size="15" fill="#ffffff" text-anchor="middle">Predict</text>
+</g>
+
+<g id="resetButton" cursor="pointer">
+  <rect x="620" y="410" width="100" height="32" rx="8" ry="8" fill="#eeeeee" stroke="#cccccc" stroke-width="1.5"/>
+  <text x="670" y="432" font-size="13" fill="#444444" text-anchor="middle">Reset</text>
+</g>
+
+<rect x="80" y="520" width="660" height="220" rx="18" ry="18" fill="#f7f7f7" stroke="#dddddd" stroke-width="2"/>
+
+<text x="100" y="555" font-size="16" fill="#222222">Your prediction</text>
+<text x="100" y="580" font-size="14" fill="#555555">Before you press Predict, mentally estimate the post-collision velocities.</text>
+
+<text x="100" y="615" font-size="14" fill="#444444">After collision:</text>
+<text id="afterV1" x="100" y="640" font-size="14" fill="#ff6666">v₁' = ?</text>
+<text id="afterV2" x="260" y="640" font-size="14" fill="#66aaff">v₂' = ?</text>
+
+<text x="100" y="675" font-size="14" fill="#444444">Momentum check:</text>
+<text id="momentumCheck" x="100" y="700" font-size="14" fill="#444444">Total momentum before ≈ after</text>
+
+<g id="collisionInfo">
+  <circle cx="620" cy="640" r="8" fill="#bbbbbb"/>
+  <text x="640" y="645" font-size="13" fill="#555555">Elastic, 1D collision</text>
+</g>
+
+</svg>
+</div>
+<script>
+var svg=document.querySelector("svg");
+var pt=svg.createSVGPoint();
+
+function cursorPoint(evt){
+  pt.x=evt.clientX;
+  pt.y=evt.clientY;
+  var screenCTM=svg.getScreenCTM();
+  return pt.matrixTransform(screenCTM.inverse());
+}
+
+var state={
+  m1:1,
+  m2:2,
+  v1:3,
+  v2:-2
+};
+
+var drag={
+  target:null,
+  startX:0,
+  startY:0,
+  origCx:0,
+  origCy:0
+};
+
+var ball1=document.getElementById("ball1");
+var ball2=document.getElementById("ball2");
+var ball1Circle=document.getElementById("ball1Circle");
+var ball2Circle=document.getElementById("ball2Circle");
+var arrow1=document.getElementById("arrow1");
+var arrow2=document.getElementById("arrow2");
+var v1Text=document.getElementById("v1Text");
+var v2Text=document.getElementById("v2Text");
+var massRatioText=document.getElementById("massRatioText");
+var afterV1=document.getElementById("afterV1");
+var afterV2=document.getElementById("afterV2");
+var momentumCheck=document.getElementById("momentumCheck");
+var predictButton=document.getElementById("predictButton");
+var resetButton=document.getElementById("resetButton");
+
+function updateTexts(){
+  v1Text.textContent="v₁ = "+(state.v1>=0?"+":"")+state.v1.toFixed(1)+" m/s";
+  v2Text.textContent="v₂ = "+(state.v2>=0?"+":"")+state.v2.toFixed(1)+" m/s";
+  if(state.m2>state.m1*1.05){
+    massRatioText.textContent="m₂ is heavier";
+  }else if(state.m1>state.m2*1.05){
+    massRatioText.textContent="m₁ is heavier";
+  }else{
+    massRatioText.textContent="m₁ and m₂ similar";
+  }
+}
+
+function updateArrows(){
+  var b1x=parseFloat(ball1Circle.getAttribute("cx"));
+  var b2x=parseFloat(ball2Circle.getAttribute("cx"));
+  var baseY=320;
+  var len1=40+state.v1*8;
+  var len2=40-state.v2*8;
+  if(len1<10)len1=10;
+  if(len2<10)len2=10;
+
+  var a1StartX=b1x-(state.v1>=0?len1:0);
+  var a1EndX=b1x+(state.v1>=0?0:len1);
+  arrow1.setAttribute("d","M"+a1StartX+" "+baseY+" H"+a1EndX);
+
+  var a2StartX=b2x-(state.v2<=0?0:len2);
+  var a2EndX=b2x+(state.v2<=0?-len2:0);
+  arrow2.setAttribute("d","M"+a2StartX+" "+baseY+" H"+a2EndX);
+}
+
+function clamp(val,min,max){return Math.max(min,Math.min(max,val));}
+
+function handleDragStart(evt){
+  var target=evt.currentTarget;
+  drag.target=target;
+  var p=cursorPoint(evt);
+  drag.startX=p.x;
+  drag.startY=p.y;
+  var circle=target==ball1?ball1Circle:ball2Circle;
+  drag.origCx=parseFloat(circle.getAttribute("cx"));
+  drag.origCy=parseFloat(circle.getAttribute("cy"));
+}
+
+function handleDragMove(evt){
+  if(!drag.target)return;
+  evt.preventDefault();
+  var p=cursorPoint(evt);
+  var dx=p.x-drag.startX;
+  var dy=p.y-drag.startY;
+  var circle=drag.target==ball1?ball1Circle:ball2Circle;
+  var newCx=drag.origCx+dx;
+  var newCy=drag.origCy+dy;
+  newCx=clamp(newCx,120,520);
+  newCy=clamp(newCy,300,420);
+  circle.setAttribute("cx",newCx);
+  circle.setAttribute("cy",newCy);
+  var label=drag.target==ball1?document.getElementById("ball1Label"):document.getElementById("ball2Label");
+  label.setAttribute("x",newCx);
+  label.setAttribute("y",newCy+6);
+
+  var vScale=0.1;
+  var baseX=drag.target==ball1?180:480;
+  var dv=(newCx-baseX)*vScale;
+  dv=clamp(dv,-5,5);
+  if(drag.target==ball1){
+    state.v1=dv;
+  }else{
+    state.v2=dv;
+  }
+
+  var mScale=-0.04;
+  var baseY=360;
+  var dm=(newCy-baseY)*mScale;
+  var mass=drag.target==ball1?state.m1:state.m2;
+  mass=1+dm;
+  mass=clamp(mass,0.5,3);
+  if(drag.target==ball1){
+    state.m1=mass;
+    circle.setAttribute("r",22+mass*6);
+  }else{
+    state.m2=mass;
+    circle.setAttribute("r",22+mass*6);
+  }
+
+  updateTexts();
+  updateArrows();
+  afterV1.textContent="v₁' = ?";
+  afterV2.textContent="v₂' = ?";
+  momentumCheck.textContent="Total momentum before ≈ after";
+}
+
+function handleDragEnd(){
+  drag.target=null;
+}
+
+ball1.addEventListener("mousedown",handleDragStart);
+ball2.addEventListener("mousedown",handleDragStart);
+svg.addEventListener("mousemove",handleDragMove);
+window.addEventListener("mouseup",handleDragEnd);
+
+ball1.addEventListener("touchstart",function(e){handleDragStart(e.touches[0]);});
+ball2.addEventListener("touchstart",function(e){handleDragStart(e.touches[0]);});
+svg.addEventListener("touchmove",function(e){handleDragMove(e.touches[0]);});
+window.addEventListener("touchend",handleDragEnd);
+
+predictButton.addEventListener("click",function(){
+  var m1=state.m1,m2=state.m2,v1=state.v1,v2=state.v2;
+  var v1p=( (m1-m2)/(m1+m2) )*v1 + ( (2*m2)/(m1+m2) )*v2;
+  var v2p=( (2*m1)/(m1+m2) )*v1 + ( (m2-m1)/(m1+m2) )*v2;
+
+  afterV1.textContent="v₁' = "+(v1p>=0?"+":"")+v1p.toFixed(2)+" m/s";
+  afterV2.textContent="v₂' = "+(v2p>=0?"+":"")+v2p.toFixed(2)+" m/s";
+
+  var pBefore=m1*v1+m2*v2;
+  var pAfter=m1*v1p+m2*v2p;
+  var diff=Math.abs(pBefore-pAfter);
+  var ok=diff<0.05;
+  momentumCheck.textContent="p before = "+pBefore.toFixed(2)+", p after = "+pAfter.toFixed(2)+(ok?" (conserved)":" (rounding error)");
+
+  microAnimateBalls(v1p,v2p);
+});
+
+resetButton.addEventListener("click",function(){
+  state.m1=1;
+  state.m2=2;
+  state.v1=3;
+  state.v2=-2;
+
+  ball1Circle.setAttribute("cx",180);
+  ball1Circle.setAttribute("cy",360);
+  ball2Circle.setAttribute("cx",480);
+  ball2Circle.setAttribute("cy",360);
+  ball1Circle.setAttribute("r",22+state.m1*6);
+  ball2Circle.setAttribute("r",22+state.m2*6);
+  document.getElementById("ball1Label").setAttribute("x",180);
+  document.getElementById("ball1Label").setAttribute("y",366);
+  document.getElementById("ball2Label").setAttribute("x",480);
+  document.getElementById("ball2Label").setAttribute("y",366);
+
+  updateTexts();
+  updateArrows();
+  afterV1.textContent="v₁' = ?";
+  afterV2.textContent="v₂' = ?";
+  momentumCheck.textContent="Total momentum before ≈ after";
+});
+
+function microAnimateBalls(v1p,v2p){
+  var start=null;
+  var duration=600;
+  var b1Start=parseFloat(ball1Circle.getAttribute("cx"));
+  var b2Start=parseFloat(ball2Circle.getAttribute("cx"));
+
+  function step(ts){
+    if(!start)start=ts;
+    var t=(ts-start)/duration;
+    if(t>1)t=1;
+    var ease=t<0.5?2*t*t:-1+(4-2*t)*t;
+
+    var dx1=v1p*8*ease;
+    var dx2=v2p*8*ease;
+
+    ball1Circle.setAttribute("cx",b1Start+dx1);
+    document.getElementById("ball1Label").setAttribute("x",b1Start+dx1);
+    ball2Circle.setAttribute("cx",b2Start+dx2);
+    document.getElementById("ball2Label").setAttribute("x",b2Start+dx2);
+
+    updateArrows();
+
+    if(t<1){
+      requestAnimationFrame(step);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+updateTexts();
+updateArrows();
+</script>
+</body>
+</html>
