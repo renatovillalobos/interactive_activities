@@ -1,0 +1,271 @@
+<html>
+<head>
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  height:100%;
+  background:#f0f0f0;
+}
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+svg{
+  width:90vmin;
+  height:90vmin;
+}
+text{
+  font-family:Arial, sans-serif;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 800">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f9fbff"/>
+      <stop offset="100%" stop-color="#e6edf8"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="800" height="800" fill="url(#bgGrad)"/>
+
+  <rect x="60" y="40" width="680" height="80" rx="18" ry="18" fill="#ffffff" stroke="#d0d7e2" stroke-width="1.5"/>
+  <text x="80" y="80" font-size="26" fill="#1b2845" font-weight="bold">Car Crash Test Simulation</text>
+  <text x="80" y="108" font-size="16" fill="#4b5b78">Explore conservation of momentum in a simple collision.</text>
+
+  <rect x="60" y="140" width="320" height="230" rx="16" ry="16" fill="#ffffff" stroke="#cfd6e6" stroke-width="1.5"/>
+  <text x="80" y="172" font-size="18" fill="#1b2845" font-weight="bold">Idea</text>
+  <text x="80" y="200" font-size="15" fill="#394764">Car Crash Test Simulation</text>
+
+  <text x="80" y="236" font-size="17" fill="#1b2845" font-weight="bold">Learning purpose</text>
+  <text x="80" y="262" font-size="14" fill="#4b5b78">Exploring conservation of momentum</text>
+
+  <text x="80" y="296" font-size="17" fill="#1b2845" font-weight="bold">Materials needed</text>
+  <text x="80" y="322" font-size="14" fill="#4b5b78">• Toy cars</text>
+  <text x="80" y="344" font-size="14" fill="#4b5b78">• Ruler</text>
+  <text x="80" y="366" font-size="14" fill="#4b5b78">• Masking tape</text>
+
+  <rect x="400" y="140" width="340" height="480" rx="16" ry="16" fill="#ffffff" stroke="#cfd6e6" stroke-width="1.5"/>
+  <text x="420" y="172" font-size="18" fill="#1b2845" font-weight="bold">Procedure</text>
+  <text x="420" y="198" font-size="14" fill="#4b5b78">
+    <tspan x="420" dy="0">Students will line up two toy cars on a flat</tspan>
+    <tspan x="420" dy="18">surface and secure them with masking tape.</tspan>
+    <tspan x="420" dy="18">They will then release one car to collide with</tspan>
+    <tspan x="420" dy="18">the stationary car. By measuring the</tspan>
+    <tspan x="420" dy="18">velocities and direction before and after</tspan>
+    <tspan x="420" dy="18">the collision, students can calculate the</tspan>
+    <tspan x="420" dy="18">momentum and observe if it is conserved.</tspan>
+  </text>
+
+  <rect x="60" y="390" width="320" height="230" rx="16" ry="16" fill="#ffffff" stroke="#cfd6e6" stroke-width="1.5"/>
+  <text x="80" y="422" font-size="18" fill="#1b2845" font-weight="bold">Simulation</text>
+  <text x="80" y="450" font-size="14" fill="#4b5b78">Drag the moving car to start the crash test.</text>
+  <text x="80" y="470" font-size="14" fill="#4b5b78">Watch the velocities change and see how</text>
+  <text x="80" y="490" font-size="14" fill="#4b5b78">momentum is conserved.</text>
+
+  <rect x="80" y="520" width="280" height="80" rx="12" ry="12" fill="#f3f6ff" stroke="#c0c8e4" stroke-width="1"/>
+  <text x="96" y="546" font-size="13" fill="#1b2845" font-weight="bold">Before collision</text>
+  <text x="96" y="566" font-size="13" fill="#4b5b78">Moving car v = 2 m/s</text>
+  <text x="96" y="586" font-size="13" fill="#4b5b78">Stationary car v = 0 m/s</text>
+
+  <rect x="80" y="610" width="280" height="80" rx="12" ry="12" fill="#f3f6ff" stroke="#c0c8e4" stroke-width="1"/>
+  <text x="96" y="636" font-size="13" fill="#1b2845" font-weight="bold">After collision</text>
+  <text id="afterText1" x="96" y="656" font-size="13" fill="#4b5b78">Moving car v = ?</text>
+  <text id="afterText2" x="96" y="676" font-size="13" fill="#4b5b78">Stationary car v = ?</text>
+
+  <rect x="420" y="420" width="280" height="160" rx="14" ry="14" fill="#f7f9ff" stroke="#cfd6e6" stroke-width="1"/>
+  <text x="438" y="446" font-size="15" fill="#1b2845" font-weight="bold">Total momentum</text>
+  <text x="438" y="468" font-size="14" fill="#4b5b78">Before: p = m·v = 2m</text>
+  <text id="pAfter" x="438" y="492" font-size="14" fill="#4b5b78">After: p = ?</text>
+  <text id="conserveMsg" x="438" y="520" font-size="14" fill="#1b8544" opacity="0">Momentum is conserved!</text>
+
+  <rect x="430" y="600" width="140" height="40" rx="20" ry="20" fill="#2c66ff" id="resetBtnBg"/>
+  <text x="460" y="626" font-size="15" fill="#ffffff" font-weight="bold" id="resetBtnText">Reset</text>
+
+  <g id="track">
+    <rect x="120" y="320" width="560" height="20" rx="10" ry="10" fill="#d3d8e6"/>
+  </g>
+
+  <g id="staticCar">
+    <rect x="560" y="292" width="80" height="40" rx="8" ry="8" fill="#ffb347" stroke="#c68a2b" stroke-width="2"/>
+    <rect x="570" y="300" width="32" height="16" rx="3" ry="3" fill="#ffe6c3"/>
+    <circle cx="580" cy="334" r="8" fill="#333"/>
+    <circle cx="620" cy="334" r="8" fill="#333"/>
+  </g>
+
+  <g id="movingCar" cursor="pointer">
+    <rect id="movingCarBody" x="180" y="292" width="80" height="40" rx="8" ry="8" fill="#4aa3ff" stroke="#2d75c4" stroke-width="2"/>
+    <rect x="190" y="300" width="32" height="16" rx="3" ry="3" fill="#d2ecff"/>
+    <circle cx="190" cy="334" r="8" fill="#333"/>
+    <circle cx="230" cy="334" r="8" fill="#333"/>
+  </g>
+
+  <g id="arrowLeft">
+    <path d="M230 280 L210 280 L210 274 L196 284 L210 294 L210 288 L230 288 Z" fill="#4aa3ff"/>
+  </g>
+
+  <g id="arrowRight">
+    <path d="M590 280 L610 280 L610 274 L624 284 L610 294 L610 288 L590 288 Z" fill="#ffb347" opacity="0.3"/>
+  </g>
+
+  <g id="startButton" cursor="pointer">
+    <rect x="420" y="360" width="120" height="40" rx="20" ry="20" fill="#22a86b"/>
+    <text x="445" y="386" font-size="15" fill="#ffffff" font-weight="bold">Start crash</text>
+  </g>
+
+  <script>
+  const svg = document.querySelector('svg');
+  const movingCar = document.getElementById('movingCar');
+  const movingCarBody = document.getElementById('movingCarBody');
+  const startButton = document.getElementById('startButton');
+  const arrowLeft = document.getElementById('arrowLeft');
+  const arrowRight = document.getElementById('arrowRight');
+  const afterText1 = document.getElementById('afterText1');
+  const afterText2 = document.getElementById('afterText2');
+  const pAfter = document.getElementById('pAfter');
+  const conserveMsg = document.getElementById('conserveMsg');
+  const resetBtnBg = document.getElementById('resetBtnBg');
+  const resetBtnText = document.getElementById('resetBtnText');
+
+  let isDragging = false;
+  let dragOffsetX = 0;
+  let currentX = 180;
+  let animating = false;
+  const minX = 140;
+  const maxX = 480;
+  const collisionX = 460;
+
+  function setCarX(x){
+    movingCar.setAttribute('transform','translate('+(x-180)+',0)');
+    currentX = x;
+  }
+
+  function svgPoint(evt){
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX || (evt.touches && evt.touches[0].clientX) || 0;
+    pt.y = evt.clientY || (evt.touches && evt.touches[0].clientY) || 0;
+    const ctm = svg.getScreenCTM().inverse();
+    return pt.matrixTransform(ctm);
+  }
+
+  function startDrag(evt){
+    if(animating) return;
+    isDragging = true;
+    const p = svgPoint(evt);
+    dragOffsetX = p.x - currentX;
+    movingCarBody.setAttribute('fill','#2f8cff');
+  }
+  function doDrag(evt){
+    if(!isDragging || animating) return;
+    const p = svgPoint(evt);
+    let x = p.x - dragOffsetX;
+    if(x<minX) x=minX;
+    if(x>maxX) x=maxX;
+    setCarX(x);
+  }
+  function endDrag(){
+    if(!isDragging) return;
+    isDragging = false;
+    movingCarBody.setAttribute('fill','#4aa3ff');
+  }
+
+  movingCar.addEventListener('mousedown',startDrag);
+  svg.addEventListener('mousemove',doDrag);
+  window.addEventListener('mouseup',endDrag);
+  movingCar.addEventListener('touchstart',function(e){e.preventDefault();startDrag(e);},{passive:false});
+  svg.addEventListener('touchmove',function(e){e.preventDefault();doDrag(e);},{passive:false});
+  window.addEventListener('touchend',endDrag);
+
+  function animateCrash(){
+    if(animating) return;
+    animating = true;
+    let start = null;
+    const startX = currentX;
+    const endX = collisionX;
+    const duration = 600;
+    arrowLeft.style.opacity = 0.2;
+    function step(ts){
+      if(!start) start = ts;
+      const t = (ts-start)/duration;
+      if(t>=1){
+        setCarX(endX);
+        finishCrash();
+        return;
+      }
+      const eased = t*t*(3-2*t);
+      setCarX(startX + (endX-startX)*eased);
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function finishCrash(){
+    afterText1.textContent = "Moving car v = 0.5 m/s";
+    afterText2.textContent = "Stationary car v = 1.5 m/s";
+    pAfter.textContent = "After: p = 2m";
+    conserveMsg.style.opacity = 0;
+    let start = null;
+    function fade(ts){
+      if(!start) start = ts;
+      const t = (ts-start)/500;
+      if(t>=1){
+        conserveMsg.style.opacity = 1;
+        arrowRight.style.opacity = 0.8;
+        animating = false;
+        return;
+      }
+      conserveMsg.style.opacity = t;
+      arrowRight.style.opacity = 0.3 + 0.5*t;
+      requestAnimationFrame(fade);
+    }
+    requestAnimationFrame(fade);
+  }
+
+  startButton.addEventListener('click',animateCrash);
+
+  function resetSim(){
+    if(animating) return;
+    setCarX(180);
+    afterText1.textContent = "Moving car v = ?";
+    afterText2.textContent = "Stationary car v = ?";
+    pAfter.textContent = "After: p = ?";
+    conserveMsg.style.opacity = 0;
+    arrowRight.style.opacity = 0.3;
+    arrowLeft.style.opacity = 1;
+  }
+
+  function insideResetBox(p){
+    const x = p.x, y = p.y;
+    return x>=430 && x<=570 && y>=600 && y<=640;
+  }
+
+  function resetPress(){
+    resetBtnBg.setAttribute('fill','#244fcc');
+  }
+  function resetRelease(){
+    resetBtnBg.setAttribute('fill','#2c66ff');
+  }
+
+  resetBtnBg.addEventListener('mousedown',function(e){resetPress();});
+  resetBtnText.addEventListener('mousedown',function(e){resetPress();});
+  window.addEventListener('mouseup',function(e){
+    const p = svgPoint(e);
+    if(insideResetBox(p)) resetSim();
+    resetRelease();
+  });
+
+  resetBtnBg.addEventListener('touchstart',function(e){e.preventDefault();resetPress();},{passive:false});
+  resetBtnText.addEventListener('touchstart',function(e){e.preventDefault();resetPress();},{passive:false});
+  window.addEventListener('touchend',function(e){
+    const p = svgPoint(e);
+    if(insideResetBox(p)) resetSim();
+    resetRelease();
+  });
+
+  </script>
+</svg>
+</body>
+</html>
