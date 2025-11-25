@@ -1,0 +1,233 @@
+<html>
+<head>
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background:#f1f3f6;
+}
+.container{
+  width:100vmin;
+  height:100vmin;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+svg{
+  width:100%;
+  height:100%;
+}
+text{
+  font-family:Arial, Helvetica, sans-serif;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<svg viewBox="0 0 800 800">
+<defs>
+  <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset="1" stop-color="#f7f8fb"/>
+  </linearGradient>
+</defs>
+
+<rect x="0" y="0" width="800" height="800" fill="#e4e7ee"/>
+
+<rect x="40" y="40" width="720" height="720" rx="28" ry="28" fill="#d5dae5"/>
+
+<rect x="70" y="70" width="660" height="660" rx="24" ry="24" fill="url(#cardGrad)" stroke="#c3cad8" stroke-width="2"/>
+
+<rect x="70" y="70" width="660" height="90" rx="24" ry="24" fill="#2b3448"/>
+
+<text x="100" y="117" font-size="28" fill="#ffffff" font-weight="bold">Momentum Collision Lab</text>
+<text x="100" y="145" font-size="16" fill="#c7d0e4">Explore how momentum is conserved in different collisions.</text>
+
+<rect x="90" y="190" width="620" height="80" rx="18" ry="18" fill="#eef1f8" stroke="#d7deee" stroke-width="1.5"/>
+<text x="110" y="220" font-size="18" fill="#2b3448" font-weight="bold">Drag each activity into the correct collision type box.</text>
+<text x="110" y="245" font-size="15" fill="#4c5874">Use what you know about elastic and inelastic collisions.</text>
+
+<rect x="90" y="290" width="300" height="60" rx="16" ry="16" fill="#2b3448"/>
+<text x="110" y="326" font-size="20" fill="#ffffff" font-weight="bold">Elastic Collisions</text>
+
+<rect x="410" y="290" width="300" height="60" rx="16" ry="16" fill="#2b3448"/>
+<text x="430" y="326" font-size="20" fill="#ffffff" font-weight="bold">Inelastic Collisions</text>
+
+<g id="drop_elastic">
+  <rect x="90" y="360" width="300" height="320" rx="18" ry="18" fill="#ffffff" stroke="#c9d0e2" stroke-width="2"/>
+  <rect x="105" y="375" width="60" height="18" rx="9" ry="9" fill="#eef1f8"/>
+  <text x="115" y="389" font-size="12" fill="#6a7288">Drop here</text>
+</g>
+
+<g id="drop_inelastic">
+  <rect x="410" y="360" width="300" height="320" rx="18" ry="18" fill="#ffffff" stroke="#c9d0e2" stroke-width="2"/>
+  <rect x="425" y="375" width="60" height="18" rx="9" ry="9" fill="#eef1f8"/>
+  <text x="435" y="389" font-size="12" fill="#6a7288">Drop here</text>
+</g>
+
+<g id="card1" class="draggable" data-answer="elastic">
+  <rect x="110" y="390" width="260" height="120" rx="14" ry="14" fill="#ffffff" stroke="#c9d0e2" stroke-width="1.5"/>
+  <rect x="125" y="405" width="120" height="22" rx="11" ry="11" fill="#eef1f8"/>
+  <text x="133" y="421" font-size="12" fill="#5b6680">Activity 1</text>
+  <text x="125" y="448" font-size="16" fill="#222840" font-weight="bold">Ball Bounce Collision</text>
+  <text x="125" y="472" font-size="12" fill="#5b6680">Observe a small ball bouncing higher</text>
+  <text x="125" y="488" font-size="12" fill="#5b6680">after it collides with a larger ball.</text>
+</g>
+
+<g id="card2" class="draggable" data-answer="inelastic">
+  <rect x="110" y="530" width="260" height="120" rx="14" ry="14" fill="#ffffff" stroke="#c9d0e2" stroke-width="1.5"/>
+  <rect x="125" y="545" width="120" height="22" rx="11" ry="11" fill="#eef1f8"/>
+  <text x="133" y="561" font-size="12" fill="#5b6680">Activity 2</text>
+  <text x="125" y="588" font-size="16" fill="#222840" font-weight="bold">Magnetic Car Crash</text>
+  <text x="125" y="612" font-size="12" fill="#5b6680">Two cars collide and stick together</text>
+  <text x="125" y="628" font-size="12" fill="#5b6680">using magnets on a smooth track.</text>
+</g>
+
+<g id="card3" class="draggable" data-answer="elastic">
+  <rect x="110" y="670" width="260" height="120" rx="14" ry="14" fill="#ffffff" stroke="#c9d0e2" stroke-width="1.5"/>
+  <rect x="125" y="685" width="120" height="22" rx="11" ry="11" fill="#eef1f8"/>
+  <text x="133" y="701" font-size="12" fill="#5b6680">Activity 3</text>
+  <text x="125" y="728" font-size="16" fill="#222840" font-weight="bold">Velocity Prediction Challenge</text>
+  <text x="125" y="752" font-size="12" fill="#5b6680">Predict and test post-collision</text>
+  <text x="125" y="768" font-size="12" fill="#5b6680">velocities of different masses.</text>
+</g>
+
+<g id="checkButton">
+  <rect x="520" y="705" width="190" height="50" rx="25" ry="25" fill="#2b7cff"/>
+  <text x="545" y="737" font-size="18" fill="#ffffff" font-weight="bold">Check Answers</text>
+</g>
+
+<text id="feedback" x="410" y="690" text-anchor="middle" font-size="16" fill="#2b3448"></text>
+
+</svg>
+</div>
+<script>
+(function(){
+  const svg = document.querySelector('svg');
+  const cards = Array.from(document.querySelectorAll('.draggable'));
+  const dropElastic = document.getElementById('drop_elastic').getBBox();
+  const dropInelastic = document.getElementById('drop_inelastic').getBBox();
+  const feedback = document.getElementById('feedback');
+  const checkButton = document.getElementById('checkButton');
+  const cardData = new Map();
+
+  cards.forEach(c=>{
+    const box = c.getBBox();
+    cardData.set(c.id,{
+      homeX: box.x,
+      homeY: box.y,
+      placedZone:null,
+      locked:false
+    });
+  });
+
+  let current = null;
+  let offset = {x:0,y:0};
+
+  function getPoint(evt){
+    const pt = svg.createSVGPoint();
+    pt.x = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    pt.y = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  function startDrag(evt){
+    const target = evt.currentTarget;
+    const data = cardData.get(target.id);
+    if(data.locked) return;
+    current = target;
+    const box = target.getBBox();
+    const p = getPoint(evt);
+    offset.x = p.x - box.x;
+    offset.y = p.y - box.y;
+    target.parentNode.appendChild(target);
+    target.style.transition = 'none';
+  }
+
+  function drag(evt){
+    if(!current) return;
+    evt.preventDefault();
+    const p = getPoint(evt);
+    const x = p.x - offset.x;
+    const y = p.y - offset.y;
+    current.setAttribute('transform',`translate(${x - cardData.get(current.id).homeX},${y - cardData.get(current.id).homeY})`);
+  }
+
+  function endDrag(){
+    if(!current) return;
+    const data = cardData.get(current.id);
+    const box = current.getBBox();
+    let zone = null;
+    const cx = box.x + box.width/2;
+    const cy = box.y + box.height/2;
+
+    function inBox(b){
+      return cx>b.x && cx<b.x+b.width && cy>b.y && cy<b.y+b.height;
+    }
+    if(inBox(dropElastic)) zone='elastic';
+    else if(inBox(dropInelastic)) zone='inelastic';
+
+    if(zone){
+      data.placedZone = zone;
+      let targetBox = zone==='elastic'?dropElastic:dropInelastic;
+      const existing = cards.filter(c=>cardData.get(c.id).placedZone===zone);
+      const index = existing.length-1>=0?existing.length-1:0;
+      const padX = 15;
+      const padY = 30;
+      const rowH = 130;
+      const colW = 270;
+      const col = index%1;
+      const row = index;
+      const newX = targetBox.x + padX + col*colW;
+      const newY = targetBox.y + padY + row*rowH;
+      const dx = newX - data.homeX;
+      const dy = newY - data.homeY;
+      current.style.transition = 'transform 0.2s';
+      current.setAttribute('transform',`translate(${dx},${dy})`);
+    }else{
+      data.placedZone = null;
+      current.style.transition = 'transform 0.2s';
+      current.setAttribute('transform','translate(0,0)');
+    }
+    current = null;
+  }
+
+  cards.forEach(c=>{
+    c.addEventListener('mousedown',startDrag);
+    c.addEventListener('touchstart',startDrag,{passive:false});
+  });
+  window.addEventListener('mousemove',drag);
+  window.addEventListener('touchmove',drag,{passive:false});
+  window.addEventListener('mouseup',endDrag);
+  window.addEventListener('touchend',endDrag);
+
+  checkButton.addEventListener('mousedown',check);
+  checkButton.addEventListener('touchstart',function(e){e.preventDefault();check();});
+
+  function check(){
+    let correct=0;
+    let total=cards.length;
+    cards.forEach(c=>{
+      const data = cardData.get(c.id);
+      const ans = c.getAttribute('data-answer');
+      if(data.placedZone===ans){
+        correct++;
+      }
+    });
+    if(correct===total){
+      feedback.textContent="All matched correctly! Momentum is conserved.";
+      cards.forEach(c=>{
+        const d = cardData.get(c.id);
+        d.locked=true;
+      });
+    }else{
+      feedback.textContent=correct+" of "+total+" correct. Try adjusting your matches.";
+    }
+  }
+})();
+</script>
+</body>
+</html>
