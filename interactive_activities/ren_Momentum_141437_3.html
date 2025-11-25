@@ -1,0 +1,225 @@
+<html>
+<head>
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  background:#f3f4f6;
+  height:100%;
+}
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+svg{
+  width:96vmin;
+  height:96vmin;
+}
+text{
+  font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 900 900">
+  <defs>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="900" fill="#e5e7eb"/>
+
+  <rect x="60" y="60" width="780" height="780" rx="32" fill="#0f172a"/>
+
+  <rect x="80" y="80" width="740" height="120" rx="20" fill="url(#cardGrad)" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="110" y="125" fill="#0f172a" font-size="26" font-weight="600">Momentum Collision Lab</text>
+  <text x="110" y="160" fill="#4b5563" font-size="16">Drag each experiment idea into the correct collision type box.</text>
+
+  <rect x="80" y="220" width="740" height="260" rx="22" fill="url(#cardGrad)" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="110" y="255" fill="#0f172a" font-size="22" font-weight="600">Experiment Ideas</text>
+
+  <g id="card1" class="draggable" cursor="pointer">
+    <rect x="110" y="280" width="660" height="70" rx="16" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+    <text x="140" y="325" fill="#111827" font-size="20" font-weight="600">Ball Bounce Collision</text>
+  </g>
+
+  <g id="card2" class="draggable" cursor="pointer">
+    <rect x="110" y="365" width="660" height="70" rx="16" fill="#ecfeff" stroke="#06b6d4" stroke-width="1.5"/>
+    <text x="140" y="410" fill="#111827" font-size="20" font-weight="600">Magnetic Car Crash</text>
+  </g>
+
+  <g id="card3" class="draggable" cursor="pointer">
+    <rect x="110" y="450" width="660" height="70" rx="16" fill="#fef9c3" stroke="#eab308" stroke-width="1.5"/>
+    <text x="140" y="495" fill="#111827" font-size="20" font-weight="600">Velocity Prediction Challenge</text>
+  </g>
+
+  <rect x="80" y="500" width="360" height="300" rx="22" fill="url(#cardGrad)" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="110" y="540" fill="#0f172a" font-size="20" font-weight="600">Elastic Collisions</text>
+  <rect id="dropElastic" x="100" y="560" width="320" height="220" rx="16" fill="#f9fafb" stroke="#cbd5f5" stroke-width="2" stroke-dasharray="6 6"/>
+
+  <rect x="460" y="500" width="360" height="300" rx="22" fill="url(#cardGrad)" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="490" y="540" fill="#0f172a" font-size="20" font-weight="600">Inelastic Collisions</text>
+  <rect id="dropInelastic" x="480" y="560" width="320" height="220" rx="16" fill="#f9fafb" stroke="#fecaca" stroke-width="2" stroke-dasharray="6 6"/>
+
+  <g id="feedbackArea">
+    <rect x="250" y="820" width="400" height="40" rx="20" fill="#0f172a" opacity="0.0"/>
+    <text id="feedbackText" x="450" y="846" text-anchor="middle" fill="#f9fafb" font-size="16" opacity="0.0">Placeholder</text>
+  </g>
+
+  <g id="checkButton" cursor="pointer">
+    <rect x="640" y="110" width="160" height="50" rx="999" fill="#22c55e"/>
+    <text x="720" y="142" text-anchor="middle" fill="white" font-size="18" font-weight="600">Check Answers</text>
+  </g>
+
+  <script><![CDATA[
+    const svg = document.querySelector('svg');
+    const ns = 'http://www.w3.org/2000/svg';
+
+    const cards = {
+      card1:{el:document.getElementById('card1'), correct:'elastic'},
+      card2:{el:document.getElementById('card2'), correct:'inelastic'},
+      card3:{el:document.getElementById('card3'), correct:null}
+    };
+
+    const dropElastic = document.getElementById('dropElastic');
+    const dropInelastic = document.getElementById('dropInelastic');
+    const checkButton = document.getElementById('checkButton');
+    const feedbackText = document.getElementById('feedbackText');
+    const feedbackBg = document.querySelector('#feedbackArea rect');
+
+    const dropZones = [
+      {type:'elastic', el:dropElastic},
+      {type:'inelastic', el:dropInelastic}
+    ];
+
+    Object.values(cards).forEach(c=>{
+      const bbox = c.el.getBBox();
+      c.home = {x:bbox.x,y:bbox.y};
+      c.placed = null;
+    });
+
+    let active = null;
+    let offset = {x:0,y:0};
+
+    function pt(evt){
+      const p = svg.createSVGPoint();
+      p.x = evt.touches ? evt.touches[0].clientX : evt.clientX;
+      p.y = evt.touches ? evt.touches[0].clientY : evt.clientY;
+      return p.matrixTransform(svg.getScreenCTM().inverse());
+    }
+
+    function onDown(evt){
+      const id = evt.currentTarget.id;
+      const card = cards[id];
+      if(card.locked) return;
+      active = card;
+      const p = pt(evt);
+      const bbox = card.el.getBBox();
+      offset.x = p.x - bbox.x;
+      offset.y = p.y - bbox.y;
+      card.el.parentNode.appendChild(card.el);
+      evt.preventDefault();
+    }
+
+    function onMove(evt){
+      if(!active) return;
+      const p = pt(evt);
+      const x = p.x - offset.x;
+      const y = p.y - offset.y;
+      active.el.setAttribute('transform','translate('+(x-active.home.x)+','+(y-active.home.y)+')');
+    }
+
+    function hitTest(card, zoneEl){
+      const cb = card.el.getBBox();
+      const z = zoneEl.getBBox();
+      const cx = cb.x + cb.width/2;
+      const cy = cb.y + cb.height/2;
+      return cx>z.x && cx<z.x+z.width && cy>z.y && cy<z.y+z.height;
+    }
+
+    function animateSnap(card, targetX, targetY){
+      const bbox = card.el.getBBox();
+      const startX = bbox.x;
+      const startY = bbox.y;
+      const dx = targetX - startX;
+      const dy = targetY - startY;
+      const start = performance.now();
+      const dur = 150;
+      function step(ts){
+        const t = Math.min(1,(ts-start)/dur);
+        const e = t<0.5?2*t*t:-1+(4-2*t)*t;
+        const nx = startX + dx*e;
+        const ny = startY + dy*e;
+        card.el.setAttribute('transform','translate('+(nx-card.home.x)+','+(ny-card.home.y)+')');
+        if(t<1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    function onUp(evt){
+      if(!active) return;
+      let placed = null;
+      for(const dz of dropZones){
+        if(hitTest(active, dz.el)){
+          active.placed = dz.type;
+          const z = dz.el.getBBox();
+          const targetX = z.x + 10;
+          const targetY = z.y + 10 + (dz.type==='elastic'?0:80);
+          animateSnap(active, targetX, targetY);
+          placed = dz.type;
+          break;
+        }
+      }
+      if(!placed){
+        active.placed = null;
+        animateSnap(active, active.home.x, active.home.y);
+      }
+      active = null;
+    }
+
+    Object.values(cards).forEach(c=>{
+      c.el.addEventListener('mousedown',onDown);
+      c.el.addEventListener('touchstart',onDown,{passive:false});
+    });
+    window.addEventListener('mousemove',onMove);
+    window.addEventListener('touchmove',onMove,{passive:false});
+    window.addEventListener('mouseup',onUp);
+    window.addEventListener('touchend',onUp);
+
+    function setFeedback(text,color){
+      feedbackText.textContent = text;
+      feedbackText.setAttribute('fill','#f9fafb');
+      feedbackBg.setAttribute('fill',color);
+      feedbackBg.setAttribute('opacity','0.95');
+      feedbackText.setAttribute('opacity','1');
+      feedbackBg.setAttribute('transform','scale(1.02)');
+      setTimeout(()=>{
+        feedbackBg.setAttribute('transform','scale(1)');
+      },120);
+    }
+
+    checkButton.addEventListener('mousedown',check);
+    checkButton.addEventListener('touchstart',function(e){e.preventDefault();check();},{passive:false});
+
+    function check(){
+      let correct = 0;
+      let total = 0;
+      Object.entries(cards).forEach(([id,c])=>{
+        if(c.correct){
+          total++;
+          if(c.placed===c.correct) correct++;
+        }
+      });
+      if(correct===total){
+        setFeedback('Nice! The collisions are sorted correctly.','#16a34a');
+      }else{
+        setFeedback('Try again: drag each idea to the correct box.','#dc2626');
+      }
+    }
+  ]]></script>
+</svg>
+</body>
+</html>
