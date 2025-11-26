@@ -1,0 +1,200 @@
+<html>
+<head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #f0f0f0;
+  height: 100%;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+svg {
+  width: min(100vw, 100vh);
+  height: min(100vw, 100vh);
+  touch-action: none;
+  -ms-touch-action: none;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+
+<rect x="0" y="0" width="800" height="800" fill="#E6F2FF"/>
+
+<rect x="60" y="40" width="680" height="80" rx="16" ry="16" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2"/>
+<text x="400" y="78" text-anchor="middle" font-family="Arial" font-size="26" fill="#333333">Magnet Maze Challenge</text>
+<text x="400" y="106" text-anchor="middle" font-family="Arial" font-size="16" fill="#666666">Guide the metal object through the maze using the magnet.</text>
+
+<rect x="60" y="150" width="380" height="180" rx="14" ry="14" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2"/>
+<text x="80" y="182" font-family="Arial" font-size="18" fill="#333333">Materials</text>
+<rect x="80" y="192" width="60" height="2" fill="#4A90E2"/>
+<text x="80" y="220" font-family="Arial" font-size="14" fill="#555555">• Paper</text>
+<text x="80" y="244" font-family="Arial" font-size="14" fill="#555555">• Magnets</text>
+<text x="80" y="268" font-family="Arial" font-size="14" fill="#555555">• Small metal objects</text>
+
+<rect x="460" y="150" width="280" height="180" rx="14" ry="14" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2"/>
+<text x="480" y="182" font-family="Arial" font-size="18" fill="#333333">Goal</text>
+<rect x="480" y="192" width="40" height="2" fill="#4A90E2"/>
+<text x="480" y="220" font-family="Arial" font-size="14" fill="#555555">Use magnetic attraction</text>
+<text x="480" y="244" font-family="Arial" font-size="14" fill="#555555">and repulsion to move a</text>
+<text x="480" y="268" font-family="Arial" font-size="14" fill="#555555">metal object through the</text>
+<text x="480" y="292" font-family="Arial" font-size="14" fill="#555555">maze without touching walls.</text>
+
+<rect x="60" y="350" width="680" height="390" rx="18" ry="18" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="2"/>
+
+<rect x="90" y="380" width="450" height="330" rx="20" ry="20" fill="#FDFDFD" stroke="#CCCCCC" stroke-width="2"/>
+
+<path d="M120 410 H510" stroke="#4A90E2" stroke-width="16" fill="none" stroke-linecap="round"/>
+<path d="M120 410 V680" stroke="#4A90E2" stroke-width="16" fill="none" stroke-linecap="round"/>
+<path d="M120 680 H510" stroke="#4A90E2" stroke-width="16" fill="none" stroke-linecap="round"/>
+<path d="M510 410 V680" stroke="#4A90E2" stroke-width="16" fill="none" stroke-linecap="round"/>
+
+<path d="M200 410 V600" stroke="#4A90E2" stroke-width="16" fill="none" stroke-linecap="round"/>
+<path d="M200 600 H430" stroke="#4A90E2" stroke-width="16" fill="none" stroke-linecap="round"/>
+<path d="M430 440 V680" stroke="#4A90E2" stroke-width="16" fill="none" stroke-linecap="round"/>
+
+<path d="M280 680 V520" stroke="#4A90E2" stroke-width="16" fill="none" stroke-linecap="round"/>
+<path d="M280 520 H350" stroke="#4A90E2" stroke-width="16" fill="none" stroke-linecap="round"/>
+<path d="M350 520 V440" stroke="#4A90E2" stroke-width="16" fill="none" stroke-linecap="round"/>
+
+<rect x="122" y="432" width="44" height="44" rx="10" ry="10" fill="#E2F7E2" stroke="#7ED321" stroke-width="3"/>
+<text x="144" y="459" font-family="Arial" font-size="14" fill="#4A4A4A" text-anchor="middle">START</text>
+
+<rect x="446" y="634" width="44" height="44" rx="10" ry="10" fill="#FFEED6" stroke="#F5A623" stroke-width="3"/>
+<text x="468" y="661" font-family="Arial" font-size="14" fill="#4A4A4A" text-anchor="middle">END</text>
+
+<g id="metalObject" cursor="pointer">
+<circle cx="144" cy="454" r="12" fill="#BBBBBB" stroke="#888888" stroke-width="2"/>
+<circle cx="140" cy="450" r="3" fill="#FFFFFF" opacity="0.7"/>
+</g>
+
+<g id="magnet" cursor="pointer">
+<rect x="320" y="390" width="70" height="40" rx="18" ry="18" fill="#D0021B"/>
+<rect x="320" y="390" width="22" height="40" rx="18" ry="18" fill="#FFFFFF"/>
+<rect x="368" y="390" width="22" height="40" rx="18" ry="18" fill="#FFFFFF"/>
+<text x="342" y="416" font-family="Arial" font-size="12" fill="#333333" text-anchor="middle">N</text>
+<text x="388" y="416" font-family="Arial" font-size="12" fill="#333333" text-anchor="middle">S</text>
+</g>
+
+<rect x="560" y="380" width="160" height="120" rx="12" ry="12" fill="#F9FAFF" stroke="#CCCCCC" stroke-width="2"/>
+<text x="580" y="410" font-family="Arial" font-size="18" fill="#333333">Magnet</text>
+<rect x="580" y="420" width="60" height="2" fill="#4A90E2"/>
+<text x="580" y="448" font-family="Arial" font-size="13" fill="#555555">Drag the magnet</text>
+<text x="580" y="468" font-family="Arial" font-size="13" fill="#555555">to pull the metal</text>
+<text x="580" y="488" font-family="Arial" font-size="13" fill="#555555">object through</text>
+<text x="580" y="508" font-family="Arial" font-size="13" fill="#555555">the maze.</text>
+
+<rect x="560" y="520" width="160" height="80" rx="12" ry="12" fill="#F9FAFF" stroke="#CCCCCC" stroke-width="2"/>
+<text x="580" y="548" font-family="Arial" font-size="18" fill="#333333">Status</text>
+<rect x="580" y="558" width="60" height="2" fill="#4A90E2"/>
+<text id="statusText" x="580" y="586" font-family="Arial" font-size="14" fill="#999999">Move to END zone</text>
+
+<g id="resetButton" cursor="pointer">
+<rect x="560" y="620" width="160" height="60" rx="16" ry="16" fill="#4A90E2"/>
+<text x="640" y="655" text-anchor="middle" font-family="Arial" font-size="18" fill="#FFFFFF">Reset</text>
+</g>
+
+<script>
+var svg = document.querySelector("svg");
+var magnet = document.getElementById("magnet");
+var metal = document.getElementById("metalObject");
+var statusText = document.getElementById("statusText");
+var resetButton = document.getElementById("resetButton");
+
+var draggingMagnet = false;
+var offset = {x:0,y:0};
+var magnetPos = {x:320+35,y:390+20};
+var metalPos = {x:144,y:454};
+var metalLocked = false;
+
+function setMagnetTransform(){
+  magnet.setAttribute("transform","translate("+(magnetPos.x-355)+","+(magnetPos.y-410)+")");
+}
+function setMetalTransform(){
+  metal.setAttribute("transform","translate("+(metalPos.x-144)+","+(metalPos.y-454)+")");
+}
+
+setMagnetTransform();
+setMetalTransform();
+
+function getPoint(evt){
+  var pt = svg.createSVGPoint();
+  pt.x = evt.clientX;
+  pt.y = evt.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+magnet.addEventListener("pointerdown",function(evt){
+  draggingMagnet = true;
+  var p = getPoint(evt);
+  offset.x = p.x - magnetPos.x;
+  offset.y = p.y - magnetPos.y;
+  magnet.style.transition="none";
+  metal.style.transition="none";
+  svg.setPointerCapture(evt.pointerId);
+});
+
+svg.addEventListener("pointermove",function(evt){
+  if(!draggingMagnet || metalLocked) return;
+  var p = getPoint(evt);
+  magnetPos.x = p.x - offset.x;
+  magnetPos.y = p.y - offset.y;
+  setMagnetTransform();
+
+  var dx = magnetPos.x - metalPos.x;
+  var dy = magnetPos.y - metalPos.y;
+  var dist = Math.sqrt(dx*dx+dy*dy);
+  var maxInfluence = 120;
+  if(dist < 4) dist = 4;
+  if(dist < maxInfluence){
+    var strength = (maxInfluence-dist)/maxInfluence;
+    var step = 3*strength;
+    metalPos.x += (dx/dist)*step;
+    metalPos.y += (dy/dist)*step;
+    keepMetalInBounds();
+    setMetalTransform();
+    checkEndZone();
+  }
+});
+
+svg.addEventListener("pointerup",function(evt){
+  draggingMagnet = false;
+  svg.releasePointerCapture(evt.pointerId);
+});
+
+function keepMetalInBounds(){
+  if(metalPos.x < 132) metalPos.x = 132;
+  if(metalPos.x > 498) metalPos.x = 498;
+  if(metalPos.y < 422) metalPos.y = 422;
+  if(metalPos.y > 668) metalPos.y = 668;
+}
+
+function checkEndZone(){
+  if(metalLocked) return;
+  if(metalPos.x > 446 && metalPos.x < 490 && metalPos.y > 634 && metalPos.y < 678){
+    metalLocked = true;
+    statusText.textContent = "Reached END! Well done.";
+    statusText.setAttribute("fill","#7ED321");
+  }
+}
+
+resetButton.addEventListener("pointerdown",function(){
+  magnetPos = {x:320+35,y:390+20};
+  metalPos = {x:144,y:454};
+  metalLocked = false;
+  magnet.style.transition="transform 0.2s";
+  metal.style.transition="transform 0.2s";
+  setMagnetTransform();
+  setMetalTransform();
+  statusText.textContent = "Move to END zone";
+  statusText.setAttribute("fill","#999999");
+});
+</script>
+
+</svg>
+</body>
+</html>
