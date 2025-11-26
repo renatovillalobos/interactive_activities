@@ -1,0 +1,261 @@
+<html>
+<head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  height: 100%;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+svg {
+  width: 95vmin;
+  height: 95vmin;
+}
+text {
+  font-family: Arial, sans-serif;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 800 800">
+  <rect x="0" y="0" width="800" height="800" fill="#F4F6FB"/>
+  <rect x="60" y="40" width="680" height="720" rx="24" ry="24" fill="#FFFFFF" stroke="#D4DAE8" stroke-width="2"/>
+
+  <text x="400" y="95" text-anchor="middle" font-size="28" fill="#222841" font-weight="bold">
+    Magnetic Sorting Game
+  </text>
+
+  <rect x="100" y="130" width="600" height="80" rx="16" ry="16" fill="#EEF2FF" stroke="#CED5F5" stroke-width="1.5"/>
+  <text x="120" y="160" font-size="18" fill="#3A4166" font-weight="bold">
+    Goal:
+  </text>
+  <text x="170" y="160" font-size="18" fill="#3A4166">
+    Sort objects by whether they are magnetic or non-magnetic.
+  </text>
+  <text x="120" y="190" font-size="16" fill="#505A7A">
+    Drag each object into the correct container, then release it.
+  </text>
+
+  <rect x="90" y="240" width="620" height="220" rx="18" ry="18" fill="#FFFFFF" stroke="#E0E4F0" stroke-width="1.5"/>
+  <text x="110" y="270" font-size="18" fill="#253153" font-weight="bold">
+    Materials
+  </text>
+
+  <g id="object-nail" cursor="pointer">
+    <rect x="130" y="300" width="80" height="60" rx="12" ry="12" fill="#F6F7FC" stroke="#D6DBF0" stroke-width="1.5"/>
+    <rect x="148" y="323" width="44" height="6" rx="3" ry="3" fill="#9AA3B8"/>
+    <rect x="184" y="320" width="8" height="12" rx="3" ry="3" fill="#C0C6D8"/>
+    <text x="170" y="353" text-anchor="middle" font-size="14" fill="#2B3354">
+      Nail
+    </text>
+  </g>
+
+  <g id="object-paperclip" cursor="pointer">
+    <rect x="250" y="300" width="80" height="60" rx="12" ry="12" fill="#F6F7FC" stroke="#D6DBF0" stroke-width="1.5"/>
+    <path d="M278 318c0-6 4-10 10-10h4c6 0 10 4 10 10v16c0 6-4 10-10 10h-4c-6 0-10-4-10-10v-10c0-4 2-6 6-6h2c4 0 6 2 6 6v10" fill="none" stroke="#8D97B4" stroke-width="3"/>
+    <text x="290" y="353" text-anchor="middle" font-size="14" fill="#2B3354">
+      Paperclip
+    </text>
+  </g>
+
+  <g id="object-coin" cursor="pointer">
+    <rect x="370" y="300" width="80" height="60" rx="12" ry="12" fill="#F6F7FC" stroke="#D6DBF0" stroke-width="1.5"/>
+    <circle cx="410" cy="323" r="13" fill="#F3D88B" stroke="#C7A85A" stroke-width="2"/>
+    <text x="410" y="354" text-anchor="middle" font-size="14" fill="#2B3354">
+      Coin
+    </text>
+  </g>
+
+  <g id="object-plastic" cursor="pointer">
+    <rect x="490" y="300" width="80" height="60" rx="12" ry="12" fill="#F6F7FC" stroke="#D6DBF0" stroke-width="1.5"/>
+    <rect x="503" y="315" width="54" height="22" rx="6" ry="6" fill="#FFB5B5" stroke="#E38989" stroke-width="1.5"/>
+    <text x="530" y="353" text-anchor="middle" font-size="14" fill="#2B3354">
+      Plastic toy
+    </text>
+  </g>
+
+  <g id="object-eraser" cursor="pointer">
+    <rect x="610" y="300" width="80" height="60" rx="12" ry="12" fill="#F6F7FC" stroke="#D6DBF0" stroke-width="1.5"/>
+    <rect x="623" y="317" width="35" height="18" rx="4" ry="4" fill="#FFD6A3" stroke="#E8AF6C" stroke-width="1.5"/>
+    <rect x="658" y="317" width="12" height="18" rx="3" ry="3" fill="#F5F5F5" stroke="#D3D3D3" stroke-width="1"/>
+    <text x="650" y="353" text-anchor="middle" font-size="14" fill="#2B3354">
+      Eraser
+    </text>
+  </g>
+
+  <rect x="90" y="480" width="620" height="260" rx="18" ry="18" fill="#FFFFFF" stroke="#E0E4F0" stroke-width="1.5"/>
+  <text x="110" y="510" font-size="18" fill="#253153" font-weight="bold">
+    Sort the objects
+  </text>
+
+  <rect x="130" y="530" width="240" height="190" rx="16" ry="16" fill="#E9F3FF" stroke="#AAC6F5" stroke-width="2"/>
+  <text x="250" y="558" text-anchor="middle" font-size="18" fill="#204A84" font-weight="bold">
+    Magnetic
+  </text>
+  <rect x="170" y="580" width="160" height="90" rx="10" ry="10" fill="#FFFFFF" stroke="#C7D6F5" stroke-width="1.5"/>
+
+  <rect x="430" y="530" width="240" height="190" rx="16" ry="16" fill="#FFF5E6" stroke="#F3C98B" stroke-width="2"/>
+  <text x="550" y="558" text-anchor="middle" font-size="18" fill="#8A4A10" font-weight="bold">
+    Non-magnetic
+  </text>
+  <rect x="470" y="580" width="160" height="90" rx="10" ry="10" fill="#FFFFFF" stroke="#F0CF9B" stroke-width="1.5"/>
+
+  <g id="feedback-group" opacity="0">
+    <rect x="260" y="690" width="280" height="40" rx="12" ry="12" fill="#E4F8E8" stroke="#7AC68A" stroke-width="1.5"/>
+    <text id="feedback-text" x="400" y="717" text-anchor="middle" font-size="16" fill="#256435">
+      All objects sorted correctly!
+    </text>
+  </g>
+
+  <g id="check-button" cursor="pointer">
+    <rect x="320" y="430" width="160" height="40" rx="20" ry="20" fill="#3F5CF4"/>
+    <text x="400" y="456" text-anchor="middle" font-size="18" fill="#FFFFFF" font-weight="bold">
+      Check
+    </text>
+  </g>
+
+  <script>
+  const svg = document.querySelector('svg');
+
+  const dropZones = {
+    magnetic: {x:170, y:580, width:160, height:90},
+    nonmagnetic: {x:470, y:580, width:160, height:90}
+  };
+
+  const objectTargets = {
+    'object-nail': 'magnetic',
+    'object-paperclip': 'magnetic',
+    'object-coin': 'magnetic',
+    'object-plastic': 'nonmagnetic',
+    'object-eraser': 'nonmagnetic'
+  };
+
+  const startPositions = {};
+  ['object-nail','object-paperclip','object-coin','object-plastic','object-eraser'].forEach(id => {
+    const g = document.getElementById(id);
+    const bbox = g.getBBox();
+    startPositions[id] = {x:bbox.x, y:bbox.y};
+    g.dataset.homeX = bbox.x;
+    g.dataset.homeY = bbox.y;
+    g.dataset.locked = 'false';
+  });
+
+  let selected = null;
+  let offset = {x:0, y:0};
+
+  function svgPoint(evt) {
+    const pt = svg.createSVGPoint();
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    const res = pt.matrixTransform(svg.getScreenCTM().inverse());
+    return res;
+  }
+
+  function startDrag(evt) {
+    const g = evt.currentTarget;
+    if (g.dataset.locked === 'true') return;
+    selected = g;
+    const pt = svgPoint(evt);
+    const bbox = g.getBBox();
+    offset.x = pt.x - bbox.x;
+    offset.y = pt.y - bbox.y;
+    g.style.transition = 'none';
+    g.setAttribute('opacity','0.9');
+  }
+
+  function drag(evt) {
+    if (!selected) return;
+    evt.preventDefault();
+    const pt = svgPoint(evt);
+    const x = pt.x - offset.x;
+    const y = pt.y - offset.y;
+    selected.setAttribute('transform',`translate(${x - startPositions[selected.id].x},${y - startPositions[selected.id].y})`);
+  }
+
+  function endDrag(evt) {
+    if (!selected) return;
+    const g = selected;
+    const pt = svgPoint(evt);
+    const bbox = g.getBBox();
+    const centerX = pt.x;
+    const centerY = pt.y;
+    let placed = false;
+    for (const zoneName in dropZones) {
+      const z = dropZones[zoneName];
+      if (centerX >= z.x && centerX <= z.x+z.width &&
+          centerY >= z.y && centerY <= z.y+z.height) {
+        g.dataset.zone = zoneName;
+        const targetX = z.x + z.width/2 - (bbox.width/2);
+        const targetY = z.y + z.height/2 - (bbox.height/2);
+        g.style.transition = 'transform 0.15s ease-out';
+        g.setAttribute('transform',`translate(${targetX - startPositions[g.id].x},${targetY - startPositions[g.id].y})`);
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      g.dataset.zone = '';
+      g.style.transition = 'transform 0.15s ease-out';
+      g.setAttribute('transform','translate(0,0)');
+    }
+    g.setAttribute('opacity','1');
+    selected = null;
+  }
+
+  ['object-nail','object-paperclip','object-coin','object-plastic','object-eraser'].forEach(id => {
+    const g = document.getElementById(id);
+    g.addEventListener('pointerdown', startDrag);
+  });
+  svg.addEventListener('pointermove', drag);
+  svg.addEventListener('pointerup', endDrag);
+  svg.addEventListener('pointerleave', endDrag);
+
+  const checkButton = document.getElementById('check-button');
+  const feedbackGroup = document.getElementById('feedback-group');
+  const feedbackText = document.getElementById('feedback-text');
+
+  checkButton.addEventListener('pointerdown', ()=>{
+    let allCorrect = true;
+    let allPlaced = true;
+    for (const id in objectTargets) {
+      const g = document.getElementById(id);
+      const zone = g.dataset.zone || '';
+      if (!zone) {
+        allPlaced = false;
+        allCorrect = false;
+      } else if (zone !== objectTargets[id]) {
+        allCorrect = false;
+      }
+    }
+    if (allCorrect) {
+      feedbackText.textContent = 'All objects sorted correctly!';
+      feedbackText.setAttribute('fill','#256435');
+      feedbackGroup.setAttribute('opacity','1');
+      for (const id in objectTargets) {
+        const g = document.getElementById(id);
+        g.dataset.locked = 'true';
+      }
+    } else if (!allPlaced) {
+      feedbackText.textContent = 'Place every object into a container.';
+      feedbackText.setAttribute('fill','#8A4A10');
+      feedbackGroup.setAttribute('opacity','1');
+    } else {
+      feedbackText.textContent = 'Some objects are in the wrong container.';
+      feedbackText.setAttribute('fill','#8A1C1C');
+      feedbackGroup.setAttribute('opacity','1');
+    }
+
+    checkButton.querySelector('rect').setAttribute('fill','#2F46C8');
+    setTimeout(()=>{
+      checkButton.querySelector('rect').setAttribute('fill','#3F5CF4');
+    },150);
+  });
+  </script>
+</svg>
+</body>
+</html>
