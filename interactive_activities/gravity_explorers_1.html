@@ -1,0 +1,285 @@
+<html>
+<head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #f3f3f3;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+svg {
+  width: 90vmin;
+  height: 90vmin;
+}
+text {
+  font-family: Arial, sans-serif;
+}
+button {
+  font-family: inherit;
+}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 600 600">
+  <defs>
+    <style type="text/css"><![CDATA[
+      .title { font-size: 24px; font-weight: bold; fill:#222222; }
+      .subtitle { font-size: 14px; fill:#444444; }
+      .label { font-size: 13px; fill:#333333; }
+      .small { font-size: 12px; fill:#555555; }
+      .btn-text { font-size: 14px; fill:#ffffff; font-weight: bold; }
+    ]]></style>
+  </defs>
+
+  <rect x="0" y="0" width="600" height="600" fill="#e6eef7"/>
+
+  <rect x="40" y="40" width="520" height="520" rx="20" ry="20" fill="#ffffff" stroke="#c5d0e0" stroke-width="2"/>
+
+  <text x="60" y="80" class="title">Gravity Drop Challenge</text>
+  <text x="60" y="105" class="subtitle">Compare how different masses fall under gravity</text>
+
+  <rect x="60" y="130" width="220" height="150" rx="12" ry="12" fill="#f7f9fc" stroke="#d4deed" stroke-width="1.5"/>
+  <text x="75" y="155" class="label">Materials</text>
+  <circle cx="80" cy="180" r="3" fill="#4a6fb5"/>
+  <text x="90" y="184" class="small">Feather</text>
+  <circle cx="80" cy="205" r="3" fill="#4a6fb5"/>
+  <text x="90" y="209" class="small">Rock</text>
+  <circle cx="80" cy="230" r="3" fill="#4a6fb5"/>
+  <text x="90" y="234" class="small">Ball</text>
+  <circle cx="80" cy="255" r="3" fill="#4a6fb5"/>
+  <text x="90" y="259" class="small">Ruler</text>
+
+  <rect x="60" y="300" width="220" height="230" rx="12" ry="12" fill="#f7f9fc" stroke="#d4deed" stroke-width="1.5"/>
+  <text x="75" y="325" class="label">Procedure</text>
+  <text x="75" y="350" class="small">1. Gather a feather, a rock, and a ball</text>
+  <text x="75" y="370" class="small">2. Hold each at the same height and drop</text>
+  <text x="75" y="390" class="small">3. Observe time to reach the ground</text>
+  <text x="75" y="410" class="small">4. Compare fall rates and discuss mass</text>
+
+  <rect x="310" y="130" width="230" height="220" rx="12" ry="12" fill="#f7f9fc" stroke="#d4deed" stroke-width="1.5"/>
+
+  <text x="325" y="155" class="label">Drop Zone</text>
+  <text x="325" y="175" class="small">Drag each object to drop it</text>
+
+  <rect id="dropZone" x="335" y="190" width="180" height="120" rx="10" ry="10" fill="#ffffff" stroke="#b7c5dd" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <text x="345" y="212" class="small" fill="#888888">Drop area</text>
+
+  <path id="groundLine" d="M340 295 H510" stroke="#7c8bab" stroke-width="3" stroke-linecap="round"/>
+
+  <g id="featherObj" cursor="pointer">
+    <path d="M110 460 C100 440 90 430 90 420 C90 410 100 405 110 410 C120 415 125 425 123 435 C121 445 115 455 110 460 Z"
+          fill="#ffffff" stroke="#4a6fb5" stroke-width="1.2"/>
+    <path d="M95 418 C103 423 110 430 116 440" stroke="#4a6fb5" stroke-width="0.8"/>
+    <text x="80" y="490" class="small">Feather</text>
+  </g>
+
+  <g id="rockObj" cursor="pointer">
+    <path d="M170 450 C170 435 180 425 195 422 C210 419 225 425 232 435 C238 445 235 460 225 468 C215 476 200 478 188 472 C176 466 170 460 170 450 Z"
+          fill="#8b9bb5" stroke="#4a5b80" stroke-width="1.5"/>
+    <text x="180" y="490" class="small">Rock</text>
+  </g>
+
+  <g id="ballObj" cursor="pointer">
+    <circle cx="150" cy="390" r="22" fill="#ffb347" stroke="#d98a2b" stroke-width="2"/>
+    <path d="M150 368 A22 22 0 0 0 150 412" stroke="#d98a2b" stroke-width="1" fill="none"/>
+    <text x="135" y="420" class="small">Ball</text>
+  </g>
+
+  <g id="btnDrop" cursor="pointer">
+    <rect x="340" y="340" width="160" height="36" rx="8" ry="8" fill="#4a6fb5"/>
+    <text x="365" y="363" class="btn-text">DROP OBJECTS</text>
+  </g>
+
+  <text x="325" y="395" class="label">Observation</text>
+  <text id="obsText" x="325" y="418" class="small" fill="#555555">Place all three in the zone,</text>
+  <text id="obsText2" x="325" y="438" class="small" fill="#555555">then press "DROP OBJECTS".</text>
+
+  <g id="ruler">
+    <rect x="485" y="200" width="18" height="100" fill="#f4d28b" stroke="#c79d4a" stroke-width="1"/>
+    <path d="M486 210 H503 M486 220 H499 M486 230 H503 M486 240 H499 M486 250 H503 M486 260 H499 M486 270 H503 M486 280 H499 M486 290 H503"
+          stroke="#c79d4a" stroke-width="1"/>
+  </g>
+
+</svg>
+<script>
+(function() {
+  var svg = document.querySelector('svg');
+  var dropZone = document.getElementById('dropZone');
+  var btnDrop = document.getElementById('btnDrop');
+  var obs1 = document.getElementById('obsText');
+  var obs2 = document.getElementById('obsText2');
+
+  var objects = [
+    { id: 'featherObj', name: 'Feather', massRank: 1 },
+    { id: 'ballObj', name: 'Ball', massRank: 2 },
+    { id: 'rockObj', name: 'Rock', massRank: 3 }
+  ];
+
+  var state = {};
+  var dragInfo = null;
+
+  var dropRect = {
+    x: parseFloat(dropZone.getAttribute('x')),
+    y: parseFloat(dropZone.getAttribute('y')),
+    width: parseFloat(dropZone.getAttribute('width')),
+    height: parseFloat(dropZone.getAttribute('height'))
+  };
+
+  objects.forEach(function(o) {
+    var g = document.getElementById(o.id);
+    var bbox = g.getBBox();
+    state[o.id] = {
+      g: g,
+      homeX: bbox.x,
+      homeY: bbox.y,
+      dropped: false,
+      massRank: o.massRank
+    };
+    makeDraggable(o.id);
+  });
+
+  function svgPoint(evt) {
+    var pt = svg.createSVGPoint();
+    if (evt.touches && evt.touches.length > 0) {
+      pt.x = evt.touches[0].clientX;
+      pt.y = evt.touches[0].clientY;
+    } else {
+      pt.x = evt.clientX;
+      pt.y = evt.clientY;
+    }
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  function makeDraggable(id) {
+    var s = state[id];
+    var g = s.g;
+
+    function start(evt) {
+      evt.preventDefault();
+      var p = svgPoint(evt);
+      var bbox = g.getBBox();
+      dragInfo = {
+        id: id,
+        offsetX: p.x - bbox.x,
+        offsetY: p.y - bbox.y
+      };
+      g.style.transition = 'none';
+    }
+
+    function move(evt) {
+      if (!dragInfo || dragInfo.id !== id) return;
+      evt.preventDefault();
+      var p = svgPoint(evt);
+      var nx = p.x - dragInfo.offsetX;
+      var ny = p.y - dragInfo.offsetY;
+      g.setAttribute('transform', 'translate(' + (nx - s.homeX) + ',' + (ny - s.homeY) + ')');
+    }
+
+    function end(evt) {
+      if (!dragInfo || dragInfo.id !== id) return;
+      evt.preventDefault();
+      var bbox = g.getBBox();
+      var cx = bbox.x + bbox.width / 2;
+      var cy = bbox.y + bbox.height / 2;
+
+      if (cx > dropRect.x && cx < dropRect.x + dropRect.width &&
+          cy > dropRect.y && cy < dropRect.y + dropRect.height) {
+        var targetX = dropRect.x + dropRect.width / 2 - bbox.width / 2;
+        var targetY = dropRect.y + 20 + (s.massRank - 1) * 30;
+        var dx = targetX - s.homeX;
+        var dy = targetY - s.homeY;
+        g.style.transition = 'transform 0.2s ease-out';
+        g.setAttribute('transform', 'translate(' + dx + ',' + dy + ')');
+        s.dropped = true;
+      } else {
+        g.style.transition = 'transform 0.2s ease-out';
+        g.setAttribute('transform', 'translate(0,0)');
+        s.dropped = false;
+      }
+      dragInfo = null;
+      updateInstruction();
+    }
+
+    g.addEventListener('mousedown', start);
+    g.addEventListener('touchstart', start, { passive: false });
+    svg.addEventListener('mousemove', move);
+    svg.addEventListener('touchmove', move, { passive: false });
+    svg.addEventListener('mouseup', end);
+    svg.addEventListener('touchend', end);
+    svg.addEventListener('touchcancel', end);
+  }
+
+  function allDropped() {
+    return objects.every(function(o) { return state[o.id].dropped; });
+  }
+
+  function updateInstruction() {
+    if (!allDropped()) {
+      obs1.textContent = 'Place all three in the zone,';
+      obs2.textContent = 'then press "DROP OBJECTS".';
+    } else {
+      obs1.textContent = 'Press "DROP OBJECTS" to see';
+      obs2.textContent = 'how mass affects fall time.';
+    }
+  }
+
+  btnDrop.addEventListener('mousedown', triggerDrop);
+  btnDrop.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    triggerDrop();
+  });
+
+  function triggerDrop() {
+    if (!allDropped()) {
+      pulseText('#cc0000', 'Put feather, rock, and ball');
+      return;
+    }
+
+    var groundY = 295;
+    objects.forEach(function(o) {
+      var s = state[o.id];
+      var g = s.g;
+      var bbox = g.getBBox();
+      var startY = bbox.y;
+      var dy = groundY - (bbox.y + bbox.height);
+
+      var duration = 600 + (3 - s.massRank) * 250;
+
+      g.style.transition = 'transform ' + duration + 'ms ease-in';
+      var current = g.getAttribute('transform') || 'translate(0,0)';
+      var match = /translate\(([-0-9.]+),\s*([-0-9.]+)\)/.exec(current);
+      var cx = match ? parseFloat(match[1]) : 0;
+      var cy = match ? parseFloat(match[2]) : 0;
+      g.setAttribute('transform', 'translate(' + cx + ',' + (cy + dy) + ')');
+    });
+
+    obs1.textContent = 'Heavier rock lands first, then ball,';
+    obs2.textContent = 'feather is slowest due to air resistance.';
+  }
+
+  function pulseText(color, message) {
+    obs1.textContent = message;
+    obs2.textContent = 'Place all in the dashed box.';
+    obs1.setAttribute('fill', color);
+    obs2.setAttribute('fill', color);
+    obs1.style.transition = 'opacity 0.2s';
+    obs2.style.transition = 'opacity 0.2s';
+    obs1.style.opacity = '0.4';
+    obs2.style.opacity = '0.4';
+    setTimeout(function() {
+      obs1.style.opacity = '1';
+      obs2.style.opacity = '1';
+      obs1.setAttribute('fill', '#555555');
+      obs2.setAttribute('fill', '#555555');
+    }, 250);
+  }
+})();
+</script>
+</body>
+</html>
