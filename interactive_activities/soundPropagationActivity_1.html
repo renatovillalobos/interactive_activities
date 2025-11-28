@@ -1,0 +1,297 @@
+<html>
+<head>
+<style>
+  body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+  .container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+  svg { width: 100%; height: 100%; max-width: 600px; max-height: 600px; background: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; user-select: none; touch-action: none; }
+  .label { font-size: 14px; fill: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; pointer-events: none; }
+  .instr { font-size: 18px; fill: #334155; text-anchor: middle; font-weight: 500; pointer-events: none; }
+  .draggable { cursor: grab; transition: transform 0.1s; }
+  .draggable:active { cursor: grabbing; scale: 1.1; }
+  .wave { pointer-events: none; }
+</style>
+</head>
+<body>
+<div class="container">
+<svg id="lab" viewBox="0 0 600 600">
+  <!-- Layout Backgrounds/Guides -->
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="1" dy="2" result="offsetblur"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.3"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Title & Instruction -->
+  <text x="300" y="40" class="instr">Drag the mallet to strike materials</text>
+
+  <!-- ZONE 1: STRING -->
+  <g id="zone-string" transform="translate(50, 100)">
+    <text x="0" y="-15" class="label">String (Solid)</text>
+    <!-- Posts -->
+    <rect x="0" y="0" width="10" height="60" rx="2" fill="#94a3b8"/>
+    <rect x="490" y="0" width="10" height="60" rx="2" fill="#94a3b8"/>
+    <!-- The String -->
+    <line id="string-line" x1="5" y1="30" x2="495" y2="30" stroke="#d97706" stroke-width="3"/>
+    <!-- Hit Box (Invisible) -->
+    <rect x="0" y="-20" width="500" height="100" fill="transparent" class="target" data-type="string"/>
+  </g>
+
+  <!-- ZONE 2: METAL ROD -->
+  <g id="zone-rod" transform="translate(50, 240)">
+    <text x="0" y="-15" class="label">Metal Rod (Solid)</text>
+    <!-- Rod -->
+    <rect id="rod-shape" x="0" y="10" width="500" height="40" rx="4" fill="#64748b" filter="url(#shadow)"/>
+    <!-- Hit Box (Invisible) -->
+    <rect x="0" y="0" width="500" height="60" fill="transparent" class="target" data-type="rod"/>
+  </g>
+
+  <!-- ZONE 3: WATER -->
+  <g id="zone-water" transform="translate(50, 380)">
+    <text x="0" y="-15" class="label">Water (Liquid)</text>
+    <!-- Container -->
+    <path d="M0,10 L0,90 Q0,100 10,100 L490,100 Q500,100 500,90 L500,10" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2"/>
+    <!-- Water Level -->
+    <path id="water-surface" d="M2,30 L498,30 L498,90 Q498,98 490,98 L10,98 Q2,98 2,90 Z" fill="#7dd3fc" opacity="0.8"/>
+    <!-- Hit Box (Invisible) -->
+    <rect x="0" y="0" width="500" height="100" fill="transparent" class="target" data-type="water"/>
+  </g>
+
+  <!-- Dynamic Waves Layer -->
+  <g id="wave-layer"></g>
+
+  <!-- Mallet Tool -->
+  <g id="mallet" class="draggable" transform="translate(520, 500)">
+    <g transform="rotate(-45)">
+        <!-- Handle -->
+        <rect x="-4" y="0" width="8" height="70" fill="#78350f" rx="2"/>
+        <!-- Head -->
+        <circle cx="0" cy="0" r="14" fill="#ef4444" stroke="#b91c1c" stroke-width="2"/>
+        <circle cx="-4" cy="-4" r="4" fill="white" opacity="0.3"/>
+    </g>
+  </g>
+
+</svg>
+</div>
+
+<script>
+  const svg = document.getElementById('lab');
+  const mallet = document.getElementById('mallet');
+  const waveLayer = document.getElementById('wave-layer');
+  const targets = document.querySelectorAll('.target');
+  
+  let isDragging = false;
+  let startX, startY;
+  let initialTransform;
+  let malletBox = { x: 520, y: 500 }; // Default reset position
+  
+  // Animation loop variables
+  let waves = [];
+
+  // Initialize
+  mallet.setAttribute('transform', `translate(${malletBox.x}, ${malletBox.y})`);
+
+  // Drag Logic
+  function getSVGCoords(evt) {
+    let pt = svg.createSVGPoint();
+    pt.x = evt.clientX || evt.touches[0].clientX;
+    pt.y = evt.clientY || evt.touches[0].clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  function onDown(evt) {
+    evt.preventDefault();
+    isDragging = true;
+    const coords = getSVGCoords(evt);
+    startX = coords.x;
+    startY = coords.y;
+    
+    // Parse current transform
+    const transformList = mallet.transform.baseVal;
+    if (transformList.length > 0) {
+        const matrix = transformList.getItem(0).matrix;
+        malletBox.x = matrix.e;
+        malletBox.y = matrix.f;
+    }
+    
+    mallet.style.cursor = 'grabbing';
+    // Lift effect
+    mallet.querySelector('g').setAttribute('transform', 'rotate(-45) scale(1.1)');
+  }
+
+  function onMove(evt) {
+    if (!isDragging) return;
+    evt.preventDefault();
+    const coords = getSVGCoords(evt);
+    const dx = coords.x - startX;
+    const dy = coords.y - startY;
+    
+    const newX = malletBox.x + dx;
+    const newY = malletBox.y + dy;
+    
+    mallet.setAttribute('transform', `translate(${newX}, ${newY})`);
+  }
+
+  function onUp(evt) {
+    if (!isDragging) return;
+    isDragging = false;
+    mallet.style.cursor = 'grab';
+    mallet.querySelector('g').setAttribute('transform', 'rotate(-45) scale(1)');
+
+    // Check collision
+    const malletRect = mallet.getBoundingClientRect();
+    const malletCenterX = malletRect.left + malletRect.width / 2;
+    const malletCenterY = malletRect.top + malletRect.height / 2;
+
+    let hit = false;
+    let hitType = '';
+    let hitZoneX = 0;
+    let hitZoneY = 0;
+
+    targets.forEach(target => {
+        const rect = target.getBoundingClientRect();
+        if (malletCenterX >= rect.left && malletCenterX <= rect.right &&
+            malletCenterY >= rect.top && malletCenterY <= rect.bottom) {
+            hit = true;
+            hitType = target.getAttribute('data-type');
+            // Get local coordinate in SVG space for wave center
+            const svgRect = svg.getBoundingClientRect();
+            hitZoneX = malletCenterX - svgRect.left; // Approximation for responsive
+            // Map back to viewBox roughly
+            const viewBox = svg.viewBox.baseVal;
+            hitZoneX = (hitZoneX / svgRect.width) * viewBox.width;
+            hitZoneY = ((malletCenterY - svgRect.top) / svgRect.height) * viewBox.height;
+        }
+    });
+
+    if (hit) {
+        strikeAnimation(hitType, hitZoneX, hitZoneY);
+    } 
+    
+    // Snap back
+    snapBack();
+  }
+
+  function snapBack() {
+    malletBox.x = 520;
+    malletBox.y = 500;
+    mallet.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    mallet.setAttribute('transform', `translate(520, 500)`);
+    setTimeout(() => {
+        mallet.style.transition = '';
+    }, 400);
+  }
+
+  function strikeAnimation(type, x, y) {
+    // 1. Visual Strike Effect (Shake Object)
+    let elemToShake;
+    if (type === 'string') elemToShake = document.getElementById('string-line');
+    if (type === 'rod') elemToShake = document.getElementById('rod-shape');
+    if (type === 'water') elemToShake = document.getElementById('water-surface');
+
+    if(elemToShake) {
+        elemToShake.style.transition = 'transform 0.05s';
+        let count = 0;
+        const interval = setInterval(() => {
+            const offset = (count % 2 === 0 ? 2 : -2);
+            elemToShake.setAttribute('transform', `translate(0, ${offset})`);
+            count++;
+            if(count > 5) {
+                clearInterval(interval);
+                elemToShake.setAttribute('transform', `translate(0, 0)`);
+            }
+        }, 50);
+    }
+
+    // 2. Spawn Waves
+    createWaves(type, x, y);
+  }
+
+  function createWaves(type, x, y) {
+    // Propagation Logic:
+    // Rod (Solid): Fast speed, high frequency.
+    // String (Solid): Fast speed, high frequency (thinner).
+    // Water (Liquid): Slower speed, lower frequency (wider waves).
+
+    let speed = 0;
+    let count = 0;
+    let color = '';
+    let intervalDelay = 0;
+
+    if (type === 'rod') {
+        speed = 10;
+        count = 6;
+        color = '#475569';
+        intervalDelay = 80;
+    } else if (type === 'string') {
+        speed = 8;
+        count = 6;
+        color = '#d97706';
+        intervalDelay = 100;
+    } else if (type === 'water') {
+        speed = 3;
+        count = 4;
+        color = '#0284c7';
+        intervalDelay = 300;
+    }
+
+    let i = 0;
+    const waveInt = setInterval(() => {
+        spawnWaveCircle(x, y, speed, color);
+        i++;
+        if (i >= count) clearInterval(waveInt);
+    }, intervalDelay);
+  }
+
+  function spawnWaveCircle(x, y, speed, color) {
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", x);
+    circle.setAttribute("cy", y);
+    circle.setAttribute("r", 0);
+    circle.setAttribute("fill", "none");
+    circle.setAttribute("stroke", color);
+    circle.setAttribute("stroke-width", "2");
+    circle.setAttribute("opacity", "1");
+    circle.setAttribute("class", "wave");
+    
+    waveLayer.appendChild(circle);
+    waves.push({ el: circle, r: 0, speed: speed, opacity: 1 });
+  }
+
+  // Animation Loop
+  function animate() {
+    for (let i = waves.length - 1; i >= 0; i--) {
+        const w = waves[i];
+        w.r += w.speed;
+        w.opacity -= 0.015;
+        
+        if (w.opacity <= 0) {
+            waveLayer.removeChild(w.el);
+            waves.splice(i, 1);
+        } else {
+            w.el.setAttribute("r", w.r);
+            w.el.setAttribute("opacity", w.opacity);
+            w.el.setAttribute("stroke-width", 2 * w.opacity);
+        }
+    }
+    requestAnimationFrame(animate);
+  }
+
+  // Start Animation Loop
+  animate();
+
+  // Event Listeners
+  mallet.addEventListener('mousedown', onDown);
+  mallet.addEventListener('touchstart', onDown, { passive: false });
+  
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  
+  window.addEventListener('mouseup', onUp);
+  window.addEventListener('touchend', onUp);
+
+</script>
+</body>
+</html>
