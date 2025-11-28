@@ -1,0 +1,253 @@
+<html>
+<head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f2f5;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        overflow: hidden;
+    }
+    #lab-container {
+        width: 100%;
+        max-width: 800px;
+        aspect-ratio: 4/3;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        touch-action: none; /* Prevent scroll on mobile */
+    }
+    .draggable {
+        cursor: grab;
+    }
+    .draggable:active {
+        cursor: grabbing;
+    }
+    .ui-text {
+        font-size: 14px;
+        fill: #555;
+        font-weight: 500;
+        user-select: none;
+    }
+    .measure-text {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+    }
+    /* Simple wave animation */
+    @keyframes pulse {
+        0% { opacity: 0.8; transform: scale(0.8); }
+        100% { opacity: 0; transform: scale(2.5); }
+    }
+    .wave {
+        transform-origin: 100px 300px;
+        animation: pulse 2s infinite linear;
+    }
+    .wave-2 { animation-delay: 0.6s; }
+    .wave-3 { animation-delay: 1.2s; }
+
+    /* Snap areas visual (invisible but logical) */
+    .snap-zone {
+        fill: transparent;
+    }
+</style>
+</head>
+<body>
+
+<div id="lab-container">
+    <svg viewBox="0 0 800 600" id="mainSvg">
+        <!-- Background -->
+        <rect width="800" height="600" fill="#ffffff" />
+        
+        <!-- Grid/Floor Guide -->
+        <line x1="50" y1="450" x2="750" y2="450" stroke="#e0e0e0" stroke-width="2" />
+        
+        <!-- Sound Waves -->
+        <g id="waves">
+            <circle cx="100" cy="300" r="40" fill="none" stroke="#3498db" stroke-width="3" class="wave" />
+            <circle cx="100" cy="300" r="40" fill="none" stroke="#3498db" stroke-width="3" class="wave wave-2" />
+            <circle cx="100" cy="300" r="40" fill="none" stroke="#3498db" stroke-width="3" class="wave wave-3" />
+        </g>
+
+        <!-- Speaker (Static) -->
+        <g transform="translate(50, 240)">
+            <!-- Box -->
+            <rect x="0" y="0" width="80" height="120" rx="8" fill="#34495e" />
+            <!-- Cone -->
+            <circle cx="40" cy="40" r="25" fill="#2c3e50" />
+            <circle cx="40" cy="40" r="10" fill="#1abc9c" />
+            <circle cx="40" cy="90" r="20" fill="#2c3e50" />
+            <!-- Stand -->
+            <rect x="30" y="120" width="20" height="90" fill="#7f8c8d" />
+            <path d="M 20 210 L 60 210 L 50 200 L 30 200 Z" fill="#7f8c8d" />
+        </g>
+
+        <!-- Ruler / Measuring Tape (Static) -->
+        <g id="ruler" transform="translate(0, 480)">
+            <line x1="100" y1="0" x2="700" y2="0" stroke="#7f8c8d" stroke-width="2" />
+            
+            <!-- Ticks -->
+            <g transform="translate(250, 0)">
+                <line y1="-10" y2="10" stroke="#7f8c8d" stroke-width="2"/>
+                <text x="0" y="30" text-anchor="middle" class="ui-text">1m</text>
+            </g>
+            <g transform="translate(400, 0)">
+                <line y1="-10" y2="10" stroke="#7f8c8d" stroke-width="2"/>
+                <text x="0" y="30" text-anchor="middle" class="ui-text">2m</text>
+            </g>
+            <g transform="translate(550, 0)">
+                <line y1="-10" y2="10" stroke="#7f8c8d" stroke-width="2"/>
+                <text x="0" y="30" text-anchor="middle" class="ui-text">3m</text>
+            </g>
+             <g transform="translate(700, 0)">
+                <line y1="-10" y2="10" stroke="#7f8c8d" stroke-width="2"/>
+                <text x="0" y="30" text-anchor="middle" class="ui-text">4m</text>
+            </g>
+        </g>
+
+        <!-- Labels -->
+        <text x="400" y="50" text-anchor="middle" font-size="20" fill="#333" font-weight="bold">Sound Intensity Lab</text>
+        <text x="400" y="80" text-anchor="middle" font-size="14" fill="#7f8c8d">Drag the meter to measure intensity at different distances</text>
+
+        <!-- Draggable Sound Meter -->
+        <g id="meter" class="draggable" transform="translate(250, 260)">
+            <!-- Shadow -->
+            <ellipse cx="40" cy="180" rx="30" ry="8" fill="rgba(0,0,0,0.15)" />
+            
+            <!-- Handle/Body -->
+            <rect x="0" y="0" width="80" height="140" rx="10" fill="#f39c12" stroke="#d35400" stroke-width="2" />
+            
+            <!-- Screen Area -->
+            <rect x="10" y="15" width="60" height="50" rx="4" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" />
+            
+            <!-- Microphone Tip -->
+            <rect x="30" y="-30" width="20" height="30" rx="4" fill="#34495e" />
+            <line x1="35" y1="-25" x2="35" y2="-5" stroke="#555" stroke-width="1" />
+            <line x1="45" y1="-25" x2="45" y2="-5" stroke="#555" stroke-width="1" />
+            
+            <!-- Screen Text -->
+            <text x="40" y="35" text-anchor="middle" font-size="9" fill="#7f8c8d" font-family="sans-serif">INTENSITY</text>
+            <text id="intensityVal" x="40" y="55" text-anchor="middle" font-size="16" fill="#2c3e50" class="measure-text">100%</text>
+            
+            <!-- Buttons decorative -->
+            <circle cx="40" cy="90" r="12" fill="#e74c3c" />
+            <rect x="25" y="115" width="30" height="6" rx="3" fill="#d35400" />
+            
+            <!-- Sensor Line (Visual feedback on meter) -->
+            <rect id="signalBar" x="12" y="60" width="56" height="3" fill="#27ae60" />
+        </g>
+
+    </svg>
+</div>
+
+<script>
+    const svg = document.getElementById('mainSvg');
+    const meter = document.getElementById('meter');
+    const intensityText = document.getElementById('intensityVal');
+    const signalBar = document.getElementById('signalBar');
+
+    let isDragging = false;
+    let startX;
+    let meterX = 250; // Initial position (1m)
+    const meterY = 260; // Fixed Y
+    
+    // Constraints
+    const minX = 180;
+    const maxX = 720;
+    
+    // Physics Constants
+    const sourceX = 100; // Position of speaker face
+    const refDistancePx = 150; // 150px = 1 meter
+    
+    function getEventPoint(evt) {
+        let pt = svg.createSVGPoint();
+        pt.x = evt.clientX || evt.touches[0].clientX;
+        pt.y = evt.clientY || evt.touches[0].clientY;
+        return pt.matrixTransform(svg.getScreenCTM().inverse());
+    }
+
+    function updatePhysics(currentX) {
+        // Calculate distance from source
+        const distPx = currentX - sourceX;
+        
+        // Convert to meters (approximate for display)
+        const meters = distPx / refDistancePx;
+        
+        // Inverse Square Law: I = 1 / d^2
+        // We normalize so that at 1m (150px), Intensity = 100%
+        let intensity = 100 / (meters * meters);
+        
+        // Clamp for UI cleaniness
+        if (intensity > 100) intensity = 100;
+        if (intensity < 0) intensity = 0;
+        
+        // Update Text
+        intensityText.textContent = intensity.toFixed(1) + '%';
+        
+        // Update Signal Bar Color and Width
+        const barWidth = (intensity / 100) * 56;
+        signalBar.setAttribute('width', Math.max(0, barWidth));
+        
+        if (intensity > 60) signalBar.setAttribute('fill', '#27ae60'); // Green
+        else if (intensity > 30) signalBar.setAttribute('fill', '#f1c40f'); // Yellow
+        else signalBar.setAttribute('fill', '#c0392b'); // Red
+    }
+
+    function onStart(evt) {
+        isDragging = true;
+        const pt = getEventPoint(evt);
+        // Calculate offset to prevent snapping to center of mouse
+        // We just track movement relative to current transforms
+        meter.classList.add('grabbing');
+    }
+
+    function onMove(evt) {
+        if (!isDragging) return;
+        evt.preventDefault();
+        
+        const pt = getEventPoint(evt);
+        
+        // Clamp X
+        let newX = pt.x - 40; // Center offset (meter is 80 wide)
+        if (newX < minX) newX = minX;
+        if (newX > maxX) newX = maxX;
+        
+        meterX = newX;
+        
+        // Update visual position
+        meter.setAttribute('transform', `translate(${meterX}, ${meterY})`);
+        
+        // Update logic
+        updatePhysics(meterX + 40); // Pass center of meter
+    }
+
+    function onEnd() {
+        isDragging = false;
+        meter.classList.remove('grabbing');
+    }
+
+    // Event Listeners
+    meter.addEventListener('mousedown', onStart);
+    meter.addEventListener('touchstart', onStart, {passive: false});
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('touchmove', onMove, {passive: false});
+
+    window.addEventListener('mouseup', onEnd);
+    window.addEventListener('touchend', onEnd);
+
+    // Initial calculation
+    updatePhysics(meterX + 40);
+
+</script>
+</body>
+</html>
