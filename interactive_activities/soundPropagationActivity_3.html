@@ -1,0 +1,264 @@
+<html>
+<head>
+<style>
+  body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #f4f6f8; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+  svg { width: 100%; height: 100%; display: block; touch-action: none; user-select: none; }
+  .draggable { cursor: grab; filter: drop-shadow(0px 4px 3px rgba(0,0,0,0.1)); transition: transform 0.1s; }
+  .draggable:active { cursor: grabbing; scale: 1.05; }
+  .label-bg { fill: white; stroke: #ccd1d5; stroke-width: 2; rx: 8; }
+  .label-text { fill: #333; font-weight: 600; font-size: 18px; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+  .wave-line { stroke: #2c3e50; stroke-width: 2; stroke-linecap: round; }
+  .bracket { fill: none; stroke: #e74c3c; stroke-width: 2; }
+  .arrow { fill: #e74c3c; }
+  .zone { fill: transparent; stroke: none; }
+  .zone-debug { fill: rgba(0, 255, 0, 0.1); stroke: green; } /* for testing only, hidden in prod */
+  .correct .label-bg { stroke: #27ae60; fill: #e8f8f5; stroke-width: 3; }
+  .correct .label-text { fill: #1e8449; }
+  .title { font-size: 24px; font-weight: 700; fill: #2c3e50; text-anchor: middle; }
+  .instruction { font-size: 16px; fill: #7f8c8d; text-anchor: middle; }
+</style>
+</head>
+<body>
+
+<svg viewBox="0 0 800 600" id="mainSvg">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#ffffff" />
+  
+  <!-- Header -->
+  <text x="400" y="50" class="title">Sound Wave Analysis</text>
+  <text x="400" y="80" class="instruction">Drag labels to the correct parts of the wave diagram.</text>
+
+  <!-- Diagram Container -->
+  <g transform="translate(50, 150)">
+    
+    <!-- The Longitudinal Wave Visualization (Static) -->
+    <g id="wave-lines">
+      <!-- Cluster 1 (Compression) -->
+      <line x1="20" y1="50" x2="20" y2="150" class="wave-line" opacity="0.4"/>
+      <line x1="45" y1="50" x2="45" y2="150" class="wave-line" opacity="0.6"/>
+      <line x1="65" y1="50" x2="65" y2="150" class="wave-line" opacity="0.8"/>
+      <line x1="80" y1="50" x2="80" y2="150" class="wave-line"/>
+      <line x1="90" y1="50" x2="90" y2="150" class="wave-line"/>
+      <line x1="100" y1="50" x2="100" y2="150" class="wave-line"/> <!-- Center C1 -->
+      <line x1="110" y1="50" x2="110" y2="150" class="wave-line"/>
+      <line x1="120" y1="50" x2="120" y2="150" class="wave-line"/>
+      <line x1="135" y1="50" x2="135" y2="150" class="wave-line" opacity="0.8"/>
+      <line x1="155" y1="50" x2="155" y2="150" class="wave-line" opacity="0.6"/>
+      <line x1="180" y1="50" x2="180" y2="150" class="wave-line" opacity="0.4"/>
+
+      <!-- Spread (Rarefaction) -->
+      <line x1="220" y1="50" x2="220" y2="150" class="wave-line" opacity="0.4"/>
+      <line x1="270" y1="50" x2="270" y2="150" class="wave-line" opacity="0.4"/>
+      <line x1="330" y1="50" x2="330" y2="150" class="wave-line" opacity="0.4"/> <!-- Center R -->
+      <line x1="390" y1="50" x2="390" y2="150" class="wave-line" opacity="0.4"/>
+      <line x1="440" y1="50" x2="440" y2="150" class="wave-line" opacity="0.4"/>
+
+      <!-- Cluster 2 (Compression) -->
+      <line x1="480" y1="50" x2="480" y2="150" class="wave-line" opacity="0.4"/>
+      <line x1="505" y1="50" x2="505" y2="150" class="wave-line" opacity="0.6"/>
+      <line x1="525" y1="50" x2="525" y2="150" class="wave-line" opacity="0.8"/>
+      <line x1="540" y1="50" x2="540" y2="150" class="wave-line"/>
+      <line x1="550" y1="50" x2="550" y2="150" class="wave-line"/>
+      <line x1="560" y1="50" x2="560" y2="150" class="wave-line"/> <!-- Center C2 -->
+      <line x1="570" y1="50" x2="570" y2="150" class="wave-line"/>
+      <line x1="580" y1="50" x2="580" y2="150" class="wave-line"/>
+      <line x1="595" y1="50" x2="595" y2="150" class="wave-line" opacity="0.8"/>
+      <line x1="615" y1="50" x2="615" y2="150" class="wave-line" opacity="0.6"/>
+      <line x1="640" y1="50" x2="640" y2="150" class="wave-line" opacity="0.4"/>
+      
+      <!-- Spread 2 -->
+      <line x1="680" y1="50" x2="680" y2="150" class="wave-line" opacity="0.4"/>
+    </g>
+
+    <!-- Wavelength Indicator (Bracket) -->
+    <path d="M 100 40 L 100 20 L 560 20 L 560 40" class="bracket"/>
+    <polygon points="100,45 95,35 105,35" class="arrow"/>
+    <polygon points="560,45 555,35 565,35" class="arrow"/>
+
+    <!-- Drop Zones (Hidden Logic) -->
+    <!-- Zone: Compression (Left Cluster) -->
+    <rect id="zone-compression" x="50" y="40" width="100" height="120" class="zone"/>
+    <!-- Zone: Rarefaction (Middle Spread) -->
+    <rect id="zone-rarefaction" x="280" y="40" width="100" height="120" class="zone"/>
+    <!-- Zone: Wavelength (Top Bracket) -->
+    <rect id="zone-wavelength" x="250" y="0" width="160" height="50" class="zone"/>
+
+  </g>
+
+  <!-- Draggables Dock -->
+  <g id="dock" transform="translate(0, 450)">
+    <line x1="100" y1="0" x2="700" y2="0" stroke="#eee" stroke-width="2" />
+    
+    <!-- Item 1: Compression -->
+    <g class="draggable" id="drag-compression" data-target="zone-compression">
+      <rect x="100" y="30" width="160" height="50" class="label-bg"/>
+      <text x="180" y="55" class="label-text">Compression</text>
+    </g>
+
+    <!-- Item 2: Wavelength -->
+    <g class="draggable" id="drag-wavelength" data-target="zone-wavelength">
+      <rect x="320" y="30" width="160" height="50" class="label-bg"/>
+      <text x="400" y="55" class="label-text">Wavelength</text>
+    </g>
+
+    <!-- Item 3: Rarefaction -->
+    <g class="draggable" id="drag-rarefaction" data-target="zone-rarefaction">
+      <rect x="540" y="30" width="160" height="50" class="label-bg"/>
+      <text x="620" y="55" class="label-text">Rarefaction</text>
+    </g>
+  </g>
+
+</svg>
+
+<script>
+  const svg = document.getElementById('mainSvg');
+  let selectedElement = null;
+  let offset = { x: 0, y: 0 };
+  let transform;
+  
+  // Store initial positions for snap-back
+  const initials = {};
+  document.querySelectorAll('.draggable').forEach(el => {
+    const transformList = el.transform.baseVal;
+    if (transformList.length === 0) {
+      const t = svg.createSVGTransform();
+      t.setTranslate(0, 0);
+      transformList.appendItem(t);
+    }
+    const t = transformList.getItem(0);
+    initials[el.id] = { x: t.matrix.e, y: t.matrix.f };
+    
+    el.addEventListener('mousedown', startDrag);
+    el.addEventListener('touchstart', startDrag, {passive: false});
+  });
+
+  const zones = {
+    'zone-compression': document.getElementById('zone-compression'),
+    'zone-rarefaction': document.getElementById('zone-rarefaction'),
+    'zone-wavelength': document.getElementById('zone-wavelength')
+  };
+
+  function getMousePosition(evt) {
+    const CTM = svg.getScreenCTM();
+    if (evt.touches) { evt = evt.touches[0]; }
+    return {
+      x: (evt.clientX - CTM.e) / CTM.a,
+      y: (evt.clientY - CTM.f) / CTM.d
+    };
+  }
+
+  function startDrag(evt) {
+    if (evt.target.classList.contains('locked')) return;
+    
+    // Find the G parent
+    let target = evt.target;
+    while (!target.classList.contains('draggable')) {
+      target = target.parentNode;
+    }
+    
+    // Don't drag if locked
+    if (target.classList.contains('correct')) return;
+
+    selectedElement = target;
+    transform = selectedElement.transform.baseVal.getItem(0);
+    
+    const coord = getMousePosition(evt);
+    offset.x = coord.x - transform.matrix.e;
+    offset.y = coord.y - transform.matrix.f;
+    
+    // Move to front
+    selectedElement.parentNode.appendChild(selectedElement);
+  }
+
+  function drag(evt) {
+    if (selectedElement) {
+      evt.preventDefault();
+      const coord = getMousePosition(evt);
+      transform.setTranslate(coord.x - offset.x, coord.y - offset.y);
+    }
+  }
+
+  function endDrag(evt) {
+    if (!selectedElement) return;
+
+    const dragBox = selectedElement.getBoundingClientRect();
+    const targetId = selectedElement.getAttribute('data-target');
+    const zone = zones[targetId];
+    const zoneBox = zone.getBoundingClientRect();
+
+    // Simple AABB collision detection
+    const isOver = !(dragBox.right < zoneBox.left || 
+                     dragBox.left > zoneBox.right || 
+                     dragBox.bottom < zoneBox.top || 
+                     dragBox.top > zoneBox.bottom);
+
+    if (isOver) {
+      // Snap to zone center
+      snapToZone(selectedElement, zone);
+      selectedElement.classList.add('correct');
+      // Visual feedback via minimal pulse
+      const bg = selectedElement.querySelector('.label-bg');
+      // Add checkmark logic or just style change (handled by CSS)
+    } else {
+      // Revert
+      const init = initials[selectedElement.id];
+      transform.setTranslate(init.x, init.y);
+    }
+
+    selectedElement = null;
+  }
+
+  function snapToZone(element, zone) {
+    // We need to calculate the transform required to center the element over the zone
+    // SVG coordinates
+    const zoneRect = zone.getBBox(); // Local coordinates in the group
+    const elemRect = element.getBBox(); // Local coordinates of the drag group
+    
+    // Since zone is inside a transform group (translate(50, 150)), we must add that offset
+    // The drag items are in the root coordinate space initially (inside dock group at y=450, but we want absolute coords)
+    
+    // However, the easier way for SVG visual matching is finding the center points in global SVG space
+    
+    // Zone global position logic:
+    // The zone is in a group translated by (50, 150)
+    const zoneGlobalX = zoneRect.x + zoneRect.width/2 + 50;
+    const zoneGlobalY = zoneRect.y + zoneRect.height/2 + 150;
+    
+    // The element is currently at `transform` relative to its initial position inside the <g id="dock"> which is at (0, 450)
+    // Wait, <g id="dock"> transforms the coordinate space.
+    // If I move the element OUT of the dock group into root, calculation is easier.
+    // But let's stick to the current transform logic.
+    
+    // Dock is at (0, 450).
+    // Initial Item Pos relative to Dock is (100, 30) for Rect, etc.
+    // We modify the transform on the group itself.
+    
+    // Let's rely on visual center matching relative to the item's center.
+    // Element Center (local to element group)
+    const elCX = elemRect.x + elemRect.width/2;
+    const elCY = elemRect.y + elemRect.height/2;
+    
+    // We want Global Element Center == Global Zone Center
+    // Global Zone Center = zoneGlobalX, zoneGlobalY
+    // Global Element Center = (DockY + TransformY + elCY) ... 
+    // Actually, simply:
+    // NewTransformX = GlobalZoneX - DockX - elCX
+    // NewTransformY = GlobalZoneY - DockY - elCY
+    
+    const dockX = 0;
+    const dockY = 450;
+    
+    const newX = zoneGlobalX - dockX - elCX;
+    const newY = zoneGlobalY - dockY - elCY;
+    
+    transform.setTranslate(newX, newY);
+  }
+
+  window.addEventListener('mousemove', drag);
+  window.addEventListener('mouseup', endDrag);
+  window.addEventListener('touchmove', drag, {passive: false});
+  window.addEventListener('touchend', endDrag);
+
+</script>
+</body>
+</html>
