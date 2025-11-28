@@ -1,0 +1,300 @@
+<html>
+<head>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #0B0D17;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    touch-action: none; /* Prevent scroll on mobile */
+    user-select: none;
+  }
+  .clickable {
+    cursor: pointer;
+  }
+  .draggable {
+    cursor: grab;
+  }
+  .draggable:active {
+    cursor: grabbing;
+  }
+  .label-text {
+    font-size: 14px;
+    fill: #8D99AE;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+  .value-text {
+    font-size: 16px;
+    fill: #EDF2F4;
+    text-anchor: middle;
+    font-weight: bold;
+    pointer-events: none;
+  }
+  .title {
+    font-size: 24px;
+    fill: #EDF2F4;
+    text-anchor: middle;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  .instruction {
+    font-size: 14px;
+    fill: #8D99AE;
+    text-anchor: middle;
+  }
+</style>
+</head>
+<body>
+
+<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet" id="labSvg">
+  <!-- Background Elements -->
+  <defs>
+    <radialGradient id="planetGrad1" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#4CC9F0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4361EE;stop-opacity:1" />
+    </radialGradient>
+    <radialGradient id="planetGrad2" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#F72585;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B5179E;stop-opacity:1" />
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <marker id="arrowhead-left" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="10 0, 10 7, 0 3.5" fill="#EF476F" />
+    </marker>
+    <marker id="arrowhead-right" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#EF476F" />
+    </marker>
+  </defs>
+
+  <!-- Title & Header -->
+  <text x="400" y="50" class="title">GRAVITY TUG-OF-WAR</text>
+  <text x="400" y="80" class="instruction">Drag the red planet. Tap planets to change mass.</text>
+
+  <!-- Force Visualization Layer -->
+  <g id="forceVisuals">
+    <!-- The "String" -->
+    <line id="stringLine" x1="200" y1="300" x2="600" y2="300" stroke="#4895EF" stroke-width="2" stroke-dasharray="5,5" opacity="0.6" />
+    
+    <!-- Force Arrows -->
+    <g id="arrowsGroup" transform="translate(400, 300)">
+        <line id="forceLeft" x1="-10" y1="0" x2="-60" y2="0" stroke="#EF476F" stroke-width="4" marker-end="url(#arrowhead-left)" />
+        <line id="forceRight" x1="10" y1="0" x2="60" y2="0" stroke="#EF476F" stroke-width="4" marker-end="url(#arrowhead-right)" />
+        
+        <!-- Force Label -->
+        <rect x="-40" y="-35" width="80" height="24" rx="4" fill="#2B2D42" stroke="#EF476F" stroke-width="1" />
+        <text id="forceValue" x="0" y="-18" class="value-text" style="font-size: 12px; fill:#EF476F">FORCE</text>
+    </g>
+  </g>
+
+  <!-- Planet A (Left, Fixed Position for simplicity of interaction, but mass changes) -->
+  <g id="planetA_group" transform="translate(200, 300)" class="clickable">
+    <circle id="planetA_orbit" r="70" fill="none" stroke="#4361EE" stroke-width="1" opacity="0.2" stroke-dasharray="4,4" />
+    <circle id="planetA" r="30" fill="url(#planetGrad1)" filter="url(#glow)" />
+    <text y="60" class="label-text">Mass A</text>
+    <text id="massA_val" y="80" class="value-text">1x</text>
+  </g>
+
+  <!-- Planet B (Right, Draggable) -->
+  <g id="planetB_group" transform="translate(600, 300)" class="draggable">
+    <circle id="planetB_orbit" r="70" fill="none" stroke="#F72585" stroke-width="1" opacity="0.2" stroke-dasharray="4,4" />
+    <!-- Hit area for easier dragging -->
+    <circle r="60" fill="transparent" /> 
+    <circle id="planetB" r="30" fill="url(#planetGrad2)" filter="url(#glow)" />
+    <text y="60" class="label-text">Mass B</text>
+    <text id="massB_val" y="80" class="value-text">1x</text>
+    
+    <!-- Drag Handle Indicator -->
+    <g transform="translate(0, -55)" opacity="0.6">
+        <path d="M-10,0 L-5,5 L-5,-5 Z" fill="#fff"/>
+        <path d="M10,0 L5,5 L5,-5 Z" fill="#fff"/>
+    </g>
+  </g>
+
+</svg>
+
+<script>
+  // State
+  const state = {
+    p1Mass: 1,
+    p2Mass: 1,
+    p2X: 600,
+    minX: 300,
+    maxX: 700,
+    baseRadius: 20
+  };
+
+  // DOM Elements
+  const svg = document.getElementById('labSvg');
+  const planetAGroup = document.getElementById('planetA_group');
+  const planetBGroup = document.getElementById('planetB_group');
+  const planetA = document.getElementById('planetA');
+  const planetB = document.getElementById('planetB');
+  const stringLine = document.getElementById('stringLine');
+  const massAText = document.getElementById('massA_val');
+  const massBText = document.getElementById('massB_val');
+  const arrowsGroup = document.getElementById('arrowsGroup');
+  const forceLeft = document.getElementById('forceLeft');
+  const forceRight = document.getElementById('forceRight');
+  const forceValue = document.getElementById('forceValue');
+
+  // Drag Logic Variables
+  let isDragging = false;
+  let startX = 0;
+  let initialP2X = 0;
+
+  // Mass Configuration
+  const massConfig = [
+    { label: "1x", r: 25 },
+    { label: "5x", r: 35 },
+    { label: "10x", r: 45 }
+  ];
+
+  // Initialize
+  function init() {
+    updateVisuals();
+    addListeners();
+  }
+
+  function getSVGPoint(event) {
+    let pt = svg.createSVGPoint();
+    pt.x = event.clientX || event.touches[0].clientX;
+    pt.y = event.clientY || event.touches[0].clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  function updateVisuals() {
+    // 1. Update Planet Positions
+    planetBGroup.setAttribute('transform', `translate(${state.p2X}, 300)`);
+    stringLine.setAttribute('x2', state.p2X);
+
+    // 2. Update Planet Sizes (Mass)
+    const ma = massConfig[state.p1Mass - 1];
+    const mb = massConfig[state.p2Mass - 1];
+    
+    planetA.setAttribute('r', ma.r);
+    massAText.textContent = ma.label;
+    
+    planetB.setAttribute('r', mb.r);
+    massBText.textContent = mb.label;
+
+    // 3. Calculate Force (Inverse Square Law simplified)
+    // Distance in pixels
+    const distance = state.p2X - 200; 
+    // Normalized distance (avoid division by huge numbers)
+    const dNorm = distance / 100; 
+    // Masses (using raw index 1,2,3 for simplicity of simulation scale)
+    const m1 = state.p1Mass === 1 ? 1 : (state.p1Mass === 2 ? 5 : 10);
+    const m2 = state.p2Mass === 1 ? 1 : (state.p2Mass === 2 ? 5 : 10);
+    
+    // F = G * (m1*m2)/r^2
+    const G = 5; // scaling constant
+    let force = (G * m1 * m2) / (dNorm * dNorm);
+    
+    // Clamp force for visual sanity
+    if(force > 100) force = 100;
+    if(force < 1) force = 1;
+
+    // 4. Update Arrows
+    // Center of arrows is midpoint
+    const midX = 200 + (distance / 2);
+    arrowsGroup.setAttribute('transform', `translate(${midX}, 300)`);
+
+    // Arrow length based on force
+    const arrowLen = 10 + (force * 3); // base length + scaling
+    
+    forceLeft.setAttribute('x2', -arrowLen);
+    forceRight.setAttribute('x2', arrowLen);
+
+    // Update Text
+    forceValue.textContent = Math.round(force * 10) + " N";
+  }
+
+  function addListeners() {
+    // Cycle Mass A
+    planetAGroup.addEventListener('pointerdown', (e) => {
+      // Prevent drag conflicts
+      e.stopPropagation();
+      state.p1Mass = (state.p1Mass % 3) + 1;
+      // Small scale animation
+      planetA.setAttribute('transform', 'scale(0.9)');
+      setTimeout(() => planetA.removeAttribute('transform'), 100);
+      updateVisuals();
+    });
+
+    // Cycle Mass B (Only if not dragging, logic handled in up if strictly click, 
+    // but dragging is primary. Let's make mass change on separate small button inside group? 
+    // Or just check movement delta. Let's check delta.)
+    
+    // Dragging Planet B
+    planetBGroup.addEventListener('pointerdown', (e) => {
+      isDragging = true;
+      planetBGroup.setPointerCapture(e.pointerId);
+      const pt = getSVGPoint(e);
+      startX = pt.x;
+      initialP2X = state.p2X;
+      planetBGroup.style.cursor = 'grabbing';
+      
+      // Store start time/pos to detect click vs drag
+      planetBGroup.dataset.startX = pt.x;
+      planetBGroup.dataset.startTime = Date.now();
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      
+      const pt = getSVGPoint(e);
+      const dx = pt.x - startX;
+      let newX = initialP2X + dx;
+      
+      // Constraints
+      if (newX < state.minX) newX = state.minX;
+      if (newX > state.maxX) newX = state.maxX;
+      
+      state.p2X = newX;
+      updateVisuals();
+    });
+
+    window.addEventListener('pointerup', (e) => {
+      if (!isDragging) return;
+      
+      // Detect Click to change mass
+      const pt = getSVGPoint(e);
+      const dist = Math.abs(pt.x - parseFloat(planetBGroup.dataset.startX));
+      const time = Date.now() - parseFloat(planetBGroup.dataset.startTime);
+
+      // If moved less than 5px and quickly, treat as click
+      if (dist < 5 && time < 200) {
+          state.p2Mass = (state.p2Mass % 3) + 1;
+          planetB.setAttribute('transform', 'scale(0.9)');
+          setTimeout(() => planetB.removeAttribute('transform'), 100);
+          updateVisuals();
+      }
+
+      isDragging = false;
+      planetBGroup.style.cursor = 'grab';
+    });
+  }
+
+  // Run
+  init();
+
+</script>
+</body>
+</html>
