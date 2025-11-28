@@ -1,0 +1,278 @@
+<html>
+<head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #0f1012;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    .container {
+        width: 100vmin;
+        height: 100vmin;
+        max-width: 800px;
+        max-height: 800px;
+        position: relative;
+    }
+    svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        user-select: none;
+    }
+    .interactive {
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+    .interactive:hover {
+        transform: scale(1.05);
+    }
+    .interactive:active {
+        transform: scale(0.95);
+    }
+    /* Simple fade transition for text */
+    .fade-text {
+        transition: opacity 0.3s ease;
+    }
+    /* Platform color transition */
+    #platform-surface {
+        transition: fill 0.5s ease;
+    }
+    /* Astronaut group for animation */
+    #astronaut-group {
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform-origin: 300px 400px;
+    }
+    /* Weight display transition */
+    #display-weight-val {
+        transition: fill 0.3s ease;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+<svg viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+    <!-- DEFS -->
+    <defs>
+        <filter id="glow">
+            <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+            <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+        <linearGradient id="grad-display" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#2a2a35;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#1f1f26;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+
+    <!-- BACKGROUND -->
+    <rect width="600" height="600" fill="#0B0D17" />
+    
+    <!-- STARS (Static) -->
+    <g fill="#FFF" opacity="0.6">
+        <circle cx="50" cy="50" r="1.5" />
+        <circle cx="120" cy="150" r="1" />
+        <circle cx="500" cy="80" r="2" />
+        <circle cx="450" cy="200" r="1" />
+        <circle cx="550" cy="300" r="1.5" />
+        <circle cx="80" cy="400" r="1" />
+        <circle cx="200" cy="50" r="1" />
+        <circle cx="350" cy="120" r="1.5" />
+        <circle cx="20" cy="250" r="1" />
+        <circle cx="580" cy="500" r="1" />
+    </g>
+
+    <!-- UI DISPLAY PANEL -->
+    <g transform="translate(150, 40)">
+        <rect x="0" y="0" width="300" height="90" rx="10" fill="url(#grad-display)" stroke="#444" stroke-width="2" />
+        <!-- Labels -->
+        <text x="150" y="25" text-anchor="middle" fill="#888" font-size="12" font-weight="bold" letter-spacing="1">CELESTIAL WEIGHT SCALE</text>
+        
+        <!-- Mass (Constant) -->
+        <text x="70" y="50" text-anchor="middle" fill="#AAA" font-size="10">MASS</text>
+        <text x="70" y="75" text-anchor="middle" fill="#FFF" font-size="20" font-weight="bold">60 kg</text>
+        
+        <!-- Divider -->
+        <line x1="150" y1="40" x2="150" y2="80" stroke="#444" stroke-width="1" />
+        
+        <!-- Weight (Variable) -->
+        <text x="230" y="50" text-anchor="middle" fill="#AAA" font-size="10">WEIGHT (Force)</text>
+        <text id="display-weight-val" x="230" y="75" text-anchor="middle" fill="#4dabf7" font-size="20" font-weight="bold">588 N</text>
+    </g>
+
+    <!-- SURFACE / PLATFORM -->
+    <g transform="translate(0, 400)">
+        <!-- Horizon/Planet Surface -->
+        <path id="platform-surface" d="M -50 0 Q 300 -60 650 0 L 650 200 L -50 200 Z" fill="#2b8a3e" />
+        <!-- Scale Base -->
+        <ellipse cx="300" cy="0" rx="120" ry="20" fill="rgba(0,0,0,0.3)" />
+    </g>
+
+    <!-- ASTRONAUT -->
+    <g id="astronaut-group" transform="translate(0,0)">
+        <!-- Legs -->
+        <path d="M 285 340 L 285 380 L 275 395" stroke="#EEE" stroke-width="14" stroke-linecap="round" fill="none" />
+        <path d="M 315 340 L 315 380 L 325 395" stroke="#EEE" stroke-width="14" stroke-linecap="round" fill="none" />
+        
+        <!-- Boots -->
+        <path d="M 268 395 L 290 395 L 290 400 L 268 400 Z" fill="#999" />
+        <path d="M 310 395 L 332 395 L 332 400 L 310 400 Z" fill="#999" />
+
+        <!-- Body -->
+        <rect x="270" y="280" width="60" height="70" rx="10" fill="#FFF" />
+        <!-- Chest Panel -->
+        <rect x="285" y="295" width="30" height="20" rx="2" fill="#CCC" />
+        <circle cx="292" cy="305" r="3" fill="#333" />
+        <circle cx="308" cy="305" r="3" fill="#e03131" />
+        
+        <!-- Arms -->
+        <path d="M 270 290 Q 250 310 255 330" stroke="#EEE" stroke-width="12" stroke-linecap="round" fill="none" />
+        <path d="M 330 290 Q 350 310 345 330" stroke="#EEE" stroke-width="12" stroke-linecap="round" fill="none" />
+        
+        <!-- Hands -->
+        <circle cx="255" cy="335" r="8" fill="#999" />
+        <circle cx="345" cy="335" r="8" fill="#999" />
+
+        <!-- Head -->
+        <circle cx="300" cy="260" r="35" fill="#FFF" />
+        <!-- Visor -->
+        <path d="M 275 255 Q 300 240 325 255 Q 325 285 300 285 Q 275 285 275 255" fill="#222" stroke="#AAA" stroke-width="2" />
+        <!-- Reflection on visor -->
+        <path d="M 285 255 Q 295 250 305 255" stroke="rgba(255,255,255,0.3)" stroke-width="3" fill="none" stroke-linecap="round" />
+    </g>
+
+    <!-- CONTROLS / PLANETS -->
+    <g transform="translate(60, 480)">
+        
+        <!-- MOON -->
+        <g id="btn-moon" class="interactive" onclick="selectPlanet('moon')">
+            <circle cx="40" cy="40" r="35" fill="#adb5bd" stroke="#343a40" stroke-width="2" />
+            <circle cx="25" cy="30" r="5" fill="#868e96" />
+            <circle cx="50" cy="50" r="8" fill="#868e96" />
+            <text x="40" y="95" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">MOON</text>
+        </g>
+
+        <!-- MARS -->
+        <g id="btn-mars" class="interactive" transform="translate(133, 0)" onclick="selectPlanet('mars')">
+            <circle cx="40" cy="40" r="35" fill="#e03131" stroke="#343a40" stroke-width="2" />
+            <path d="M 15 40 Q 40 20 65 40" stroke="#c92a2a" stroke-width="4" fill="none" opacity="0.5" />
+            <text x="40" y="95" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">MARS</text>
+        </g>
+
+        <!-- EARTH (Selected State Indicator handled by JS logic visually) -->
+        <g id="btn-earth" class="interactive" transform="translate(266, 0)" onclick="selectPlanet('earth')">
+            <circle cx="40" cy="40" r="35" fill="#1c7ed6" stroke="#343a40" stroke-width="2" />
+            <path d="M 15 30 Q 30 10 50 30 T 65 50" stroke="#2b8a3e" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.8" />
+            <text x="40" y="95" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">EARTH</text>
+        </g>
+
+        <!-- JUPITER -->
+        <g id="btn-jupiter" class="interactive" transform="translate(400, 0)" onclick="selectPlanet('jupiter')">
+            <circle cx="40" cy="40" r="35" fill="#e67700" stroke="#343a40" stroke-width="2" />
+            <line x1="10" y1="25" x2="70" y2="25" stroke="#d9480f" stroke-width="4" />
+            <line x1="5" y1="40" x2="75" y2="40" stroke="#d9480f" stroke-width="6" />
+            <line x1="10" y1="55" x2="70" y2="55" stroke="#d9480f" stroke-width="4" />
+            <text x="40" y="95" text-anchor="middle" fill="#FFF" font-size="12" font-weight="bold">JUPITER</text>
+        </g>
+
+    </g>
+
+    <!-- Selection Indicator Ring (Moves to selected planet) -->
+    <circle id="selection-ring" cx="366" cy="520" r="42" fill="none" stroke="#FFF" stroke-width="3" stroke-dasharray="5,3" opacity="1" style="transition: all 0.3s ease;" />
+
+</svg>
+</div>
+
+<script>
+    // Configuration Data
+    const MASS_KG = 60; // The astronaut's mass
+    
+    const PLANETS = {
+        earth: {
+            gravity: 9.8,
+            color: '#2b8a3e', // Greenish ground
+            xPos: 366 // Center X of the button group (60 + 266 + 40)
+        },
+        moon: {
+            gravity: 1.6,
+            color: '#868e96', // Grey ground
+            xPos: 100 // (60 + 0 + 40)
+        },
+        mars: {
+            gravity: 3.7,
+            color: '#c92a2a', // Red ground
+            xPos: 233 // (60 + 133 + 40)
+        },
+        jupiter: {
+            gravity: 24.8,
+            color: '#d9480f', // Orange ground
+            xPos: 500 // (60 + 400 + 40)
+        }
+    };
+
+    // DOM Elements
+    const surface = document.getElementById('platform-surface');
+    const displayVal = document.getElementById('display-weight-val');
+    const selectionRing = document.getElementById('selection-ring');
+    const astronaut = document.getElementById('astronaut-group');
+
+    function selectPlanet(planetKey) {
+        const data = PLANETS[planetKey];
+        
+        // 1. Calculate Weight
+        // Formula: Weight (N) = Mass (kg) * Gravity (m/s^2)
+        const weight = Math.round(MASS_KG * data.gravity);
+        
+        // 2. Update Display
+        // Add a small opacity blink
+        displayVal.style.opacity = 0;
+        setTimeout(() => {
+            displayVal.textContent = weight + " N";
+            displayVal.style.opacity = 1;
+        }, 150);
+
+        // 3. Update Visuals
+        surface.style.fill = data.color;
+        selectionRing.setAttribute('cx', data.xPos);
+
+        // 4. Scale Animation Logic (Feedback on weight)
+        // Heavier planets squish the astronaut slightly, Lighter ones stretch/float slightly
+        let scaleY = 1;
+        let translateY = 0;
+
+        if (planetKey === 'jupiter') {
+            scaleY = 0.95; // Squish
+            translateY = 15; // Move down to compensate scale origin
+        } else if (planetKey === 'moon') {
+            scaleY = 1.05; // Stretch
+            translateY = -15; // Float up
+        } else if (planetKey === 'mars') {
+            scaleY = 1.02; 
+            translateY = -5;
+        } else {
+            // Earth - Normal
+            scaleY = 1;
+            translateY = 0;
+        }
+
+        // Apply transform
+        // Using matrix to handle scaling from bottom pivot roughly
+        // Simplified: scaleY and translate
+        astronaut.style.transform = `translate(0px, ${translateY}px) scale(1, ${scaleY})`;
+    }
+
+    // Initialize (Start at Earth)
+    selectPlanet('earth');
+
+</script>
+</body>
+</html>
